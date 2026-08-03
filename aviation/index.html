@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#eef6f1" />
+    <title>Aviation Practice · Anthony Amaru</title>
+    <link rel="icon" href="../favicon.ico" sizes="any" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="afh_questions.js"></script>
+    <script src="phak_questions.js"></script>
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <div id="admin-lock" class="admin-lock" hidden>
+      <form id="aviation-unlock-form" class="unlock-card">
+        <span class="mini-mark">✦</span>
+        <p class="eyebrow">Private practice area</p>
+        <h1>Admin access required</h1>
+        <p>Unlock once for this browser session to take tests and save scores.</p>
+        <label>
+          <span>Admin password</span>
+          <input id="aviation-password" type="password" autocomplete="current-password" required />
+        </label>
+        <p id="aviation-password-error" class="form-error" role="alert"></p>
+        <button class="button primary" type="submit">Unlock practice</button>
+      </form>
+    </div>
+
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">Flight study desk</p>
+        <h1>Aviation practice</h1>
+      </div>
+      <div class="header-score" aria-live="polite">
+        <span>Last score</span>
+        <strong id="last-score">—</strong>
+      </div>
+    </header>
+
+    <main>
+      <section id="setup-view" class="view active">
+        <div class="intro-grid">
+          <article class="panel setup-panel">
+            <p class="eyebrow">Build a test</p>
+            <h2>Choose your source and pace.</h2>
+            <div class="field-grid">
+              <label>
+                <span>Handbook</span>
+                <select id="book-select">
+                  <option value="phak">Pilot's Handbook of Aeronautical Knowledge</option>
+                  <option value="afh">Airplane Flying Handbook</option>
+                </select>
+              </label>
+              <label>
+                <span>Chapter</span>
+                <select id="chapter-select"></select>
+              </label>
+              <label>
+                <span>Questions</span>
+                <select id="question-count">
+                  <option value="10">10 questions</option>
+                  <option value="20">20 questions</option>
+                  <option value="all">All available</option>
+                </select>
+              </label>
+            </div>
+            <button id="start-test" class="button primary" type="button">Start practice test</button>
+            <p id="question-availability" class="fine-print"></p>
+          </article>
+
+          <article class="panel history-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Saved on this device</p>
+                <h2>Score history</h2>
+              </div>
+              <button id="clear-history" class="text-button" type="button">Clear</button>
+            </div>
+            <div id="history-list" class="history-list"></div>
+          </article>
+        </div>
+
+        <article class="panel search-panel">
+          <div class="panel-heading search-heading">
+            <div>
+              <p class="eyebrow">Local knowledge search</p>
+              <h2>Search the FAA study bank.</h2>
+              <p>Find related questions and explanations without sending your query anywhere.</p>
+            </div>
+            <form id="aviation-search-form" class="search-form">
+              <input id="aviation-search" type="search" placeholder="Try “angle of attack”" />
+              <button class="button secondary" type="submit">Search</button>
+            </form>
+          </div>
+          <div id="aviation-search-results" class="search-results"></div>
+        </article>
+      </section>
+
+      <section id="quiz-view" class="view">
+        <div class="quiz-topline">
+          <button id="exit-test" class="text-button" type="button">← Exit test</button>
+          <div class="quiz-progress-copy"><span id="quiz-position">1 / 10</span><strong id="quiz-running-score">0 correct</strong></div>
+        </div>
+        <div class="progress-track"><span id="quiz-progress"></span></div>
+        <article class="panel question-card">
+          <div class="question-meta"><span id="question-source"></span><span id="question-id"></span></div>
+          <h2 id="question-text"></h2>
+          <div id="answer-options" class="answer-options"></div>
+          <div id="answer-feedback" class="answer-feedback" hidden></div>
+          <div class="question-actions">
+            <button id="check-answer" class="button primary" type="button" disabled>Check answer</button>
+            <button id="next-question" class="button primary" type="button" hidden>Next question</button>
+          </div>
+        </article>
+      </section>
+
+      <section id="results-view" class="view">
+        <article class="panel results-card">
+          <span class="result-ring" id="result-percent">0%</span>
+          <p class="eyebrow">Test complete</p>
+          <h2 id="result-title">Keep building your knowledge.</h2>
+          <p id="result-summary"></p>
+          <div class="result-actions">
+            <button id="new-test" class="button primary" type="button">Build another test</button>
+            <button id="review-wrong" class="button secondary" type="button">Review missed questions</button>
+          </div>
+        </article>
+        <div id="wrong-list" class="wrong-list"></div>
+      </section>
+    </main>
+
+    <footer>
+      <p>Public-domain FAA handbook practice · Progress is stored only in this browser.</p>
+    </footer>
+  </body>
+</html>
