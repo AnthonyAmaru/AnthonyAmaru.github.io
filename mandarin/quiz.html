@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f7f2f8" />
+    <title>Mandarin Practice · Anthony Amaru</title>
+    <link rel="icon" href="../favicon.ico" sizes="any" />
+    <link rel="stylesheet" href="../aviation/styles.css" />
+    <link rel="stylesheet" href="quiz.css" />
+    <script src="quiz.js" defer></script>
+  </head>
+  <body>
+    <div id="admin-lock" class="admin-lock" hidden>
+      <form id="mandarin-unlock-form" class="unlock-card">
+        <span class="mini-mark">好</span>
+        <p class="eyebrow">Private practice area</p>
+        <h1>Admin access required</h1>
+        <p>Unlock once for this session to take quizzes and save your scores.</p>
+        <label><span>Admin password</span><input id="mandarin-password" type="password" autocomplete="current-password" required /></label>
+        <p id="mandarin-password-error" class="form-error" role="alert"></p>
+        <button class="button primary" type="submit">Unlock practice</button>
+      </form>
+    </div>
+
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">中文练习 · Zhōngwén liànxí</p>
+        <h1>Mandarin practice</h1>
+      </div>
+      <div class="header-score"><span>Last score</span><strong id="last-score">—</strong></div>
+    </header>
+
+    <main>
+      <section id="setup-view" class="view active">
+        <div class="intro-grid">
+          <article class="panel setup-panel">
+            <p class="eyebrow">Build a quiz</p>
+            <h2>Practice only what you know.</h2>
+            <p class="intro-copy">Every question comes from your current vocabulary and sentence patterns.</p>
+            <div class="field-grid quiz-fields">
+              <label><span>Question type</span><select id="quiz-type"><option value="mixed">Mixed practice</option><option value="word">Word meanings</option><option value="sentence">Sentences</option></select></label>
+              <label><span>Questions</span><select id="question-count"><option value="5">5 questions</option><option value="10" selected>10 questions</option><option value="20">20 questions</option></select></label>
+            </div>
+            <button id="start-quiz" class="button primary" type="button">Start Mandarin quiz</button>
+          </article>
+          <article class="panel history-panel">
+            <div class="panel-heading"><div><p class="eyebrow">Saved on this device</p><h2>Score history</h2></div><button id="clear-history" class="text-button" type="button">Clear</button></div>
+            <div id="history-list" class="history-list"></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="quiz-view" class="view">
+        <div class="quiz-topline"><button id="exit-quiz" class="text-button" type="button">← Exit quiz</button><div class="quiz-progress-copy"><span id="quiz-position"></span><strong id="quiz-running-score">0 correct</strong></div></div>
+        <div class="progress-track"><span id="quiz-progress"></span></div>
+        <article class="panel question-card mandarin-card">
+          <div class="question-meta"><span id="question-type"></span><span id="question-pinyin"></span></div>
+          <p id="question-chinese" class="question-chinese" lang="zh-Hans"></p>
+          <h2 id="question-text"></h2>
+          <div id="answer-options" class="answer-options"></div>
+          <div id="answer-feedback" class="answer-feedback" hidden></div>
+          <div class="question-actions"><button id="check-answer" class="button primary" type="button" disabled>Check answer</button><button id="next-question" class="button primary" type="button" hidden>Next question</button></div>
+        </article>
+      </section>
+
+      <section id="results-view" class="view">
+        <article class="panel results-card">
+          <span class="result-ring" id="result-percent">0%</span>
+          <p class="eyebrow">练习完成 · Practice complete</p>
+          <h2 id="result-title"></h2>
+          <p id="result-summary"></p>
+          <div class="result-actions"><button id="new-quiz" class="button primary" type="button">Build another quiz</button><button id="review-wrong" class="button secondary" type="button">Review missed questions</button></div>
+        </article>
+        <div id="wrong-list" class="wrong-list"></div>
+      </section>
+    </main>
+    <footer><p>Mandarin practice from Anthony's current notebook · Progress stays in this browser.</p></footer>
+  </body>
+</html>
