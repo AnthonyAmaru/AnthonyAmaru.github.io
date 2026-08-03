@@ -3,23 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f5f1e8" />
-    <meta name="application-name" content="Mandarin Notebook" />
-    <meta
-      name="description"
-      content="Anthony Amaru's interactive Mandarin learning notebook: vocabulary, sentence patterns, character practice, and reading."
-    />
-    <meta property="og:title" content="My Mandarin Learning Notebook" />
-    <meta
-      property="og:description"
-      content="An interactive record of the Mandarin I have learned so far."
-    />
+    <meta name="theme-color" content="#f7f5ef" />
+    <meta name="application-name" content="Anthony Amaru" />
+    <meta name="description" content="Anthony Amaru's private personal portal for work, study, writing, music, and media." />
+    <meta property="og:title" content="Anthony Amaru · Personal Portal" />
+    <meta property="og:description" content="A personal atlas of work, ideas, study, writing, music, and media." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://anthonyamaru.com/" />
-    <meta property="og:image" content="https://anthonyamaru.com/og.png" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content="https://anthonyamaru.com/og.png" />
-    <title>My Mandarin Learning Notebook</title>
+    <meta property="og:image" content="https://anthonyamaru.com/brand-icon.png" />
+    <meta name="twitter:card" content="summary" />
+    <title>Anthony Amaru · Personal Portal</title>
     <link rel="icon" href="favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" href="favicon-32.png" sizes="32x32" />
     <link rel="icon" type="image/png" href="favicon-16.png" sizes="16x16" />
@@ -27,209 +20,265 @@
     <link rel="manifest" href="site.webmanifest" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Noto+Serif+SC:wght@500;600;700;900&amp;display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&amp;family=Noto+Serif+SC:wght@500;700&amp;display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
     <script src="script.js" defer></script>
   </head>
   <body>
-    <a class="skip-link" href="#main">Skip to the notebook</a>
+    <a class="skip-link" href="#main-content">Skip to content</a>
 
-    <header class="site-header">
-      <a class="brand" href="#top" aria-label="Mandarin notebook home">
-        <span class="brand-mark" aria-hidden="true"><img src="brand-icon.png" alt="" /></span>
-        <span>
-          <strong>Mandarin notebook</strong>
-          <small>Anthony Amaru</small>
-        </span>
-      </a>
-      <button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">
-        Menu
-      </button>
-      <nav id="site-nav" class="site-nav" aria-label="Primary navigation">
-        <a href="#study">Study</a>
-        <a href="#vocabulary">Vocabulary</a>
-        <a href="#patterns">Patterns</a>
-        <a href="#reading">Reading</a>
-        <a href="#characters">Characters</a>
-      </nav>
-    </header>
-
-    <main id="main">
-      <section id="top" class="hero section-shell">
-        <div class="hero-copy">
-          <p class="eyebrow">Lessons 1–4 · Beginner Mandarin</p>
-          <h1>Learn the Mandarin<br /><em>you already know.</em></h1>
-          <p class="hero-lede">
-            A living study notebook for vocabulary, pronunciation, conversation,
-            and the small wins that become fluency.
-          </p>
-          <div class="hero-actions">
-            <a class="button button-primary" href="#study">Start a review</a>
-            <a class="button button-quiet" href="#vocabulary">Open the word bank</a>
-          </div>
-          <dl class="hero-stats" aria-label="Notebook statistics">
-            <div><dt>4</dt><dd>lessons</dd></div>
-            <div><dt id="word-count">100+</dt><dd>words</dd></div>
-            <div><dt>40</dt><dd>characters</dd></div>
-            <div><dt>1</dt><dd>full reading</dd></div>
-          </dl>
-        </div>
-
-        <div class="hero-study-card" aria-label="Featured Mandarin phrase">
-          <span class="seal" aria-hidden="true">加油</span>
-          <p class="card-kicker">Phrase for today</p>
-          <p class="featured-hanzi" lang="zh-Hans">你好，欢迎学习！</p>
-          <p class="featured-pinyin">Nǐ hǎo, huānyíng xuéxí!</p>
-          <p class="featured-meaning">Hello, and welcome to learning!</p>
-          <div class="tone-line" aria-hidden="true">
-            <span class="tone tone-3">nǐ</span>
-            <span class="tone tone-3">hǎo</span>
-            <span class="tone tone-1">huān</span>
-            <span class="tone tone-2">yíng</span>
-            <span class="tone tone-2">xué</span>
-            <span class="tone tone-2">xí</span>
-          </div>
-          <div class="progress-row">
-            <span>Notebook progress</span>
-            <strong id="hero-progress">0%</strong>
-          </div>
-          <div class="progress-track" aria-hidden="true"><span id="hero-progress-bar"></span></div>
-        </div>
-      </section>
-
-      <section id="study" class="study-section section-shell">
-        <div class="section-heading split-heading">
-          <div>
-            <p class="eyebrow">Quick review</p>
-            <h2>One card at a time.</h2>
-          </div>
-          <p>Say the word aloud, reveal the answer, then decide if it feels familiar.</p>
-        </div>
-
-        <div class="study-layout">
-          <div class="flashcard-wrap">
-            <div id="flashcard" class="flashcard" tabindex="0" role="button" aria-label="Reveal flashcard answer">
-              <div class="flashcard-topline">
-                <span id="flash-category">Greeting</span>
-                <span id="flash-position">1 / 5</span>
-              </div>
-              <div class="flashcard-center">
-                <p id="flash-hanzi" class="flash-hanzi" lang="zh-Hans">你好</p>
-                <p id="flash-prompt" class="flash-prompt">Tap to reveal</p>
-                <div id="flash-answer" class="flash-answer" aria-hidden="true">
-                  <p id="flash-pinyin">nǐ hǎo</p>
-                  <strong id="flash-meaning">hello</strong>
-                </div>
-              </div>
-              <span class="flash-hint">Space to flip</span>
-            </div>
-            <div class="flash-actions">
-              <button id="review-again" class="button button-quiet" type="button">Review again</button>
-              <button id="know-word" class="button button-primary" type="button">I know this</button>
-            </div>
-          </div>
-
-          <aside class="session-panel" aria-labelledby="session-title">
-            <p class="eyebrow">Five-card session</p>
-            <h3 id="session-title">Build recognition, not pressure.</h3>
-            <ol id="session-list" class="session-list"></ol>
-            <button id="new-session" class="text-button" type="button">Shuffle a new set ↻</button>
-            <p class="local-note">Your progress stays in this browser only.</p>
-          </aside>
-        </div>
-      </section>
-
-      <section id="vocabulary" class="vocab-section section-shell">
-        <div class="section-heading split-heading">
-          <div>
-            <p class="eyebrow">Vocabulary bank</p>
-            <h2>Words with a real-life home.</h2>
-          </div>
-          <p>Search by Chinese, pinyin, or English. Filter by the situation where you would use it.</p>
-        </div>
-
-        <div class="vocab-controls">
-          <label class="search-box">
-            <span class="visually-hidden">Search vocabulary</span>
-            <span aria-hidden="true">⌕</span>
-            <input id="vocab-search" type="search" placeholder="Search words, pinyin, or meaning…" autocomplete="off" />
-          </label>
-          <div id="category-filters" class="filter-row" aria-label="Vocabulary categories"></div>
-        </div>
-
-        <div class="vocab-meta">
-          <p><strong id="visible-count">0</strong> words shown</p>
-          <button id="toggle-pinyin" class="text-button" type="button" aria-pressed="false">Hide pinyin</button>
-        </div>
-        <div id="vocab-grid" class="vocab-grid" aria-live="polite"></div>
-        <p id="vocab-empty" class="empty-state" hidden>No words match that search yet.</p>
-      </section>
-
-      <section id="patterns" class="pattern-section section-shell">
-        <div class="section-heading">
-          <p class="eyebrow">Sentence patterns</p>
-          <h2>Small structures. Big range.</h2>
-          <p>Swap in words you already know and make the sentence your own.</p>
-        </div>
-        <div id="pattern-tabs" class="pattern-tabs" role="tablist" aria-label="Sentence pattern topics"></div>
-        <div id="pattern-list" class="pattern-list"></div>
-      </section>
-
-      <section id="reading" class="reading-section">
-        <div class="reading-inner section-shell">
-          <div class="reading-intro">
-            <p class="eyebrow">Restaurant reading</p>
-            <h2>A birthday lunch<br />at Little Cat Restaurant.</h2>
-            <p>
-              Read the Chinese first. Use pinyin only when you need it, then check the English meaning.
-            </p>
-            <div id="reading-controls" class="reading-controls" role="group" aria-label="Reading display">
-              <button class="reading-toggle active" type="button" data-layer="chinese" aria-pressed="true">Chinese</button>
-              <button class="reading-toggle" type="button" data-layer="pinyin" aria-pressed="false">Pinyin</button>
-              <button class="reading-toggle" type="button" data-layer="english" aria-pressed="false">English</button>
-            </div>
-          </div>
-          <article id="reading-copy" class="reading-copy" aria-live="polite"></article>
-        </div>
-      </section>
-
-      <section id="characters" class="character-section section-shell">
-        <div class="section-heading split-heading">
-          <div>
-            <p class="eyebrow">Character practice</p>
-            <h2>Recognize before you write.</h2>
-          </div>
-          <p>Select a character to see its sound and meaning. Then say it without looking.</p>
-        </div>
-        <div class="character-layout">
-          <div id="character-grid" class="character-grid"></div>
-          <aside class="character-focus" aria-live="polite">
-            <span class="focus-label">Selected character</span>
-            <p id="focus-character" lang="zh-Hans">我</p>
-            <p id="focus-pinyin">wǒ</p>
-            <strong id="focus-meaning">I; me</strong>
-            <p class="stroke-note">Write from top to bottom and left to right.</p>
-          </aside>
-        </div>
-      </section>
-
-      <section class="closing-section section-shell">
-        <p class="closing-chinese" lang="zh-Hans">每天进步一点点。</p>
-        <h2>A little progress, every day.</h2>
-        <p>This notebook will grow with every new lesson.</p>
-        <a class="button button-primary" href="#study">Review five words</a>
-      </section>
-    </main>
-
-    <footer class="site-footer section-shell">
-      <div>
-        <span class="brand-mark small" aria-hidden="true"><img src="brand-icon.png" alt="" /></span>
-        <p><strong>My Mandarin Learning Notebook</strong><br />Built from lessons learned so far.</p>
+    <section id="entry-gate" class="entry-gate" aria-labelledby="entry-title">
+      <div class="entry-art" aria-hidden="true">
+        <img src="brand-icon.png" alt="" />
       </div>
-      <p>anthonyamaru.com · Updated August 2026</p>
-    </footer>
+      <div class="entry-copy">
+        <p class="entry-kicker">Anthony Amaru · Personal portal</p>
+        <blockquote id="entry-title">
+          “I went to the woods because I wished to live deliberately, to front only the essential facts of life, and see if I could not learn what it had to teach, and not, when I came to die, discover that I had not lived. I did not wish to live what was not life, living is so dear; nor did I wish to practice resignation, unless it was quite necessary. I wanted to live deep and suck out all the marrow of life, to live so sturdily and Spartan-like as to put to rout all that was not life, to cut a broad swath and shave close, to drive life into a corner, and reduce it to its lowest terms, and, if it proved to be mean, why then to get the whole and genuine meanness of it, and publish its meanness to the world; or if it were sublime, to know it by experience, and be able to give a true account of it in my next excursion.”
+        </blockquote>
+        <p class="entry-author">— Henry David Thoreau</p>
+        <form id="entry-form" class="entry-form">
+          <label for="entry-password">Enter the site password</label>
+          <div class="password-row">
+            <input id="entry-password" type="password" autocomplete="current-password" required />
+            <button type="submit">Enter <span aria-hidden="true">→</span></button>
+          </div>
+          <p id="entry-error" class="form-error" role="alert"></p>
+        </form>
+      </div>
+    </section>
+
+    <div id="portal" class="portal" hidden>
+      <header class="site-header">
+        <a class="brand" href="#home" data-route="home" aria-label="Anthony Amaru home">
+          <img src="brand-icon.png" alt="" />
+          <span><strong>Anthony Amaru</strong><small>Personal portal</small></span>
+        </a>
+        <button id="mobile-menu-button" class="mobile-menu-button" type="button" aria-expanded="false" aria-controls="primary-nav">Menu</button>
+        <nav id="primary-nav" class="primary-nav" aria-label="Primary navigation">
+          <button class="nav-link active" type="button" data-route="home">Home</button>
+          <button class="nav-link" type="button" data-route="resume">Resume</button>
+          <button class="nav-link" type="button" data-route="interests">Interests</button>
+          <button class="nav-link" type="button" data-route="music">Music</button>
+          <button class="nav-link" type="button" data-route="media">Media</button>
+        </nav>
+        <div class="header-actions">
+          <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch color theme"><span aria-hidden="true">☾</span></button>
+          <button id="admin-status" class="admin-chip" type="button"><span class="status-dot"></span><span>Admin locked</span></button>
+        </div>
+      </header>
+
+      <section id="music-dock" class="music-dock" aria-label="Music player">
+        <button id="dock-toggle" class="dock-art" type="button" aria-expanded="false" aria-controls="dock-expanded"><span aria-hidden="true">♫</span></button>
+        <div class="dock-copy"><small>Now playing</small><strong id="dock-title">Nothing selected</strong></div>
+        <button id="dock-previous" class="dock-control" type="button" aria-label="Previous song">‹</button>
+        <button id="dock-play" class="dock-play" type="button" aria-label="Play or pause">▶</button>
+        <button id="dock-next" class="dock-control" type="button" aria-label="Next song">›</button>
+        <div id="dock-expanded" class="dock-expanded" hidden>
+          <label for="dock-track-select">Choose a song</label>
+          <select id="dock-track-select"><option value="">No music added yet</option></select>
+          <audio id="audio-player" preload="metadata"></audio>
+        </div>
+      </section>
+
+      <main id="main-content">
+        <section id="page-home" class="page-panel active" data-page="home">
+          <div class="home-hero section-shell">
+            <div class="hero-copy">
+              <p class="eyebrow">Work · study · writing · sound</p>
+              <h1>A personal atlas,<br /><em>still being drawn.</em></h1>
+              <p class="hero-lede">One quiet place for the work I have done, the things I am learning, and the ideas I am still becoming.</p>
+              <div class="hero-actions">
+                <button class="button primary" type="button" data-route="interests">Explore my interests</button>
+                <button class="button quiet" type="button" data-route="resume">View my resume</button>
+              </div>
+            </div>
+            <aside class="hero-note">
+              <span class="hero-seal">深</span>
+              <p>Current principle</p>
+              <blockquote>Live deliberately. Learn deeply. Keep making.</blockquote>
+              <div class="hero-rule"></div>
+              <small>Built as a private, local-first workspace.</small>
+            </aside>
+          </div>
+
+          <div class="dashboard-grid section-shell">
+            <button class="dashboard-card lavender" type="button" data-route="resume"><span>01</span><h2>Resume</h2><p>Work experience, education, and the path so far.</p><strong>Open section →</strong></button>
+            <button class="dashboard-card mint" type="button" data-route="interests"><span>02</span><h2>Interests</h2><p>Aviation, Mandarin, writing, and future studies.</p><strong>Explore tools →</strong></button>
+            <button class="dashboard-card sky" type="button" data-route="music"><span>03</span><h2>Music</h2><p>A personal library organized into playlists.</p><strong>Open library →</strong></button>
+            <button class="dashboard-card peach" type="button" data-route="media"><span>04</span><h2>Media</h2><p>Photos and videos saved on this device.</p><strong>Open gallery →</strong></button>
+          </div>
+
+          <div class="home-status section-shell">
+            <div><span class="pulse-dot"></span><p><strong>Private workspace</strong><br /><small>Visitor gate active</small></p></div>
+            <div><p><strong id="home-aviation-score">No aviation score yet</strong><br /><small>Last aviation practice</small></p></div>
+            <div><p><strong id="home-mandarin-score">No Mandarin score yet</strong><br /><small>Last Mandarin practice</small></p></div>
+            <div><p><strong id="home-book-status">Book not imported</strong><br /><small>Local manuscript status</small></p></div>
+          </div>
+        </section>
+
+        <section id="page-resume" class="page-panel section-shell" data-page="resume">
+          <header class="page-heading">
+            <div><p class="eyebrow">Professional story</p><h1>Resume</h1></div>
+            <p>Keep your work and education current without editing the website code.</p>
+          </header>
+          <div class="resume-layout">
+            <div class="resume-main">
+              <div class="section-title-row"><h2>Work experience</h2><button class="small-button admin-action" type="button" data-entry-type="work">+ Add role</button></div>
+              <div id="work-list" class="timeline-list"></div>
+            </div>
+            <aside class="resume-side">
+              <div class="section-title-row"><h2>Education</h2><button class="small-button admin-action" type="button" data-entry-type="education">+ Add</button></div>
+              <div id="education-list" class="education-list"></div>
+              <div class="resume-note"><span>✦</span><p>Your resume edits are stored in this browser until a private backend is connected.</p></div>
+            </aside>
+          </div>
+        </section>
+
+        <section id="page-interests" class="page-panel section-shell" data-page="interests">
+          <header class="page-heading">
+            <div><p class="eyebrow">Curiosity in practice</p><h1>Interests</h1></div>
+            <p>Study tools and working spaces that grow as I do.</p>
+          </header>
+
+          <div class="interest-grid">
+            <article class="interest-card aviation-card">
+              <div class="interest-icon">✈</div>
+              <p class="eyebrow">Aviation</p>
+              <h2>Flight study desk</h2>
+              <p>Practice from the FAA handbooks, keep score history, and revisit every missed question.</p>
+              <div class="stat-strip"><div><strong id="aviation-last-score">—</strong><span>last score</span></div><div><strong id="aviation-test-count">0</strong><span>tests taken</span></div></div>
+              <button class="button primary launch-app" type="button" data-app="aviation" data-admin="true">Open aviation app</button>
+            </article>
+
+            <article class="interest-card mandarin-card">
+              <div class="interest-icon hanzi">好</div>
+              <p class="eyebrow">Mandarin · 中文</p>
+              <h2>Language notebook</h2>
+              <p>Review the words I know, read full passages, and test word or sentence meanings.</p>
+              <div class="stat-strip"><div><strong>135</strong><span>known words</span></div><div><strong id="mandarin-last-score">—</strong><span>last quiz</span></div></div>
+              <div class="button-pair"><button class="button quiet launch-app" type="button" data-app="mandarin">Open notebook</button><button class="button primary launch-app" type="button" data-app="mandarin-quiz" data-admin="true">Take a quiz</button></div>
+            </article>
+
+            <article class="interest-card book-card wide">
+              <div class="book-card-copy">
+                <div class="interest-icon">Aa</div>
+                <p class="eyebrow">Writing</p>
+                <h2>A Hypothesis of Man</h2>
+                <p>A private chapter workspace with real-time local saving, imports, exports, and a future secure Big Pickle editing bridge.</p>
+                <div class="privacy-line"><span>🔒</span><p><strong>Manuscript stays private.</strong> Its text is not published in this GitHub repository.</p></div>
+                <button id="open-book-studio" class="button primary" type="button">Open book studio</button>
+              </div>
+              <div class="book-visual" aria-hidden="true"><span>A</span><small>Hypothesis<br />of Man</small><i>Working manuscript</i></div>
+            </article>
+
+            <article class="interest-card assistant-card wide">
+              <div class="assistant-heading">
+                <div><div class="interest-icon">✦</div><p class="eyebrow">Future secure connector</p><h2>Big Pickle assistant</h2></div>
+                <span id="connector-status" class="connection-pill">Not connected</span>
+              </div>
+              <p>OpenCode can use Big Pickle through its provider system, but an account credential must never be embedded in this public site. Add a private gateway later to enable book edits, aviation answers, and Mandarin translation.</p>
+              <form id="connector-form" class="connector-form">
+                <label><span>Private gateway URL</span><input id="connector-url" type="url" placeholder="https://your-private-api.example.com" /></label>
+                <button class="button quiet" type="submit">Save connection</button>
+              </form>
+              <div class="assistant-demo"><span>Local tools already available</span><div><small>FAA question search</small><small>Mandarin word bank</small><small>Book import/export</small></div></div>
+            </article>
+
+            <article class="interest-card mycology-card">
+              <div class="interest-icon">◌</div><p class="eyebrow">Mycology</p><h2>Field notes coming later.</h2><p>A quiet space reserved for identifications, observations, and future study.</p><span class="coming-soon">Intentionally blank</span>
+            </article>
+          </div>
+        </section>
+
+        <section id="page-music" class="page-panel section-shell" data-page="music">
+          <header class="page-heading">
+            <div><p class="eyebrow">Personal listening room</p><h1>Music</h1></div>
+            <p>Add audio from your device, arrange playlists, and keep the current song available everywhere in the portal.</p>
+          </header>
+          <div class="music-layout">
+            <aside class="playlist-panel panel-card">
+              <div class="section-title-row"><h2>Playlists</h2><button id="new-playlist" class="small-button" type="button">+ New</button></div>
+              <button class="playlist-row active" type="button" data-playlist="all"><span>♫</span><strong>All music</strong><small id="all-track-count">0</small></button>
+              <div id="playlist-list"></div>
+            </aside>
+            <section class="library-panel panel-card">
+              <div class="library-heading"><div><p class="eyebrow">Library</p><h2 id="library-title">All music</h2></div><button id="add-music" class="button primary" type="button">Add music</button></div>
+              <input id="music-file-input" type="file" accept="audio/*" multiple hidden />
+              <div id="track-list" class="track-list"></div>
+            </section>
+          </div>
+        </section>
+
+        <section id="page-media" class="page-panel section-shell" data-page="media">
+          <header class="page-heading media-heading">
+            <div><p class="eyebrow">Personal archive</p><h1>Photos & videos</h1></div>
+            <button id="add-media" class="button primary" type="button">Add photos or videos</button>
+          </header>
+          <input id="media-file-input" type="file" accept="image/*,video/*" multiple hidden />
+          <div id="media-gallery" class="media-gallery"></div>
+          <div id="media-empty" class="empty-gallery"><span>◎</span><h2>Your gallery begins here.</h2><p>Add photos and videos from this device. Files remain in this browser's private local storage.</p></div>
+        </section>
+      </main>
+
+      <footer class="site-footer section-shell">
+        <div><img src="brand-icon.png" alt="" /><p><strong>Anthony Amaru</strong><br /><span>Live deep. Keep learning.</span></p></div>
+        <p>anthonyamaru.com · Local-first personal portal</p>
+      </footer>
+    </div>
+
+    <div id="admin-modal" class="modal-backdrop" hidden>
+      <section class="modal-card unlock-modal" role="dialog" aria-modal="true" aria-labelledby="admin-modal-title">
+        <button class="modal-close" type="button" data-close-modal="admin-modal" aria-label="Close">×</button>
+        <span class="modal-mark">✦</span>
+        <p class="eyebrow">Editing access</p>
+        <h2 id="admin-modal-title">Unlock admin tools</h2>
+        <p>Enter the admin password once. It stays active only for this browser session.</p>
+        <form id="admin-form">
+          <label><span>Admin password</span><input id="admin-password" type="password" autocomplete="current-password" required /></label>
+          <p id="admin-error" class="form-error" role="alert"></p>
+          <button class="button primary full" type="submit">Unlock this session</button>
+        </form>
+      </section>
+    </div>
+
+    <div id="entry-editor-modal" class="modal-backdrop" hidden>
+      <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="entry-editor-title">
+        <button class="modal-close" type="button" data-close-modal="entry-editor-modal" aria-label="Close">×</button>
+        <p class="eyebrow">Resume editor</p><h2 id="entry-editor-title">Add experience</h2>
+        <form id="entry-editor-form" class="stack-form">
+          <input id="entry-kind" type="hidden" /><input id="entry-index" type="hidden" />
+          <label><span>Title or degree</span><input id="entry-title" required /></label>
+          <label><span>Organization or school</span><input id="entry-organization" required /></label>
+          <div class="two-fields"><label><span>Dates</span><input id="entry-dates" placeholder="2024 — Present" /></label><label><span>Location</span><input id="entry-location" /></label></div>
+          <label><span>Description</span><textarea id="entry-description" rows="5"></textarea></label>
+          <button class="button primary" type="submit">Save entry</button>
+        </form>
+      </section>
+    </div>
+
+    <div id="app-modal" class="app-modal" hidden>
+      <header><button id="close-app" type="button">← Back to interests</button><strong id="app-modal-title">Study app</strong><a id="open-app-new-tab" href="#" target="_blank" rel="noopener">Open in new tab ↗</a></header>
+      <iframe id="app-frame" title="Embedded study app"></iframe>
+    </div>
+
+    <div id="book-modal" class="book-modal" hidden>
+      <header class="book-toolbar">
+        <button id="close-book" type="button">← Close studio</button>
+        <div><strong>A Hypothesis of Man</strong><small id="book-save-status">Saved locally</small></div>
+        <div class="book-toolbar-actions"><button id="chapter-menu" class="chapter-menu-button" type="button">Chapters</button><button id="import-book" type="button">Import</button><button id="export-book-json" type="button">Export backup</button><button id="export-book-markdown" type="button">Export Markdown</button></div>
+        <input id="book-file-input" type="file" accept=".json,.md,.txt,application/json,text/plain,text/markdown" hidden />
+      </header>
+      <div class="book-workspace">
+        <aside class="chapter-rail"><div class="chapter-rail-heading"><span>Chapters</span><button id="add-chapter" type="button" aria-label="Add chapter">+</button></div><nav id="chapter-list"></nav><div class="book-privacy"><span>🔒</span><p>Private local copy. Not included in the public website source.</p></div></aside>
+        <main class="book-editor-area">
+          <label class="book-title-label"><span>Chapter title</span><input id="book-chapter-title" /></label>
+          <label class="book-content-label"><span>Chapter notes & prose</span><textarea id="book-chapter-content" spellcheck="true" placeholder="Write, revise, and collect ideas here…"></textarea></label>
+          <footer><span id="book-word-count">0 words</span><span id="book-updated">Not edited yet</span><button id="send-to-assistant" type="button" disabled>Big Pickle connection required</button></footer>
+        </main>
+      </div>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
   </body>
 </html>

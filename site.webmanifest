@@ -1,11 +1,11 @@
 {
-  "name": "My Mandarin Learning Notebook",
-  "short_name": "Mandarin Notebook",
-  "description": "Anthony Amaru's interactive Mandarin study notebook.",
+  "name": "Anthony Amaru · Personal Portal",
+  "short_name": "Anthony Amaru",
+  "description": "A private personal portal for work, study, writing, music, and media.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f5f1e8",
-  "theme_color": "#f5f1e8",
+  "background_color": "#f7f5ef",
+  "theme_color": "#f7f5ef",
   "icons": [
     {
       "src": "icon-192.png",

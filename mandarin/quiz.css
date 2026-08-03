@@ -1,0 +1,13 @@
+:root {
+  --bg: #faf7fb;
+  --mint: #e7d9ef;
+  --mint-strong: #765286;
+  --sky: #e5eef7;
+  --peach: #f5dfd3;
+}
+.intro-copy { color: var(--muted); line-height: 1.6; }
+.quiz-fields label:first-child { grid-column: auto; }
+.question-chinese { margin: 10px 0 8px; font-family: "Noto Serif SC", "Songti SC", serif; font-size: clamp(2.7rem, 9vw, 5.5rem); font-weight: 700; line-height: 1.1; text-align: center; }
+.mandarin-card #question-text { margin: 0 0 22px; color: var(--muted); font-family: inherit; font-size: 1rem; font-weight: 600; text-align: center; }
+.mini-mark { font-family: "Noto Serif SC", "Songti SC", serif; font-size: 1.25rem; }
+@media (max-width: 760px) { .quiz-fields { grid-template-columns: 1fr; } }
