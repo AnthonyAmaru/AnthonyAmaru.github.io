@@ -442,12 +442,15 @@ function stepTrack(direction) {
 }
 
 async function addMusicFiles(files) {
-  if (!(await ensureAdmin()) || !files.length) return;
+  const audioFiles = files.filter((file) => file.type.startsWith("audio/") || /\.(mp3|m4a|aac|wav|ogg|oga|flac|opus|webm)$/i.test(file.name));
+  if (!audioFiles.length) return toast("Choose one or more audio files.");
+  if (!(await ensureAdmin())) return;
   let added = 0;
-  for (const file of files) {
+  for (const file of audioFiles) {
     try { await dbAdd("tracks", { name: file.name.replace(/\.[^.]+$/, ""), fileName: file.name, type: file.type, size: file.size, createdAt: Date.now() + added, blob: file }); added += 1; } catch (error) { toast(`Could not store ${file.name}: ${error.message}`); }
   }
-  toast(`${added} song${added === 1 ? "" : "s"} added to this device.`);
+  const skipped = files.length - audioFiles.length;
+  toast(`${added} song${added === 1 ? "" : "s"} added to this device.${skipped ? ` ${skipped} non-audio file${skipped === 1 ? " was" : "s were"} skipped.` : ""}`);
   await renderMusic();
 }
 
@@ -659,7 +662,14 @@ $("#connector-form").addEventListener("submit", async (event) => {
 
 $("#new-playlist").addEventListener("click", createPlaylist);
 $("#add-music").addEventListener("click", async () => { if (await ensureAdmin()) $("#music-file-input").click(); });
+$("#choose-music-files").addEventListener("click", async (event) => { event.stopPropagation(); if (await ensureAdmin()) $("#music-file-input").click(); });
 $("#music-file-input").addEventListener("change", (event) => { addMusicFiles([...event.target.files]); event.target.value = ""; });
+const musicDropZone = $("#music-drop-zone");
+musicDropZone.addEventListener("click", async (event) => { if (event.target.closest("button")) return; if (await ensureAdmin()) $("#music-file-input").click(); });
+musicDropZone.addEventListener("keydown", async (event) => { if (!["Enter", " "].includes(event.key)) return; event.preventDefault(); if (await ensureAdmin()) $("#music-file-input").click(); });
+["dragenter", "dragover"].forEach((eventName) => musicDropZone.addEventListener(eventName, (event) => { event.preventDefault(); event.dataTransfer.dropEffect = "copy"; musicDropZone.classList.add("is-dragging"); }));
+["dragleave", "dragend"].forEach((eventName) => musicDropZone.addEventListener(eventName, (event) => { event.preventDefault(); if (eventName === "dragleave" && musicDropZone.contains(event.relatedTarget)) return; musicDropZone.classList.remove("is-dragging"); }));
+musicDropZone.addEventListener("drop", (event) => { event.preventDefault(); musicDropZone.classList.remove("is-dragging"); addMusicFiles([...event.dataTransfer.files]); });
 $("#page-music").addEventListener("click", (event) => {
   const playlist = event.target.closest("[data-playlist]");
   const play = event.target.closest("[data-play-track]");

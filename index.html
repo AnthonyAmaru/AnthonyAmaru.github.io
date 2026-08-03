@@ -205,6 +205,11 @@
             <section class="library-panel panel-card">
               <div class="library-heading"><div><p class="eyebrow">Library</p><h2 id="library-title">All music</h2></div><button id="add-music" class="button primary" type="button">Add music</button></div>
               <input id="music-file-input" type="file" accept="audio/*" multiple hidden />
+              <div id="music-drop-zone" class="music-drop-zone" role="button" tabindex="0" aria-label="Add music by dragging audio files here or choosing files from your computer">
+                <span class="music-drop-icon" aria-hidden="true">♫</span>
+                <div><strong>Drop music files here</strong><p>or select MP3, M4A, WAV, and other audio from your computer</p></div>
+                <button id="choose-music-files" class="button secondary" type="button">Choose files</button>
+              </div>
               <div id="track-list" class="track-list"></div>
             </section>
           </div>

@@ -240,6 +240,12 @@ h1, h2 { font-family: var(--serif); font-weight: 500; letter-spacing: -.035em; }
 .playlist-row small { color: var(--muted); }
 .library-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid var(--line); padding-bottom: 20px; }
 .library-heading h2 { margin: 0; font-size: 2rem; }
+.music-drop-zone { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 16px; margin: 20px 0 6px; border: 1.5px dashed color-mix(in srgb, var(--ink) 28%, transparent); border-radius: 22px; background: color-mix(in srgb, var(--sky) 44%, var(--surface-solid)); padding: 22px; cursor: pointer; outline: none; transition: border-color .2s ease, background .2s ease, transform .2s ease; }
+.music-drop-zone:hover, .music-drop-zone:focus-visible, .music-drop-zone.is-dragging { border-color: var(--ink); background: color-mix(in srgb, var(--sky) 70%, var(--surface-solid)); transform: translateY(-1px); }
+.music-drop-zone.is-dragging { box-shadow: 0 0 0 4px color-mix(in srgb, var(--sky) 60%, transparent); }
+.music-drop-icon { display: grid; width: 48px; height: 48px; place-items: center; border-radius: 16px; background: var(--surface-solid); box-shadow: var(--shadow-sm); font-size: 1.3rem; }
+.music-drop-zone strong { display: block; margin-bottom: 4px; }
+.music-drop-zone p { margin: 0; color: var(--muted); font-size: .78rem; }
 .track-list { display: grid; }
 .track-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: center; gap: 14px; border-bottom: 1px solid var(--line); padding: 14px 3px; }
 .track-play { display: grid; width: 38px; height: 38px; place-items: center; border: 0; border-radius: 50%; background: var(--sage); cursor: pointer; font-size: .72rem; }
@@ -381,6 +387,8 @@ h1, h2 { font-family: var(--serif); font-weight: 500; letter-spacing: -.035em; }
   .connection-pill { display: inline-block; margin-bottom: 18px; }
   .connector-form { display: grid; }
   .music-layout { grid-template-columns: 1fr; }
+  .music-drop-zone { grid-template-columns: auto 1fr; padding: 18px; }
+  .music-drop-zone .button { grid-column: 1 / -1; width: 100%; }
   .playlist-panel { order: 2; }
   .track-row { grid-template-columns: auto minmax(0,1fr) auto; }
   .track-row select { grid-column: 2 / -1; max-width: none; }
