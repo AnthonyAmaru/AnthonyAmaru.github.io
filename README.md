@@ -1,6 +1,6 @@
-# Anthony Amaru · Personal Portal
+# Anthony Amaru
 
-A password-gated, mobile-first personal portal for Anthony's resume, interests, music, and media. It includes:
+A password-gated, mobile-first personal website for Anthony's resume, interests, music, and media. It includes:
 
 - public-domain FAA aviation practice with score and missed-question history
 - the original interactive Mandarin notebook plus multiple-choice quizzes
