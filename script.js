@@ -21,6 +21,7 @@ let currentPlaylist = "all";
 let tracks = [];
 let visibleTracks = [];
 let currentTrackId = null;
+const selectedTrackIds = new Set();
 let mediaObjectUrls = [];
 
 const resumeDefaults = {
@@ -431,13 +432,28 @@ async function renderMusic() {
   $$(".playlist-row[data-playlist='all']").forEach((button) => button.classList.toggle("active", currentPlaylist === "all"));
   const selectedPlaylist = playlists.find((playlist) => String(playlist.id) === currentPlaylist);
   visibleTracks = currentPlaylist === "all" ? tracks : tracks.filter((track) => track.playlist_id === selectedPlaylist?.id);
+  const availableIds = new Set(tracks.map((track) => String(track.id)));
+  [...selectedTrackIds].forEach((id) => { if (!availableIds.has(id)) selectedTrackIds.delete(id); });
   $("#library-title").textContent = currentPlaylist === "all" ? "All music" : selectedPlaylist?.name || "Playlist";
   const playlistOptions = playlists.map((playlist) => `<option value="${playlist.id}">${escapeHtml(playlist.name)}</option>`).join("");
   $("#track-list").innerHTML = cloudError ? `<div class="library-empty"><p>Cloud library unavailable.</p><small>${escapeHtml(cloudError)}</small></div>` : visibleTracks.length ? visibleTracks.map((track) => {
-    return `<article class="track-row"><button class="track-play" type="button" data-play-track="${track.id}" aria-label="Play ${escapeHtml(track.title)}">▶</button><div class="track-copy"><strong>${escapeHtml(track.title)}</strong><small>${formatBytes(track.size_bytes)}</small></div><select data-assign-track="${track.id}" aria-label="Move ${escapeHtml(track.title)} to playlist"><option value="">No playlist</option>${playlistOptions}</select><button class="track-delete" type="button" data-delete-track="${track.id}" aria-label="Delete ${escapeHtml(track.title)}">×</button></article>`;
+    return `<article class="track-row"><input class="track-select" type="checkbox" data-select-track="${track.id}" aria-label="Select ${escapeHtml(track.title)}" ${selectedTrackIds.has(String(track.id)) ? "checked" : ""} /><button class="track-play" type="button" data-play-track="${track.id}" aria-label="Play ${escapeHtml(track.title)}">▶</button><div class="track-copy"><strong>${escapeHtml(track.title)}</strong><small>${formatBytes(track.size_bytes)}</small></div><select data-assign-track="${track.id}" aria-label="Move ${escapeHtml(track.title)} to playlist"><option value="">No playlist</option>${playlistOptions}</select><button class="track-delete" type="button" data-delete-track="${track.id}" aria-label="Delete ${escapeHtml(track.title)}">×</button></article>`;
   }).join("") : '<div class="library-empty"><p>No songs here yet.</p><small>Add audio files from your device to begin.</small></div>';
   $$('[data-assign-track]').forEach((select) => { const track = tracks.find((item) => item.id === select.dataset.assignTrack); select.value = track?.playlist_id || ""; });
+  updateTrackSelectionControls();
   renderDock();
+}
+
+function updateTrackSelectionControls() {
+  const selectAll = $("#select-all-tracks");
+  const deleteButton = $("#delete-selected-tracks");
+  const visibleIds = visibleTracks.map((track) => String(track.id));
+  const selectedVisible = visibleIds.filter((id) => selectedTrackIds.has(id)).length;
+  selectAll.disabled = visibleIds.length === 0;
+  selectAll.checked = visibleIds.length > 0 && selectedVisible === visibleIds.length;
+  selectAll.indeterminate = selectedVisible > 0 && selectedVisible < visibleIds.length;
+  deleteButton.disabled = selectedTrackIds.size === 0;
+  deleteButton.textContent = selectedTrackIds.size ? `Delete ${selectedTrackIds.size}` : "Delete";
 }
 
 function renderDock() {
@@ -474,11 +490,16 @@ async function addMusicFiles(files) {
   if (!audioFiles.length) return toast("Choose one or more audio files.");
   if (!(await ensureCloudMusicAdmin())) return;
   let added = 0;
+  let duplicates = 0;
   for (const file of audioFiles) {
-    try { await musicCloud.upload("anthony", file); added += 1; } catch (error) { toast(`Could not upload ${file.name}: ${error.message}`); }
+    try {
+      const result = await musicCloud.upload("anthony", file);
+      if (result?.duplicate) duplicates += 1;
+      else added += 1;
+    } catch (error) { toast(`Could not upload ${file.name}: ${error.message}`); }
   }
   const skipped = files.length - audioFiles.length;
-  toast(`${added} song${added === 1 ? "" : "s"} uploaded to the cloud.${skipped ? ` ${skipped} non-audio file${skipped === 1 ? " was" : "s were"} skipped.` : ""}`);
+  toast(`${added} song${added === 1 ? "" : "s"} uploaded.${duplicates ? ` ${duplicates} duplicate${duplicates === 1 ? " was" : "s were"} skipped.` : ""}${skipped ? ` ${skipped} non-audio file${skipped === 1 ? " was" : "s were"} skipped.` : ""}`);
   await renderMusic();
 }
 
@@ -486,6 +507,7 @@ async function assignTrack(trackId, playlistId) {
   if (!(await ensureCloudMusicAdmin())) return renderMusic();
   try {
     await musicCloud.assignTrack(trackId, playlistId || null);
+    selectedTrackIds.delete(String(trackId));
     toast(playlistId ? "Song moved to the selected playlist." : "Song removed from playlists.");
     renderMusic();
   } catch (error) { toast(error.message); renderMusic(); }
@@ -496,8 +518,26 @@ async function deleteTrack(id) {
   const track = tracks.find((item) => item.id === String(id));
   if (!track) return;
   try { await musicCloud.deleteTrack(track); } catch (error) { return toast(error.message); }
+  selectedTrackIds.delete(String(id));
   if (currentTrackId === id) { $("#audio-player").pause(); currentTrackId = null; $("#dock-title").textContent = "Nothing selected"; }
   renderMusic();
+}
+
+async function deleteSelectedTracks() {
+  const selected = tracks.filter((track) => selectedTrackIds.has(String(track.id)));
+  if (!selected.length || !(await ensureCloudMusicAdmin())) return;
+  if (!confirm(`Delete ${selected.length} selected song${selected.length === 1 ? "" : "s"} from the cloud library?`)) return;
+  try {
+    await musicCloud.deleteTracks(selected);
+  } catch (error) { return toast(error.message); }
+  if (selected.some((track) => String(track.id) === String(currentTrackId))) {
+    $("#audio-player").pause();
+    currentTrackId = null;
+    $("#dock-title").textContent = "Nothing selected";
+  }
+  selectedTrackIds.clear();
+  await renderMusic();
+  toast(`${selected.length} song${selected.length === 1 ? "" : "s"} deleted.`);
 }
 
 async function createPlaylist() {
@@ -694,6 +734,12 @@ $("#export-book-markdown").addEventListener("click", exportBookMarkdown);
 $("#send-to-assistant").addEventListener("click", sendChapterToAssistant);
 
 $("#new-playlist").addEventListener("click", createPlaylist);
+$("#delete-selected-tracks").addEventListener("click", deleteSelectedTracks);
+$("#select-all-tracks").addEventListener("change", (event) => {
+  visibleTracks.forEach((track) => event.target.checked ? selectedTrackIds.add(String(track.id)) : selectedTrackIds.delete(String(track.id)));
+  $$('[data-select-track]').forEach((checkbox) => { checkbox.checked = event.target.checked; });
+  updateTrackSelectionControls();
+});
 $("#add-music").addEventListener("click", async () => { if (await ensureAdmin()) $("#music-file-input").click(); });
 $("#choose-music-files").addEventListener("click", async (event) => { event.stopPropagation(); if (await ensureAdmin()) $("#music-file-input").click(); });
 $("#music-file-input").addEventListener("change", (event) => { addMusicFiles([...event.target.files]); event.target.value = ""; });
@@ -707,11 +753,20 @@ $("#page-music").addEventListener("click", (event) => {
   const playlist = event.target.closest("[data-playlist]");
   const play = event.target.closest("[data-play-track]");
   const remove = event.target.closest("[data-delete-track]");
-  if (playlist) { currentPlaylist = playlist.dataset.playlist; renderMusic(); }
+  if (playlist) { selectedTrackIds.clear(); currentPlaylist = playlist.dataset.playlist; renderMusic(); }
   if (play) playTrack(play.dataset.playTrack);
   if (remove) deleteTrack(remove.dataset.deleteTrack);
 });
-$("#page-music").addEventListener("change", (event) => { const select = event.target.closest("[data-assign-track]"); if (select) assignTrack(select.dataset.assignTrack, select.value); });
+$("#page-music").addEventListener("change", (event) => {
+  const select = event.target.closest("[data-assign-track]");
+  const checkbox = event.target.closest("[data-select-track]");
+  if (select) assignTrack(select.dataset.assignTrack, select.value);
+  if (checkbox) {
+    if (checkbox.checked) selectedTrackIds.add(String(checkbox.dataset.selectTrack));
+    else selectedTrackIds.delete(String(checkbox.dataset.selectTrack));
+    updateTrackSelectionControls();
+  }
+});
 $("#dock-toggle").addEventListener("click", () => { const expanded = $("#dock-expanded"); expanded.hidden = !expanded.hidden; $("#dock-toggle").setAttribute("aria-expanded", String(!expanded.hidden)); });
 $("#dock-play").addEventListener("click", () => { const audio = $("#audio-player"); if (!audio.src && tracks.length) return playTrack(tracks[0].id); if (audio.paused) audio.play(); else audio.pause(); });
 $("#dock-previous").addEventListener("click", () => stepTrack(-1));

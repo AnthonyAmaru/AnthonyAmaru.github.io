@@ -22,9 +22,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&amp;family=Noto+Serif+SC:wght@500;700&amp;display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=20260803-snake" />
-    <script src="music-cloud.js" defer></script>
-    <script src="script.js?v=20260803-zen" defer></script>
+    <link rel="stylesheet" href="styles.css?v=20260803-music2" />
+    <script src="music-cloud.js?v=20260803-music2" defer></script>
+    <script src="script.js?v=20260803-music2" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -165,7 +165,14 @@
               <div id="playlist-list"></div>
             </aside>
             <section class="library-panel panel-card">
-              <div class="library-heading"><div><h2 id="library-title">All music</h2></div><button id="add-music" class="button primary" type="button">Add</button></div>
+              <div class="library-heading">
+                <div><h2 id="library-title">All music</h2></div>
+                <div class="library-actions">
+                  <label class="select-all-control"><input id="select-all-tracks" type="checkbox" /><span>Select all</span></label>
+                  <button id="delete-selected-tracks" class="button danger" type="button" disabled>Delete</button>
+                  <button id="add-music" class="button primary" type="button">Add</button>
+                </div>
+              </div>
               <input id="music-file-input" type="file" accept="audio/*" multiple hidden />
               <div id="music-drop-zone" class="music-drop-zone" role="button" tabindex="0" aria-label="Add music by dragging audio files here or choosing files from your computer">
                 <span class="music-drop-icon" aria-hidden="true">♫</span>

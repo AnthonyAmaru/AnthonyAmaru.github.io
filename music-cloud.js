@@ -10,6 +10,38 @@
     return path.split("/").map(encodeURIComponent).join("/");
   }
 
+  async function sha256Hex(value) {
+    const bytes = value instanceof ArrayBuffer ? value : new TextEncoder().encode(String(value));
+    const digest = await crypto.subtle.digest("SHA-256", bytes);
+    return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+  }
+
+  async function identifyFile(file) {
+    const relativePath = file.webkitRelativePath || "";
+    const folder = relativePath.includes("/") ? relativePath.slice(0, relativePath.lastIndexOf("/")) : "";
+    const contentHash = await sha256Hex(await file.arrayBuffer());
+    const folderFingerprint = folder ? await sha256Hex(folder.toLocaleLowerCase()) : null;
+    const fileFingerprint = await sha256Hex(JSON.stringify({
+      name: file.name.toLocaleLowerCase(),
+      size: file.size,
+      lastModified: Number(file.lastModified || 0),
+      folder,
+    }));
+    return {
+      contentHash,
+      fileFingerprint,
+      sourceMetadata: {
+        fingerprint_version: 1,
+        hash_algorithm: "SHA-256",
+        source_name: file.name,
+        source_last_modified: Number(file.lastModified || 0),
+        size_bytes: file.size,
+        mime_type: file.type || null,
+        folder_fingerprint: folderFingerprint,
+      },
+    };
+  }
+
   async function readResponse(response) {
     if (response.ok) {
       if (response.status === 204) return null;
@@ -81,7 +113,7 @@
 
     async list(site) {
       const playlistUrl = `${PROJECT_URL}/rest/v1/music_playlists?select=id,name,created_at&site=eq.${encodeURIComponent(site)}&order=created_at.asc`;
-      const trackUrl = `${PROJECT_URL}/rest/v1/music_tracks?select=id,playlist_id,title,file_name,storage_path,mime_type,size_bytes,created_at&site=eq.${encodeURIComponent(site)}&order=created_at.desc`;
+      const trackUrl = `${PROJECT_URL}/rest/v1/music_tracks?select=id,playlist_id,title,file_name,storage_path,mime_type,size_bytes,content_hash,file_fingerprint,source_metadata,created_at&site=eq.${encodeURIComponent(site)}&order=created_at.desc`;
       const [playlists, tracks] = await Promise.all([
         fetch(playlistUrl, { headers: this.headers() }).then(readResponse),
         fetch(trackUrl, { headers: this.headers() }).then(readResponse),
@@ -105,6 +137,9 @@
     async upload(site, file, playlistId = null) {
       this.requireAdmin();
       if (file.size > 50 * 1024 * 1024) throw new Error(`${file.name} is larger than the 50 MB file limit.`);
+      const identity = await identifyFile(file);
+      const duplicate = await this.findDuplicate(site, file, identity);
+      if (duplicate) return { duplicate: true, track: duplicate };
       const extension = (file.name.match(/\.([a-z0-9]{1,8})$/i)?.[1] || "audio").toLowerCase();
       const storagePath = `${site}/${this.user.id}/${crypto.randomUUID()}.${extension}`;
       const storageResponse = await fetch(`${PROJECT_URL}/storage/v1/object/${BUCKET}/${encodeStoragePath(storagePath)}`, {
@@ -126,6 +161,9 @@
             storage_path: storagePath,
             mime_type: file.type || null,
             size_bytes: file.size,
+            content_hash: identity.contentHash,
+            file_fingerprint: identity.fileFingerprint,
+            source_metadata: identity.sourceMetadata,
           }),
         });
         return (await readResponse(metadataResponse))?.[0];
@@ -139,6 +177,27 @@
       }
     }
 
+    async findDuplicate(site, file, identity) {
+      this.requireAdmin();
+      const base = new URL(`${PROJECT_URL}/rest/v1/music_tracks`);
+      base.searchParams.set("select", "id,title,file_name,size_bytes,content_hash,file_fingerprint");
+      base.searchParams.set("site", `eq.${site}`);
+      base.searchParams.set("user_id", `eq.${this.user.id}`);
+      base.searchParams.set("or", `(content_hash.eq.${identity.contentHash},file_fingerprint.eq.${identity.fileFingerprint})`);
+      base.searchParams.set("limit", "1");
+      const exact = await readResponse(await fetch(base, { headers: this.headers({}, true) }));
+      if (exact?.length) return exact[0];
+
+      const legacy = new URL(`${PROJECT_URL}/rest/v1/music_tracks`);
+      legacy.searchParams.set("select", "id,title,file_name,size_bytes");
+      legacy.searchParams.set("site", `eq.${site}`);
+      legacy.searchParams.set("user_id", `eq.${this.user.id}`);
+      legacy.searchParams.set("file_name", `eq.${file.name}`);
+      legacy.searchParams.set("size_bytes", `eq.${file.size}`);
+      legacy.searchParams.set("limit", "1");
+      return (await readResponse(await fetch(legacy, { headers: this.headers({}, true) })))?.[0] || null;
+    }
+
     async assignTrack(trackId, playlistId) {
       this.requireAdmin();
       const response = await fetch(`${PROJECT_URL}/rest/v1/music_tracks?id=eq.${encodeURIComponent(trackId)}`, {
@@ -150,18 +209,28 @@
     }
 
     async deleteTrack(track) {
+      return this.deleteTracks([track]);
+    }
+
+    async deleteTracks(trackList) {
       this.requireAdmin();
-      const response = await fetch(`${PROJECT_URL}/rest/v1/music_tracks?id=eq.${encodeURIComponent(track.id)}`, {
-        method: "DELETE",
-        headers: this.headers({ Prefer: "return=minimal" }, true),
-      });
-      await readResponse(response);
-      const storageResponse = await fetch(`${PROJECT_URL}/storage/v1/object/${BUCKET}`, {
-        method: "DELETE",
-        headers: this.headers({ "Content-Type": "application/json" }, true),
-        body: JSON.stringify({ prefixes: [track.storage_path] }),
-      });
-      await readResponse(storageResponse);
+      const uniqueTracks = [...new Map(trackList.map((track) => [String(track.id), track])).values()];
+      if (!uniqueTracks.length) return;
+      for (let start = 0; start < uniqueTracks.length; start += 1000) {
+        const batch = uniqueTracks.slice(start, start + 1000);
+        await readResponse(await fetch(`${PROJECT_URL}/storage/v1/object/${BUCKET}`, {
+          method: "DELETE",
+          headers: this.headers({ "Content-Type": "application/json" }, true),
+          body: JSON.stringify({ prefixes: batch.map((track) => track.storage_path) }),
+        }));
+      }
+      for (let start = 0; start < uniqueTracks.length; start += 200) {
+        const ids = uniqueTracks.slice(start, start + 200).map((track) => track.id).join(",");
+        await readResponse(await fetch(`${PROJECT_URL}/rest/v1/music_tracks?id=${encodeURIComponent(`in.(${ids})`)}`, {
+          method: "DELETE",
+          headers: this.headers({ Prefer: "return=minimal" }, true),
+        }));
+      }
     }
 
     async invokeFunction(name, body) {
