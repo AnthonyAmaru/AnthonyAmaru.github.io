@@ -3,26 +3,26 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f7f5ef" />
+    <meta name="theme-color" content="#f2f4f6" />
     <meta name="application-name" content="Anthony Amaru" />
-    <meta name="description" content="Anthony Amaru's private personal portal for work, study, writing, music, and media." />
+    <meta name="description" content="Anthony Amaru's private workspace." />
     <meta property="og:title" content="Anthony Amaru · Personal Portal" />
-    <meta property="og:description" content="A personal atlas of work, ideas, study, writing, music, and media." />
+    <meta property="og:description" content="Anthony Amaru's private workspace." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://anthonyamaru.com/" />
     <meta property="og:image" content="https://anthonyamaru.com/dragon-brand-icon.png" />
     <meta name="twitter:card" content="summary" />
     <title>Anthony Amaru · Personal Portal</title>
-    <link rel="icon" href="dragon-favicon.ico" sizes="any" />
-    <link rel="icon" type="image/png" href="dragon-favicon-64.png" sizes="64x64" />
-    <link rel="icon" type="image/png" href="dragon-favicon-32.png" sizes="32x32" />
-    <link rel="icon" type="image/png" href="dragon-favicon-16.png" sizes="16x16" />
+    <link rel="icon" href="dragon-favicon.ico?v=dragon-3" sizes="any" />
+    <link rel="icon" type="image/png" href="dragon-favicon-64.png?v=dragon-3" sizes="64x64" />
+    <link rel="icon" type="image/png" href="dragon-favicon-32.png?v=dragon-3" sizes="32x32" />
+    <link rel="icon" type="image/png" href="dragon-favicon-16.png?v=dragon-3" sizes="16x16" />
     <link rel="apple-touch-icon" href="dragon-apple-touch-icon.png" sizes="180x180" />
     <link rel="manifest" href="site.webmanifest?v=dragon-2" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&amp;family=Noto+Serif+SC:wght@500;700&amp;display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=20260803-minimal" />
     <script src="music-cloud.js" defer></script>
     <script src="script.js" defer></script>
   </head>
@@ -85,116 +85,79 @@
 
       <main id="main-content">
         <section id="page-home" class="page-panel active" data-page="home">
-          <div class="home-hero section-shell">
-            <div class="hero-copy">
-              <p class="eyebrow">Work · study · writing · sound</p>
-              <h1>A personal atlas,<br /><em>still being drawn.</em></h1>
-              <p class="hero-lede">One quiet place for the work I have done, the things I am learning, and the ideas I am still becoming.</p>
-              <div class="hero-actions">
-                <button class="button primary" type="button" data-route="interests">Explore my interests</button>
-                <button class="button quiet" type="button" data-route="resume">View my resume</button>
-              </div>
+          <div class="home-command section-shell">
+            <header class="command-heading"><img src="dragon-brand-icon.png" alt="" /><div><h1>Anthony Amaru</h1><span>Private workspace</span></div></header>
+            <div class="command-grid">
+              <button type="button" data-route="resume"><span>01</span><strong>Resume</strong><b>→</b></button>
+              <button type="button" data-route="interests"><span>02</span><strong>Aviation · Mandarin · Book</strong><b>→</b></button>
+              <button type="button" data-route="music"><span>03</span><strong>Music</strong><b>→</b></button>
+              <button type="button" data-route="media"><span>04</span><strong>Photos & videos</strong><b>→</b></button>
             </div>
-            <aside class="hero-note">
-              <span class="hero-seal">深</span>
-              <p>Current principle</p>
-              <blockquote>Live deliberately. Learn deeply. Keep making.</blockquote>
-              <div class="hero-rule"></div>
-              <small>Built as a private, local-first workspace.</small>
-            </aside>
-          </div>
-
-          <div class="dashboard-grid section-shell">
-            <button class="dashboard-card lavender" type="button" data-route="resume"><span>01</span><h2>Resume</h2><p>Work experience, education, and the path so far.</p><strong>Open section →</strong></button>
-            <button class="dashboard-card mint" type="button" data-route="interests"><span>02</span><h2>Interests</h2><p>Aviation, Mandarin, writing, and future studies.</p><strong>Explore tools →</strong></button>
-            <button class="dashboard-card sky" type="button" data-route="music"><span>03</span><h2>Music</h2><p>A personal library organized into playlists.</p><strong>Open library →</strong></button>
-            <button class="dashboard-card peach" type="button" data-route="media"><span>04</span><h2>Media</h2><p>Photos and videos saved on this device.</p><strong>Open gallery →</strong></button>
-          </div>
-
-          <div class="home-status section-shell">
-            <div><span class="pulse-dot"></span><p><strong>Private workspace</strong><br /><small>Visitor gate active</small></p></div>
-            <div><p><strong id="home-aviation-score">No aviation score yet</strong><br /><small>Last aviation practice</small></p></div>
-            <div><p><strong id="home-mandarin-score">No Mandarin score yet</strong><br /><small>Last Mandarin practice</small></p></div>
-            <div><p><strong id="home-book-status">Book not imported</strong><br /><small>Local manuscript status</small></p></div>
+            <div class="command-status">
+              <span><small>Aviation</small><strong id="home-aviation-score">—</strong></span>
+              <span><small>Mandarin</small><strong id="home-mandarin-score">—</strong></span>
+              <span><small>Book</small><strong id="home-book-status">—</strong></span>
+            </div>
           </div>
         </section>
 
         <section id="page-resume" class="page-panel section-shell" data-page="resume">
           <header class="page-heading">
-            <div><p class="eyebrow">Professional story</p><h1>Resume</h1></div>
-            <p>Keep your work and education current without editing the website code.</p>
+            <div><h1>Resume</h1></div>
           </header>
           <div class="resume-layout">
             <div class="resume-main">
-              <div class="section-title-row"><h2>Work experience</h2><button class="small-button admin-action" type="button" data-entry-type="work">+ Add role</button></div>
+              <div class="section-title-row"><h2>Experience</h2><button class="small-button admin-action" type="button" data-entry-type="work">+ Add</button></div>
               <div id="work-list" class="timeline-list"></div>
             </div>
             <aside class="resume-side">
               <div class="section-title-row"><h2>Education</h2><button class="small-button admin-action" type="button" data-entry-type="education">+ Add</button></div>
               <div id="education-list" class="education-list"></div>
-              <div class="resume-note"><span>✦</span><p>Your resume edits are stored in this browser until a private backend is connected.</p></div>
             </aside>
           </div>
         </section>
 
         <section id="page-interests" class="page-panel section-shell" data-page="interests">
-          <header class="page-heading">
-            <div><p class="eyebrow">Curiosity in practice</p><h1>Interests</h1></div>
-            <p>Study tools and working spaces that grow as I do.</p>
-          </header>
+          <header class="page-heading"><div><h1>Tools</h1></div></header>
 
           <div class="interest-grid">
             <article class="interest-card aviation-card">
               <div class="interest-icon">✈</div>
-              <p class="eyebrow">Aviation</p>
-              <h2>Flight study desk</h2>
-              <p>Practice from the FAA handbooks, keep score history, and revisit every missed question.</p>
+              <h2>Aviation</h2>
               <div class="stat-strip"><div><strong id="aviation-last-score">—</strong><span>last score</span></div><div><strong id="aviation-test-count">0</strong><span>tests taken</span></div></div>
-              <button class="button primary launch-app" type="button" data-app="aviation" data-admin="true">Open aviation app</button>
+              <button class="button primary launch-app" type="button" data-app="aviation" data-admin="true">Open</button>
             </article>
 
             <article class="interest-card mandarin-card">
               <div class="interest-icon hanzi">好</div>
-              <p class="eyebrow">Mandarin · 中文</p>
-              <h2>Language notebook</h2>
-              <p>Review the words I know, read full passages, and test word or sentence meanings.</p>
+              <h2>Mandarin</h2>
               <div class="stat-strip"><div><strong>135</strong><span>known words</span></div><div><strong id="mandarin-last-score">—</strong><span>last quiz</span></div></div>
-              <div class="button-pair"><button class="button quiet launch-app" type="button" data-app="mandarin">Open notebook</button><button class="button primary launch-app" type="button" data-app="mandarin-quiz" data-admin="true">Take a quiz</button></div>
+              <div class="button-pair"><button class="button quiet launch-app" type="button" data-app="mandarin">Notebook</button><button class="button primary launch-app" type="button" data-app="mandarin-quiz" data-admin="true">Test</button></div>
             </article>
 
-            <article class="interest-card book-card wide">
+            <article class="interest-card book-card">
               <div class="book-card-copy">
                 <div class="interest-icon">Aa</div>
-                <p class="eyebrow">Writing</p>
                 <h2>A Hypothesis of Man</h2>
-                <p>A private chapter workspace with real-time local saving, imports, exports, and secure Big Pickle-assisted editing.</p>
-                <div class="privacy-line"><span>🔒</span><p><strong>Manuscript stays private.</strong> Its text is not published in this GitHub repository.</p></div>
-                <button id="open-book-studio" class="button primary" type="button">Open book studio</button>
+                <button id="open-book-studio" class="button primary" type="button">Open</button>
               </div>
-              <div class="book-visual" aria-hidden="true"><span>A</span><small>Hypothesis<br />of Man</small><i>Working manuscript</i></div>
             </article>
 
-            <article class="interest-card assistant-card wide">
+            <article class="interest-card assistant-card">
               <div class="assistant-heading">
-                <div><div class="interest-icon">✦</div><p class="eyebrow">Secure AI connector</p><h2>Big Pickle assistant</h2></div>
-                <span id="connector-status" class="connection-pill">Gateway ready</span>
+                <div><div class="interest-icon">AI</div><h2>Big Pickle</h2></div>
+                <span id="connector-status" class="connection-pill">Key required</span>
               </div>
-              <p>The OpenCode credential is encrypted in Supabase and is never sent to the browser. Administrator sign-in is required before manuscript, aviation, or Mandarin requests can reach Big Pickle.</p>
-              <p class="privacy-line"><span>ⓘ</span><span>Big Pickle is a free-period model. A privacy notice appears before manuscript text is sent.</span></p>
-              <div class="assistant-demo"><span>Local tools already available</span><div><small>FAA question search</small><small>Mandarin word bank</small><small>Book import/export</small></div></div>
             </article>
 
             <article class="interest-card mycology-card">
-              <div class="interest-icon">◌</div><p class="eyebrow">Mycology</p><h2>Field notes coming later.</h2><p>A quiet space reserved for identifications, observations, and future study.</p><span class="coming-soon">Intentionally blank</span>
+              <div class="interest-icon">◌</div><h2>Mycology</h2><span class="coming-soon">Coming later</span>
             </article>
           </div>
         </section>
 
         <section id="page-music" class="page-panel section-shell" data-page="music">
-          <header class="page-heading">
-            <div><p class="eyebrow">Personal listening room</p><h1>Music</h1></div>
-            <p>Add audio from your device, arrange playlists, and keep the library synced across your devices.</p>
-          </header>
+          <header class="page-heading"><div><h1>Music</h1></div></header>
           <div class="music-layout">
             <aside class="playlist-panel panel-card">
               <div class="section-title-row"><h2>Playlists</h2><button id="new-playlist" class="small-button" type="button">+ New</button></div>
@@ -202,12 +165,12 @@
               <div id="playlist-list"></div>
             </aside>
             <section class="library-panel panel-card">
-              <div class="library-heading"><div><p class="eyebrow">Library</p><h2 id="library-title">All music</h2></div><button id="add-music" class="button primary" type="button">Add music</button></div>
+              <div class="library-heading"><div><h2 id="library-title">All music</h2></div><button id="add-music" class="button primary" type="button">Add</button></div>
               <input id="music-file-input" type="file" accept="audio/*" multiple hidden />
               <div id="music-drop-zone" class="music-drop-zone" role="button" tabindex="0" aria-label="Add music by dragging audio files here or choosing files from your computer">
                 <span class="music-drop-icon" aria-hidden="true">♫</span>
-                <div><strong>Drop music files here</strong><p>or select MP3, M4A, WAV, and other audio from your computer</p></div>
-                <button id="choose-music-files" class="button secondary" type="button">Choose files</button>
+                <div><strong>Drop files</strong></div>
+                <button id="choose-music-files" class="button secondary" type="button">Choose</button>
               </div>
               <div id="track-list" class="track-list"></div>
             </section>
@@ -216,18 +179,18 @@
 
         <section id="page-media" class="page-panel section-shell" data-page="media">
           <header class="page-heading media-heading">
-            <div><p class="eyebrow">Personal archive</p><h1>Photos & videos</h1></div>
-            <button id="add-media" class="button primary" type="button">Add photos or videos</button>
+            <div><h1>Photos & videos</h1></div>
+            <button id="add-media" class="button primary" type="button">Add</button>
           </header>
           <input id="media-file-input" type="file" accept="image/*,video/*" multiple hidden />
           <div id="media-gallery" class="media-gallery"></div>
-          <div id="media-empty" class="empty-gallery"><span>◎</span><h2>Your gallery begins here.</h2><p>Add photos and videos from this device. Files remain in this browser's private local storage.</p></div>
+          <div id="media-empty" class="empty-gallery"><span>◎</span><h2>No media yet</h2></div>
         </section>
       </main>
 
       <footer class="site-footer section-shell">
-        <div><img src="dragon-brand-icon.png" alt="" /><p><strong>Anthony Amaru</strong><br /><span>Live deep. Keep learning.</span></p></div>
-        <p>anthonyamaru.com · Personal portal</p>
+        <div><img src="dragon-brand-icon.png" alt="" /><p><strong>Anthony Amaru</strong></p></div>
+        <p>anthonyamaru.com</p>
       </footer>
     </div>
 

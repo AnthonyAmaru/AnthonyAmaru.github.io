@@ -24,8 +24,28 @@ let currentTrackId = null;
 let mediaObjectUrls = [];
 
 const resumeDefaults = {
-  work: [{ title: "Add your first work role", organization: "Work experience", dates: "Dates", location: "Location", description: "Use Edit to replace this starter card with your position, accomplishments, and responsibilities." }],
-  education: [{ title: "Add your education", organization: "School or program", dates: "Dates", location: "Location", description: "Add your degree, area of study, credentials, or relevant training." }],
+  work: [
+    {
+      title: "Data Specialist",
+      organization: "Bitwave · Full-time",
+      dates: "Jan 2023 — Present",
+      location: "Remote",
+      mark: "B",
+      description: "Manage sensitive digital asset accounting and blockchain transaction data for enterprise clients.\nWrite and manipulate SQL queries to analyze, reconcile, and validate financial transaction records.\nSupport customers with accounting reporting issues and transaction investigations across multiple blockchain networks.\nMeet directly with clients to review transaction activity, resolve discrepancies, and provide operational support.\nDesign and improve UI workflows and internal tools to enhance customer experience and reporting efficiency.",
+    },
+    {
+      title: "Business Owner",
+      organization: "Healthcare Products Florida Inc · Self-employed",
+      dates: "Aug 2020 — Mar 2023",
+      location: "Miami, Florida · On-site",
+      mark: "HP",
+      description: "Founded and managed a medical equipment distribution company focused on respiratory and mobility solutions.\nOversaw international logistics, wholesale distribution, e-commerce operations, and digital marketing.\nLed online retail expansion, vendor sourcing, nationwide sales, fulfillment, and customer acquisition.",
+    },
+  ],
+  education: [
+    { title: "Bachelor's degree, Computer Science", organization: "Florida International University", dates: "", location: "", mark: "FIU", description: "" },
+    { title: "Associate's degree, Computer Science", organization: "Miami Dade College", dates: "", location: "", mark: "MDC", description: "" },
+  ],
 };
 
 const bookDefaults = {
@@ -86,7 +106,7 @@ function applyTheme(theme) {
   document.documentElement.dataset.theme = next;
   localStorage.setItem(KEYS.theme, next);
   $("#theme-toggle span").textContent = next === "dark" ? "☀" : "☾";
-  $("meta[name='theme-color']").setAttribute("content", next === "dark" ? "#17201e" : "#f7f5ef");
+  $("meta[name='theme-color']").setAttribute("content", next === "dark" ? "#11161c" : "#f2f4f6");
 }
 
 function routeTo(route) {
@@ -149,6 +169,7 @@ async function ensureCloudMusicAdmin() {
 
 function getResume() {
   const data = readJson(KEYS.resume, resumeDefaults);
+  if (data.work?.length === 1 && data.work[0]?.title === "Add your first work role") return structuredClone(resumeDefaults);
   if (!Array.isArray(data.work)) data.work = [];
   if (!Array.isArray(data.education)) data.education = [];
   return data;
@@ -158,14 +179,14 @@ function renderResume() {
   const resume = getResume();
   $("#work-list").innerHTML = resume.work.length ? resume.work.map((entry, index) => `
     <article class="timeline-item">
-      <div class="timeline-meta">${escapeHtml(entry.dates)}<br />${escapeHtml(entry.location)}</div>
-      <div class="timeline-copy"><h3>${escapeHtml(entry.title)}</h3><p class="organization">${escapeHtml(entry.organization)}</p><p class="description">${escapeHtml(entry.description)}</p></div>
+      <div class="company-mark" aria-hidden="true">${escapeHtml(entry.mark || entry.organization?.slice(0, 1) || "•")}</div>
+      <div class="timeline-copy"><h3>${escapeHtml(entry.title)}</h3><p class="organization">${escapeHtml(entry.organization)}</p><p class="timeline-meta">${escapeHtml(entry.dates)}${entry.location ? ` · ${escapeHtml(entry.location)}` : ""}</p>${entry.description ? `<details class="resume-details"><summary>Responsibilities</summary><ul>${String(entry.description).split("\n").filter(Boolean).map((line) => `<li>${escapeHtml(line)}</li>`).join("")}</ul></details>` : ""}</div>
       <div class="entry-actions"><button type="button" data-edit-entry="work:${index}">Edit</button><button type="button" data-delete-entry="work:${index}">Delete</button></div>
     </article>`).join("") : '<p class="empty-state">No work experience added yet.</p>';
   $("#education-list").innerHTML = resume.education.length ? resume.education.map((entry, index) => `
     <article class="education-item">
       <div class="entry-actions"><button type="button" data-edit-entry="education:${index}">Edit</button><button type="button" data-delete-entry="education:${index}">Delete</button></div>
-      <h3>${escapeHtml(entry.title)}</h3><p class="organization">${escapeHtml(entry.organization)}</p><p class="meta">${escapeHtml(entry.dates)} · ${escapeHtml(entry.location)}</p><p class="description">${escapeHtml(entry.description)}</p>
+      <div class="company-mark" aria-hidden="true">${escapeHtml(entry.mark || entry.organization?.slice(0, 1) || "•")}</div><h3>${escapeHtml(entry.organization)}</h3><p class="organization">${escapeHtml(entry.title)}</p>${entry.dates || entry.location ? `<p class="meta">${escapeHtml(entry.dates)}${entry.location ? ` · ${escapeHtml(entry.location)}` : ""}</p>` : ""}
     </article>`).join("") : '<p class="empty-state">No education added yet.</p>';
 }
 
@@ -345,12 +366,12 @@ async function sendChapterToAssistant() {
 }
 
 function updateConnectorStatus() {
-  $("#connector-status").textContent = "Gateway ready";
-  $("#connector-status").classList.add("connected");
+  $("#connector-status").textContent = "Key required";
+  $("#connector-status").classList.remove("connected");
   const send = $("#send-to-assistant");
   if (send) {
-    send.disabled = false;
-    send.textContent = "Send chapter to Big Pickle";
+    send.disabled = true;
+    send.textContent = "AI unavailable · replace OpenCode key";
   }
 }
 
