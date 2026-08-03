@@ -8,6 +8,7 @@
     <link rel="icon" href="../favicon.ico" sizes="any" />
     <link rel="stylesheet" href="../aviation/styles.css" />
     <link rel="stylesheet" href="quiz.css" />
+    <script src="../music-cloud.js"></script>
     <script src="quiz.js" defer></script>
   </head>
   <body>
@@ -45,7 +46,7 @@
             <button id="start-quiz" class="button primary" type="button">Start Mandarin quiz</button>
           </article>
           <article class="panel history-panel">
-            <div class="panel-heading"><div><p class="eyebrow">Saved on this device</p><h2>Score history</h2></div><button id="clear-history" class="text-button" type="button">Clear</button></div>
+            <div class="panel-heading"><div><p id="history-sync-status" class="eyebrow">Saved on this device</p><h2>Score history</h2></div><button id="clear-history" class="text-button" type="button">Clear</button></div>
             <div id="history-list" class="history-list"></div>
           </article>
         </div>
@@ -75,6 +76,6 @@
         <div id="wrong-list" class="wrong-list"></div>
       </section>
     </main>
-    <footer><p>Mandarin practice from Anthony's current notebook · Progress stays in this browser.</p></footer>
+    <footer><p>Mandarin practice from Anthony's current notebook · Signed-in progress syncs privately across devices.</p></footer>
   </body>
 </html>

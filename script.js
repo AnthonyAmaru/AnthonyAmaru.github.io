@@ -1,5 +1,6 @@
 const VISITOR_HASH = "685e365003f3413bb077e7b6d5cf3b498c51df12fc883ca818d0344231fc4cd4";
 const ADMIN_HASH = "1e67aef3b01e797309c5588def71607f40a4facc6b8993af9a62306f727a2e5a";
+const CLOUD_ADMIN_EMAIL = "anthonyamaru93@gmail.com";
 const KEYS = {
   theme: "anthony_portal_theme",
   resume: "anthony_resume_v1",
@@ -12,6 +13,7 @@ const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
 let pendingAdminResolve = null;
+let adminPasswordForSession = null;
 let toastTimer = null;
 let bookSaveTimer = null;
 let currentBookChapter = 0;
@@ -19,7 +21,6 @@ let currentPlaylist = "all";
 let tracks = [];
 let visibleTracks = [];
 let currentTrackId = null;
-let trackObjectUrl = null;
 let mediaObjectUrls = [];
 
 const resumeDefaults = {
@@ -129,6 +130,21 @@ function closeAdminModal(result = false) {
   setModalOpen(false);
   if (pendingAdminResolve) pendingAdminResolve(result);
   pendingAdminResolve = null;
+}
+
+async function ensureCloudMusicAdmin() {
+  if (musicCloud.isSignedIn()) return true;
+  if (!(await ensureAdmin())) return false;
+  if (!adminPasswordForSession) return false;
+  try {
+    await musicCloud.signIn(CLOUD_ADMIN_EMAIL, adminPasswordForSession);
+    toast("Cloud workspace unlocked for this session.");
+    return true;
+  } catch (error) {
+    adminPasswordForSession = null;
+    toast(error.message);
+    return false;
+  }
 }
 
 function getResume() {
@@ -305,18 +321,15 @@ function exportBookMarkdown() {
 }
 
 async function sendChapterToAssistant() {
-  if (!(await ensureAdmin())) return;
-  const endpoint = localStorage.getItem(KEYS.connector);
-  if (!endpoint) return toast("Add a private gateway URL first.");
+  if (!(await ensureCloudMusicAdmin())) return;
   const book = getBook();
   const chapter = book.chapters[currentBookChapter];
+  if (!confirm("Send this chapter to Big Pickle? During its free period, submitted text may be collected and used to improve the model.")) return;
   const button = $("#send-to-assistant");
   button.disabled = true;
   button.textContent = "Sending securely…";
   try {
-    const response = await fetch(endpoint, { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ scope: "book", model: "opencode/big-pickle", action: "edit", chapter: { title: chapter.title, content: chapter.content } }) });
-    if (!response.ok) throw new Error(`Gateway returned ${response.status}`);
-    const result = await response.json();
+    const result = await musicCloud.invokeFunction("big-pickle", { scope: "book", action: "edit", chapter: { title: chapter.title, content: chapter.content } });
     if (typeof result.content !== "string") throw new Error("Gateway response did not include revised content.");
     if (confirm("Big Pickle returned a revision. Replace this chapter with it?")) {
       chapter.content = result.content;
@@ -332,14 +345,12 @@ async function sendChapterToAssistant() {
 }
 
 function updateConnectorStatus() {
-  const endpoint = localStorage.getItem(KEYS.connector) || "";
-  $("#connector-url").value = endpoint;
-  $("#connector-status").textContent = endpoint ? "Gateway configured" : "Not connected";
-  $("#connector-status").classList.toggle("connected", Boolean(endpoint));
+  $("#connector-status").textContent = "Gateway ready";
+  $("#connector-status").classList.add("connected");
   const send = $("#send-to-assistant");
   if (send) {
-    send.disabled = !endpoint;
-    send.textContent = endpoint ? "Send chapter to Big Pickle" : "Big Pickle connection required";
+    send.disabled = false;
+    send.textContent = "Send chapter to Big Pickle";
   }
 }
 
@@ -383,48 +394,44 @@ async function dbDelete(storeName, id) {
   });
 }
 
-function getPlaylists() {
-  const value = readJson(KEYS.playlists, []);
-  return Array.isArray(value) ? value : [];
-}
-
-function savePlaylists(playlists) {
-  writeJson(KEYS.playlists, playlists);
-}
-
 async function renderMusic() {
-  try { tracks = (await dbGetAll("tracks")).sort((a, b) => b.createdAt - a.createdAt); } catch { tracks = []; }
-  const playlists = getPlaylists();
+  let playlists = [];
+  let cloudError = "";
+  try {
+    const library = await musicCloud.list("anthony");
+    tracks = library.tracks;
+    playlists = library.playlists;
+  } catch (error) {
+    tracks = [];
+    cloudError = error.message;
+  }
   $("#all-track-count").textContent = tracks.length;
-  $("#playlist-list").innerHTML = playlists.map((playlist) => `<button class="playlist-row ${currentPlaylist === String(playlist.id) ? "active" : ""}" type="button" data-playlist="${playlist.id}"><span>♬</span><strong>${escapeHtml(playlist.name)}</strong><small>${playlist.trackIds.length}</small></button>`).join("");
+  $("#playlist-list").innerHTML = playlists.map((playlist) => `<button class="playlist-row ${currentPlaylist === String(playlist.id) ? "active" : ""}" type="button" data-playlist="${playlist.id}"><span>♬</span><strong>${escapeHtml(playlist.name)}</strong><small>${tracks.filter((track) => track.playlist_id === playlist.id).length}</small></button>`).join("");
   $$(".playlist-row[data-playlist='all']").forEach((button) => button.classList.toggle("active", currentPlaylist === "all"));
   const selectedPlaylist = playlists.find((playlist) => String(playlist.id) === currentPlaylist);
-  visibleTracks = currentPlaylist === "all" ? tracks : tracks.filter((track) => selectedPlaylist?.trackIds.includes(track.id));
+  visibleTracks = currentPlaylist === "all" ? tracks : tracks.filter((track) => track.playlist_id === selectedPlaylist?.id);
   $("#library-title").textContent = currentPlaylist === "all" ? "All music" : selectedPlaylist?.name || "Playlist";
   const playlistOptions = playlists.map((playlist) => `<option value="${playlist.id}">${escapeHtml(playlist.name)}</option>`).join("");
-  $("#track-list").innerHTML = visibleTracks.length ? visibleTracks.map((track) => {
-    const assigned = playlists.find((playlist) => playlist.trackIds.includes(track.id));
-    return `<article class="track-row"><button class="track-play" type="button" data-play-track="${track.id}" aria-label="Play ${escapeHtml(track.name)}">▶</button><div class="track-copy"><strong>${escapeHtml(track.name)}</strong><small>${formatBytes(track.size)}</small></div><select data-assign-track="${track.id}" aria-label="Move ${escapeHtml(track.name)} to playlist"><option value="">No playlist</option>${playlistOptions}</select><button class="track-delete" type="button" data-delete-track="${track.id}" aria-label="Delete ${escapeHtml(track.name)}">×</button></article>`;
+  $("#track-list").innerHTML = cloudError ? `<div class="library-empty"><p>Cloud library unavailable.</p><small>${escapeHtml(cloudError)}</small></div>` : visibleTracks.length ? visibleTracks.map((track) => {
+    return `<article class="track-row"><button class="track-play" type="button" data-play-track="${track.id}" aria-label="Play ${escapeHtml(track.title)}">▶</button><div class="track-copy"><strong>${escapeHtml(track.title)}</strong><small>${formatBytes(track.size_bytes)}</small></div><select data-assign-track="${track.id}" aria-label="Move ${escapeHtml(track.title)} to playlist"><option value="">No playlist</option>${playlistOptions}</select><button class="track-delete" type="button" data-delete-track="${track.id}" aria-label="Delete ${escapeHtml(track.title)}">×</button></article>`;
   }).join("") : '<div class="library-empty"><p>No songs here yet.</p><small>Add audio files from your device to begin.</small></div>';
-  $$('[data-assign-track]').forEach((select) => { const trackId = Number(select.dataset.assignTrack); const assigned = playlists.find((playlist) => playlist.trackIds.includes(trackId)); select.value = assigned ? String(assigned.id) : ""; });
+  $$('[data-assign-track]').forEach((select) => { const track = tracks.find((item) => item.id === select.dataset.assignTrack); select.value = track?.playlist_id || ""; });
   renderDock();
 }
 
 function renderDock() {
   const select = $("#dock-track-select");
-  select.innerHTML = tracks.length ? '<option value="">Choose a song</option>' + tracks.map((track) => `<option value="${track.id}">${escapeHtml(track.name)}</option>`).join("") : '<option value="">No music added yet</option>';
+  select.innerHTML = tracks.length ? '<option value="">Choose a song</option>' + tracks.map((track) => `<option value="${track.id}">${escapeHtml(track.title)}</option>`).join("") : '<option value="">No music added yet</option>';
   if (currentTrackId) select.value = String(currentTrackId);
 }
 
 async function playTrack(id) {
-  const track = tracks.find((item) => item.id === Number(id));
+  const track = tracks.find((item) => item.id === String(id));
   if (!track) return;
-  if (trackObjectUrl) URL.revokeObjectURL(trackObjectUrl);
-  trackObjectUrl = URL.createObjectURL(track.blob);
   currentTrackId = track.id;
   const audio = $("#audio-player");
-  audio.src = trackObjectUrl;
-  $("#dock-title").textContent = track.name;
+  audio.src = track.url;
+  $("#dock-title").textContent = track.title;
   $("#dock-track-select").value = String(track.id);
   try { await audio.play(); } catch { toast("Tap play to start this song."); }
   updatePlayButton();
@@ -442,44 +449,41 @@ function stepTrack(direction) {
 }
 
 async function addMusicFiles(files) {
-  if (!(await ensureAdmin()) || !files.length) return;
+  const audioFiles = files.filter((file) => file.type.startsWith("audio/") || /\.(mp3|m4a|aac|wav|ogg|oga|flac|opus|webm)$/i.test(file.name));
+  if (!audioFiles.length) return toast("Choose one or more audio files.");
+  if (!(await ensureCloudMusicAdmin())) return;
   let added = 0;
-  for (const file of files) {
-    try { await dbAdd("tracks", { name: file.name.replace(/\.[^.]+$/, ""), fileName: file.name, type: file.type, size: file.size, createdAt: Date.now() + added, blob: file }); added += 1; } catch (error) { toast(`Could not store ${file.name}: ${error.message}`); }
+  for (const file of audioFiles) {
+    try { await musicCloud.upload("anthony", file); added += 1; } catch (error) { toast(`Could not upload ${file.name}: ${error.message}`); }
   }
-  toast(`${added} song${added === 1 ? "" : "s"} added to this device.`);
+  const skipped = files.length - audioFiles.length;
+  toast(`${added} song${added === 1 ? "" : "s"} uploaded to the cloud.${skipped ? ` ${skipped} non-audio file${skipped === 1 ? " was" : "s were"} skipped.` : ""}`);
   await renderMusic();
 }
 
 async function assignTrack(trackId, playlistId) {
-  if (!(await ensureAdmin())) return renderMusic();
-  const playlists = getPlaylists();
-  playlists.forEach((playlist) => { playlist.trackIds = playlist.trackIds.filter((id) => id !== trackId); });
-  const target = playlists.find((playlist) => String(playlist.id) === playlistId);
-  if (target) target.trackIds.push(trackId);
-  savePlaylists(playlists);
-  toast(target ? `Song moved to ${target.name}.` : "Song removed from playlists.");
-  renderMusic();
+  if (!(await ensureCloudMusicAdmin())) return renderMusic();
+  try {
+    await musicCloud.assignTrack(trackId, playlistId || null);
+    toast(playlistId ? "Song moved to the selected playlist." : "Song removed from playlists.");
+    renderMusic();
+  } catch (error) { toast(error.message); renderMusic(); }
 }
 
 async function deleteTrack(id) {
-  if (!(await ensureAdmin()) || !confirm("Delete this song from this browser?")) return;
-  await dbDelete("tracks", id);
-  const playlists = getPlaylists();
-  playlists.forEach((playlist) => { playlist.trackIds = playlist.trackIds.filter((trackId) => trackId !== id); });
-  savePlaylists(playlists);
+  if (!(await ensureCloudMusicAdmin()) || !confirm("Delete this song from the cloud library?")) return;
+  const track = tracks.find((item) => item.id === String(id));
+  if (!track) return;
+  try { await musicCloud.deleteTrack(track); } catch (error) { return toast(error.message); }
   if (currentTrackId === id) { $("#audio-player").pause(); currentTrackId = null; $("#dock-title").textContent = "Nothing selected"; }
   renderMusic();
 }
 
 async function createPlaylist() {
-  if (!(await ensureAdmin())) return;
+  if (!(await ensureCloudMusicAdmin())) return;
   const name = prompt("Name this playlist:");
   if (!name?.trim()) return;
-  const playlists = getPlaylists();
-  playlists.push({ id: Date.now(), name: name.trim(), trackIds: [] });
-  savePlaylists(playlists);
-  renderMusic();
+  try { await musicCloud.createPlaylist("anthony", name.trim()); renderMusic(); } catch (error) { toast(error.message); }
 }
 
 async function renderMedia() {
@@ -557,6 +561,19 @@ function refreshDashboard() {
   updateAdminStatus();
 }
 
+async function syncStudyHistoryFromCloud() {
+  if (!window.musicCloud?.isSignedIn()) return;
+  try {
+    const [aviationRows, mandarinRows] = await Promise.all([
+      musicCloud.listTestAttempts("aviation"),
+      musicCloud.listTestAttempts("mandarin"),
+    ]);
+    writeJson("anthony_aviation_history_v1", aviationRows.map((row) => ({ id: row.id, date: row.completed_at, book: row.mode || "aviation", chapter: row.section || "all", correct: row.correct, total: row.total, percent: row.percent, wrong: row.wrong_answers || [] })));
+    writeJson("anthony_mandarin_history_v1", mandarinRows.map((row) => ({ id: row.id, date: row.completed_at, type: row.mode || "mixed", correct: row.correct, total: row.total, percent: row.percent, wrong: row.wrong_answers || [] })));
+    refreshDashboard();
+  } catch (error) { console.warn("Study history sync failed", error); }
+}
+
 /* Event wiring */
 $("#entry-form").addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -588,10 +605,18 @@ $("#admin-status").addEventListener("click", async () => {
 });
 $("#admin-form").addEventListener("submit", async (event) => {
   event.preventDefault();
-  if (await digest($("#admin-password").value) === ADMIN_HASH) {
-    sessionStorage.setItem("anthony_admin_unlocked", "1");
-    updateAdminStatus();
-    closeAdminModal(true);
+  const password = $("#admin-password").value;
+  if (await digest(password) === ADMIN_HASH) {
+    try {
+      if (!musicCloud.isSignedIn()) await musicCloud.signIn(CLOUD_ADMIN_EMAIL, password);
+      adminPasswordForSession = password;
+      sessionStorage.setItem("anthony_admin_unlocked", "1");
+      await syncStudyHistoryFromCloud();
+      updateAdminStatus();
+      closeAdminModal(true);
+    } catch (error) {
+      $("#admin-error").textContent = `Cloud sign-in failed: ${error.message}`;
+    }
   } else {
     $("#admin-error").textContent = "That admin password did not match.";
   }
@@ -647,33 +672,30 @@ $("#export-book-json").addEventListener("click", exportBookJson);
 $("#export-book-markdown").addEventListener("click", exportBookMarkdown);
 $("#send-to-assistant").addEventListener("click", sendChapterToAssistant);
 
-$("#connector-form").addEventListener("submit", async (event) => {
-  event.preventDefault();
-  if (!(await ensureAdmin())) return;
-  const url = $("#connector-url").value.trim();
-  if (url && !/^https:\/\//i.test(url)) return toast("Use an HTTPS private gateway URL.");
-  if (url) localStorage.setItem(KEYS.connector, url); else localStorage.removeItem(KEYS.connector);
-  updateConnectorStatus();
-  toast(url ? "Private gateway saved on this device." : "Gateway connection removed.");
-});
-
 $("#new-playlist").addEventListener("click", createPlaylist);
 $("#add-music").addEventListener("click", async () => { if (await ensureAdmin()) $("#music-file-input").click(); });
+$("#choose-music-files").addEventListener("click", async (event) => { event.stopPropagation(); if (await ensureAdmin()) $("#music-file-input").click(); });
 $("#music-file-input").addEventListener("change", (event) => { addMusicFiles([...event.target.files]); event.target.value = ""; });
+const musicDropZone = $("#music-drop-zone");
+musicDropZone.addEventListener("click", async (event) => { if (event.target.closest("button")) return; if (await ensureAdmin()) $("#music-file-input").click(); });
+musicDropZone.addEventListener("keydown", async (event) => { if (!["Enter", " "].includes(event.key)) return; event.preventDefault(); if (await ensureAdmin()) $("#music-file-input").click(); });
+["dragenter", "dragover"].forEach((eventName) => musicDropZone.addEventListener(eventName, (event) => { event.preventDefault(); event.dataTransfer.dropEffect = "copy"; musicDropZone.classList.add("is-dragging"); }));
+["dragleave", "dragend"].forEach((eventName) => musicDropZone.addEventListener(eventName, (event) => { event.preventDefault(); if (eventName === "dragleave" && musicDropZone.contains(event.relatedTarget)) return; musicDropZone.classList.remove("is-dragging"); }));
+musicDropZone.addEventListener("drop", (event) => { event.preventDefault(); musicDropZone.classList.remove("is-dragging"); addMusicFiles([...event.dataTransfer.files]); });
 $("#page-music").addEventListener("click", (event) => {
   const playlist = event.target.closest("[data-playlist]");
   const play = event.target.closest("[data-play-track]");
   const remove = event.target.closest("[data-delete-track]");
   if (playlist) { currentPlaylist = playlist.dataset.playlist; renderMusic(); }
-  if (play) playTrack(Number(play.dataset.playTrack));
-  if (remove) deleteTrack(Number(remove.dataset.deleteTrack));
+  if (play) playTrack(play.dataset.playTrack);
+  if (remove) deleteTrack(remove.dataset.deleteTrack);
 });
-$("#page-music").addEventListener("change", (event) => { const select = event.target.closest("[data-assign-track]"); if (select) assignTrack(Number(select.dataset.assignTrack), select.value); });
+$("#page-music").addEventListener("change", (event) => { const select = event.target.closest("[data-assign-track]"); if (select) assignTrack(select.dataset.assignTrack, select.value); });
 $("#dock-toggle").addEventListener("click", () => { const expanded = $("#dock-expanded"); expanded.hidden = !expanded.hidden; $("#dock-toggle").setAttribute("aria-expanded", String(!expanded.hidden)); });
 $("#dock-play").addEventListener("click", () => { const audio = $("#audio-player"); if (!audio.src && tracks.length) return playTrack(tracks[0].id); if (audio.paused) audio.play(); else audio.pause(); });
 $("#dock-previous").addEventListener("click", () => stepTrack(-1));
 $("#dock-next").addEventListener("click", () => stepTrack(1));
-$("#dock-track-select").addEventListener("change", (event) => { if (event.target.value) playTrack(Number(event.target.value)); });
+$("#dock-track-select").addEventListener("change", (event) => { if (event.target.value) playTrack(event.target.value); });
 $("#audio-player").addEventListener("play", updatePlayButton);
 $("#audio-player").addEventListener("pause", updatePlayButton);
 $("#audio-player").addEventListener("ended", () => stepTrack(1));
@@ -699,3 +721,4 @@ refreshDashboard();
 const initialRoute = location.hash.slice(1);
 if (["home", "resume", "interests", "music", "media"].includes(initialRoute)) routeTo(initialRoute);
 if (sessionStorage.getItem("anthony_visitor_unlocked") === "1") showPortal();
+if (musicCloud.isSignedIn()) syncStudyHistoryFromCloud();

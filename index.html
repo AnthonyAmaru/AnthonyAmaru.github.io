@@ -10,18 +10,20 @@
     <meta property="og:description" content="A personal atlas of work, ideas, study, writing, music, and media." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://anthonyamaru.com/" />
-    <meta property="og:image" content="https://anthonyamaru.com/brand-icon.png" />
+    <meta property="og:image" content="https://anthonyamaru.com/dragon-brand-icon.png" />
     <meta name="twitter:card" content="summary" />
     <title>Anthony Amaru · Personal Portal</title>
-    <link rel="icon" href="favicon.ico" sizes="any" />
-    <link rel="icon" type="image/png" href="favicon-32.png" sizes="32x32" />
-    <link rel="icon" type="image/png" href="favicon-16.png" sizes="16x16" />
-    <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180" />
-    <link rel="manifest" href="site.webmanifest" />
+    <link rel="icon" href="dragon-favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" href="dragon-favicon-64.png" sizes="64x64" />
+    <link rel="icon" type="image/png" href="dragon-favicon-32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="dragon-favicon-16.png" sizes="16x16" />
+    <link rel="apple-touch-icon" href="dragon-apple-touch-icon.png" sizes="180x180" />
+    <link rel="manifest" href="site.webmanifest?v=dragon-2" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&amp;family=Noto+Serif+SC:wght@500;700&amp;display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
+    <script src="music-cloud.js" defer></script>
     <script src="script.js" defer></script>
   </head>
   <body>
@@ -29,7 +31,7 @@
 
     <section id="entry-gate" class="entry-gate" aria-labelledby="entry-title">
       <div class="entry-art" aria-hidden="true">
-        <img src="brand-icon.png" alt="" />
+        <img src="dragon-brand-icon.png" alt="" />
       </div>
       <div class="entry-copy">
         <p class="entry-kicker">Anthony Amaru · Personal portal</p>
@@ -51,7 +53,7 @@
     <div id="portal" class="portal" hidden>
       <header class="site-header">
         <a class="brand" href="#home" data-route="home" aria-label="Anthony Amaru home">
-          <img src="brand-icon.png" alt="" />
+          <img src="dragon-brand-icon.png" alt="" />
           <span><strong>Anthony Amaru</strong><small>Personal portal</small></span>
         </a>
         <button id="mobile-menu-button" class="mobile-menu-button" type="button" aria-expanded="false" aria-controls="primary-nav">Menu</button>
@@ -165,7 +167,7 @@
                 <div class="interest-icon">Aa</div>
                 <p class="eyebrow">Writing</p>
                 <h2>A Hypothesis of Man</h2>
-                <p>A private chapter workspace with real-time local saving, imports, exports, and a future secure Big Pickle editing bridge.</p>
+                <p>A private chapter workspace with real-time local saving, imports, exports, and secure Big Pickle-assisted editing.</p>
                 <div class="privacy-line"><span>🔒</span><p><strong>Manuscript stays private.</strong> Its text is not published in this GitHub repository.</p></div>
                 <button id="open-book-studio" class="button primary" type="button">Open book studio</button>
               </div>
@@ -174,14 +176,11 @@
 
             <article class="interest-card assistant-card wide">
               <div class="assistant-heading">
-                <div><div class="interest-icon">✦</div><p class="eyebrow">Future secure connector</p><h2>Big Pickle assistant</h2></div>
-                <span id="connector-status" class="connection-pill">Not connected</span>
+                <div><div class="interest-icon">✦</div><p class="eyebrow">Secure AI connector</p><h2>Big Pickle assistant</h2></div>
+                <span id="connector-status" class="connection-pill">Gateway ready</span>
               </div>
-              <p>OpenCode can use Big Pickle through its provider system, but an account credential must never be embedded in this public site. Add a private gateway later to enable book edits, aviation answers, and Mandarin translation.</p>
-              <form id="connector-form" class="connector-form">
-                <label><span>Private gateway URL</span><input id="connector-url" type="url" placeholder="https://your-private-api.example.com" /></label>
-                <button class="button quiet" type="submit">Save connection</button>
-              </form>
+              <p>The OpenCode credential is encrypted in Supabase and is never sent to the browser. Administrator sign-in is required before manuscript, aviation, or Mandarin requests can reach Big Pickle.</p>
+              <p class="privacy-line"><span>ⓘ</span><span>Big Pickle is a free-period model. A privacy notice appears before manuscript text is sent.</span></p>
               <div class="assistant-demo"><span>Local tools already available</span><div><small>FAA question search</small><small>Mandarin word bank</small><small>Book import/export</small></div></div>
             </article>
 
@@ -194,7 +193,7 @@
         <section id="page-music" class="page-panel section-shell" data-page="music">
           <header class="page-heading">
             <div><p class="eyebrow">Personal listening room</p><h1>Music</h1></div>
-            <p>Add audio from your device, arrange playlists, and keep the current song available everywhere in the portal.</p>
+            <p>Add audio from your device, arrange playlists, and keep the library synced across your devices.</p>
           </header>
           <div class="music-layout">
             <aside class="playlist-panel panel-card">
@@ -205,6 +204,11 @@
             <section class="library-panel panel-card">
               <div class="library-heading"><div><p class="eyebrow">Library</p><h2 id="library-title">All music</h2></div><button id="add-music" class="button primary" type="button">Add music</button></div>
               <input id="music-file-input" type="file" accept="audio/*" multiple hidden />
+              <div id="music-drop-zone" class="music-drop-zone" role="button" tabindex="0" aria-label="Add music by dragging audio files here or choosing files from your computer">
+                <span class="music-drop-icon" aria-hidden="true">♫</span>
+                <div><strong>Drop music files here</strong><p>or select MP3, M4A, WAV, and other audio from your computer</p></div>
+                <button id="choose-music-files" class="button secondary" type="button">Choose files</button>
+              </div>
               <div id="track-list" class="track-list"></div>
             </section>
           </div>
@@ -222,8 +226,8 @@
       </main>
 
       <footer class="site-footer section-shell">
-        <div><img src="brand-icon.png" alt="" /><p><strong>Anthony Amaru</strong><br /><span>Live deep. Keep learning.</span></p></div>
-        <p>anthonyamaru.com · Local-first personal portal</p>
+        <div><img src="dragon-brand-icon.png" alt="" /><p><strong>Anthony Amaru</strong><br /><span>Live deep. Keep learning.</span></p></div>
+        <p>anthonyamaru.com · Personal portal</p>
       </footer>
     </div>
 

@@ -1,5 +1,6 @@
 const ADMIN_HASH = "1e67aef3b01e797309c5588def71607f40a4facc6b8993af9a62306f727a2e5a";
 const HISTORY_KEY = "anthony_mandarin_history_v1";
+const CLOUD_ADMIN_EMAIL = "anthonyamaru93@gmail.com";
 
 const wordBank = [
   ["你好", "nǐ hǎo", "hello"], ["很好", "hěn hǎo", "very good"], ["谢谢", "xièxie", "thank you"],
@@ -105,12 +106,22 @@ function checkAnswer() {
   $("#quiz-progress").style.width = `${((state.index + 1) / state.questions.length) * 100}%`;
 }
 
-function finishQuiz() {
+async function finishQuiz() {
   const wrong = state.results.filter((item) => !item.correct);
   const total = state.questions.length;
   const percent = Math.round((state.correct / total) * 100);
   const history = [{ id: Date.now(), date: new Date().toISOString(), type: $("#quiz-type").value, correct: state.correct, total, percent, wrong: wrong.map(({ question, chosen }) => ({ chinese: question.chinese, pinyin: question.pinyin, answer: question.answer, chosen })) }, ...getHistory()].slice(0, 30);
   localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  if (musicCloud.isSignedIn()) {
+    try {
+      const entry = history[0];
+      await musicCloud.saveTestAttempt({ subject: "mandarin", mode: entry.type, section: null, correct: entry.correct, total: entry.total, percent: entry.percent, wrong_answers: entry.wrong, completed_at: entry.date });
+      await loadHistoryFromCloud();
+    } catch (error) {
+      $("#history-sync-status").textContent = "Saved locally · cloud retry needed";
+      console.warn("Mandarin cloud save failed", error);
+    }
+  }
   $("#result-percent").textContent = `${percent}%`;
   $("#result-title").textContent = percent >= 80 ? "很好！Very good." : "一点一点来。One step at a time.";
   $("#result-summary").textContent = `${state.correct} correct out of ${total}. ${wrong.length} item${wrong.length === 1 ? "" : "s"} saved for review.`;
@@ -122,14 +133,27 @@ function finishQuiz() {
 function nextQuestion() { if (state.index < state.questions.length - 1) { state.index += 1; renderQuestion(); } else finishQuiz(); }
 function getHistory() { try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; } catch { return []; } }
 function renderHistory() { const history = getHistory(); $("#last-score").textContent = history.length ? `${history[0].percent}%` : "—"; $("#history-list").innerHTML = history.length ? history.map((entry) => `<div class="history-item"><strong>${entry.percent}% · ${entry.correct}/${entry.total}</strong><span>${entry.wrong.length} missed</span><small>${new Date(entry.date).toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</small><small>${entry.type}</small></div>`).join("") : '<p class="empty">Your completed quizzes will appear here.</p>'; }
+async function loadHistoryFromCloud() {
+  if (!window.musicCloud?.isSignedIn()) { $("#history-sync-status").textContent = "Saved on this device"; return; }
+  try {
+    const rows = await musicCloud.listTestAttempts("mandarin");
+    const history = rows.map((row) => ({ id: row.id, date: row.completed_at, type: row.mode || "mixed", correct: row.correct, total: row.total, percent: row.percent, wrong: row.wrong_answers || [] }));
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    $("#history-sync-status").textContent = "Synced privately across devices";
+    renderHistory();
+  } catch (error) {
+    $("#history-sync-status").textContent = "Cloud sync unavailable · showing this device";
+    console.warn("Mandarin cloud load failed", error);
+  }
+}
 function escapeHtml(value) { return String(value ?? "").replace(/[&<>"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[character]); }
 
-$("#mandarin-unlock-form").addEventListener("submit", async (event) => { event.preventDefault(); const hash = await digest($("#mandarin-password").value); if (hash === ADMIN_HASH) { sessionStorage.setItem("anthony_admin_unlocked", "1"); $("#mandarin-password-error").textContent = ""; $("#mandarin-password").value = ""; ensureAdmin(); } else $("#mandarin-password-error").textContent = "That admin password did not match."; });
+$("#mandarin-unlock-form").addEventListener("submit", async (event) => { event.preventDefault(); const password = $("#mandarin-password").value; const hash = await digest(password); if (hash === ADMIN_HASH) { try { if (!musicCloud.isSignedIn()) await musicCloud.signIn(CLOUD_ADMIN_EMAIL, password); sessionStorage.setItem("anthony_admin_unlocked", "1"); $("#mandarin-password-error").textContent = ""; $("#mandarin-password").value = ""; ensureAdmin(); await loadHistoryFromCloud(); } catch (error) { $("#mandarin-password-error").textContent = `Cloud sign-in failed: ${error.message}`; } } else $("#mandarin-password-error").textContent = "That admin password did not match."; });
 $("#start-quiz").addEventListener("click", startQuiz);
 $("#answer-options").addEventListener("click", (event) => { const option = event.target.closest(".answer-option"); if (!option || state.checked) return; state.selected = Number(option.dataset.index); document.querySelectorAll(".answer-option").forEach((item) => item.classList.toggle("selected", item === option)); $("#check-answer").disabled = false; });
 $("#check-answer").addEventListener("click", checkAnswer); $("#next-question").addEventListener("click", nextQuestion);
 $("#exit-quiz").addEventListener("click", () => showView("setup-view")); $("#new-quiz").addEventListener("click", () => showView("setup-view"));
 $("#review-wrong").addEventListener("click", () => $("#wrong-list").scrollIntoView({ behavior: "smooth" }));
-$("#clear-history").addEventListener("click", () => { if (!ensureAdmin()) return; if (confirm("Clear Mandarin score history on this device?")) { localStorage.removeItem(HISTORY_KEY); renderHistory(); } });
+$("#clear-history").addEventListener("click", async () => { if (!ensureAdmin()) return; if (confirm("Clear Mandarin score history on every synced device?")) { localStorage.removeItem(HISTORY_KEY); if (musicCloud.isSignedIn()) await musicCloud.clearTestAttempts("mandarin").catch((error) => console.warn("Cloud clear failed", error)); renderHistory(); } });
 
-renderHistory(); ensureAdmin();
+renderHistory(); ensureAdmin(); loadHistoryFromCloud();

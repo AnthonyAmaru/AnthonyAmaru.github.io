@@ -1,5 +1,6 @@
 const ADMIN_HASH = "1e67aef3b01e797309c5588def71607f40a4facc6b8993af9a62306f727a2e5a";
 const HISTORY_KEY = "anthony_aviation_history_v1";
+const CLOUD_ADMIN_EMAIL = "anthonyamaru93@gmail.com";
 
 const books = {
   phak: { label: "PHAK", title: "Pilot's Handbook of Aeronautical Knowledge", parts: window.PHAK_QUESTIONS || {} },
@@ -62,10 +63,44 @@ function getHistory() {
   try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; } catch { return []; }
 }
 
-function saveHistory(entry) {
+async function saveHistory(entry) {
   const history = [entry, ...getHistory()].slice(0, 30);
   localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
   renderHistory();
+  if (!window.musicCloud?.isSignedIn()) return;
+  try {
+    await musicCloud.saveTestAttempt({
+      subject: "aviation",
+      mode: entry.book,
+      section: entry.chapter,
+      correct: entry.correct,
+      total: entry.total,
+      percent: entry.percent,
+      wrong_answers: entry.wrong,
+      completed_at: entry.date,
+    });
+    await loadHistoryFromCloud();
+  } catch (error) {
+    $("#history-sync-status").textContent = "Saved locally · cloud retry needed";
+    console.warn("Aviation cloud save failed", error);
+  }
+}
+
+async function loadHistoryFromCloud() {
+  if (!window.musicCloud?.isSignedIn()) {
+    $("#history-sync-status").textContent = "Saved on this device";
+    return;
+  }
+  try {
+    const rows = await musicCloud.listTestAttempts("aviation");
+    const history = rows.map((row) => ({ id: row.id, date: row.completed_at, book: row.mode || "aviation", chapter: row.section || "all", correct: row.correct, total: row.total, percent: row.percent, wrong: row.wrong_answers || [] }));
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    $("#history-sync-status").textContent = "Synced privately across devices";
+    renderHistory();
+  } catch (error) {
+    $("#history-sync-status").textContent = "Cloud sync unavailable · showing this device";
+    console.warn("Aviation cloud load failed", error);
+  }
 }
 
 function showView(id) {
@@ -172,7 +207,7 @@ function nextQuestion() {
   }
 }
 
-function finishTest() {
+async function finishTest() {
   const wrong = appState.results.filter((result) => !result.isCorrect);
   const total = appState.session.length;
   const percent = Math.round((appState.correct / total) * 100);
@@ -194,7 +229,7 @@ function finishTest() {
       source: question.sectionRef || question.partTitle,
     })),
   };
-  saveHistory(entry);
+  await saveHistory(entry);
   $("#result-percent").textContent = `${percent}%`;
   $("#result-title").textContent = percent >= 80 ? "Strong work. Keep the edge sharp." : "Review the misses, then fly it again.";
   $("#result-summary").textContent = `${appState.correct} correct out of ${total}. ${wrong.length} question${wrong.length === 1 ? "" : "s"} saved for review.`;
@@ -253,12 +288,17 @@ function escapeHtml(value) {
 
 $("#aviation-unlock-form").addEventListener("submit", async (event) => {
   event.preventDefault();
-  const hash = await digest($("#aviation-password").value);
+  const password = $("#aviation-password").value;
+  const hash = await digest(password);
   if (hash === ADMIN_HASH) {
-    sessionStorage.setItem("anthony_admin_unlocked", "1");
-    $("#aviation-password-error").textContent = "";
-    $("#aviation-password").value = "";
-    ensureAdmin();
+    try {
+      if (!musicCloud.isSignedIn()) await musicCloud.signIn(CLOUD_ADMIN_EMAIL, password);
+      sessionStorage.setItem("anthony_admin_unlocked", "1");
+      $("#aviation-password-error").textContent = "";
+      $("#aviation-password").value = "";
+      ensureAdmin();
+      await loadHistoryFromCloud();
+    } catch (error) { $("#aviation-password-error").textContent = `Cloud sign-in failed: ${error.message}`; }
   } else {
     $("#aviation-password-error").textContent = "That admin password did not match.";
   }
@@ -276,10 +316,11 @@ $("#next-question").addEventListener("click", nextQuestion);
 $("#exit-test").addEventListener("click", () => showView("setup-view"));
 $("#new-test").addEventListener("click", () => showView("setup-view"));
 $("#review-wrong").addEventListener("click", () => $("#wrong-list").scrollIntoView({ behavior: "smooth" }));
-$("#clear-history").addEventListener("click", () => {
+$("#clear-history").addEventListener("click", async () => {
   if (!ensureAdmin()) return;
-  if (confirm("Clear aviation score history on this device?")) {
+  if (confirm("Clear aviation score history on every synced device?")) {
     localStorage.removeItem(HISTORY_KEY);
+    if (musicCloud.isSignedIn()) await musicCloud.clearTestAttempts("aviation").catch((error) => console.warn("Cloud clear failed", error));
     renderHistory();
   }
 });
@@ -291,3 +332,4 @@ $("#aviation-search-form").addEventListener("submit", (event) => {
 populateChapters();
 renderHistory();
 ensureAdmin();
+loadHistoryFromCloud();
