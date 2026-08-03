@@ -1,7 +1,7 @@
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
 const OPENCODE_API_KEY = Deno.env.get("OPENCODE_API_KEY") ?? "";
-const OPENCODE_ENDPOINT = "https://console.opencode.ai/inference/openai/v1/chat/completions";
+const OPENCODE_ENDPOINT = "https://opencode.ai/zen/v1/chat/completions";
 
 const allowedOrigins = new Set([
   "https://anthonyamaru.com",

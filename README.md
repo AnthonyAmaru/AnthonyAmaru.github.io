@@ -6,7 +6,7 @@ A password-gated, mobile-first personal portal for Anthony's resume, interests, 
 - the original interactive Mandarin notebook plus multiple-choice quizzes
 - a private, local-first manuscript studio with import and export
 - browser-local music playlists, photos, and videos
-- a secure gateway boundary for a future OpenCode Big Pickle connection
+- a Supabase Edge Function gateway for authenticated OpenCode Big Pickle requests
 
 Passwords are client-side privacy gates, not server-side authentication. Personal edits and uploaded files stay in the current browser unless a private backend is connected.
 

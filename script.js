@@ -366,12 +366,12 @@ async function sendChapterToAssistant() {
 }
 
 function updateConnectorStatus() {
-  $("#connector-status").textContent = "Key required";
-  $("#connector-status").classList.remove("connected");
+  $("#connector-status").textContent = "Ready";
+  $("#connector-status").classList.add("connected");
   const send = $("#send-to-assistant");
   if (send) {
-    send.disabled = true;
-    send.textContent = "AI unavailable · replace OpenCode key";
+    send.disabled = false;
+    send.textContent = "Send chapter to Big Pickle";
   }
 }
 
