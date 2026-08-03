@@ -1,484 +1,701 @@
-const vocabulary = [
-  // Greetings and courtesy
-  ["你好", "nǐ hǎo", "hello", "Greetings"],
-  ["很好", "hěn hǎo", "very good; doing well", "Greetings"],
-  ["不好", "bù hǎo", "not good", "Greetings"],
-  ["不错", "bù cuò", "not bad", "Greetings"],
-  ["最近怎么样？", "zuìjìn zěnmeyàng?", "How have you been recently?", "Greetings"],
-  ["对不起", "duìbuqǐ", "sorry", "Greetings"],
-  ["不好意思", "bù hǎoyìsi", "excuse me; sorry", "Greetings"],
-  ["没关系", "méi guānxi", "it is okay; no problem", "Greetings"],
-  ["谢谢", "xièxie", "thank you", "Greetings"],
-  ["明天见", "míngtiān jiàn", "see you tomorrow", "Greetings"],
-  ["拜拜", "bāibāi", "bye-bye", "Greetings"],
-  ["加油", "jiāyóu", "keep going; you can do it", "Greetings"],
-
-  // Identity and people
-  ["我", "wǒ", "I; me", "People"],
-  ["你", "nǐ", "you", "People"],
-  ["他", "tā", "he; him", "People"],
-  ["我们", "wǒmen", "we; us", "People"],
-  ["你们", "nǐmen", "you (plural)", "People"],
-  ["他们", "tāmen", "they; them", "People"],
-  ["人", "rén", "person; people", "People"],
-  ["朋友", "péngyou", "friend", "People"],
-  ["老师", "lǎoshī", "teacher", "People"],
-  ["叫", "jiào", "to be called; to call", "People"],
-  ["名字", "míngzi", "name", "People"],
-  ["美国", "měiguó", "United States", "People"],
-  ["中国", "zhōngguó", "China", "People"],
-  ["加拿大", "jiānádà", "Canada", "People"],
-  ["中文", "zhōngwén", "Chinese language", "People"],
-  ["说", "shuō", "to say; to speak", "People"],
-  ["问", "wèn", "to ask", "People"],
-  ["自己", "zìjǐ", "oneself", "People"],
-
-  // Food and drink
-  ["面包", "miànbāo", "bread", "Food & drink"],
-  ["饺子", "jiǎozi", "dumplings", "Food & drink"],
-  ["面条", "miàntiáo", "noodles", "Food & drink"],
-  ["米饭", "mǐfàn", "cooked rice", "Food & drink"],
-  ["鸡肉", "jīròu", "chicken", "Food & drink"],
-  ["西兰花", "xīlánhuā", "broccoli", "Food & drink"],
-  ["馄饨", "húntun", "wontons", "Food & drink"],
-  ["鱼", "yú", "fish", "Food & drink"],
-  ["肉", "ròu", "meat", "Food & drink"],
-  ["可乐", "kělè", "cola", "Food & drink"],
-  ["咖啡", "kāfēi", "coffee", "Food & drink"],
-  ["茶", "chá", "tea", "Food & drink"],
-  ["水", "shuǐ", "water", "Food & drink"],
-  ["冰水", "bīngshuǐ", "ice water", "Food & drink"],
-  ["热水", "rèshuǐ", "hot water", "Food & drink"],
-  ["吃", "chī", "to eat", "Food & drink"],
-  ["喝", "hē", "to drink", "Food & drink"],
-  ["吃饭", "chīfàn", "to eat a meal", "Food & drink"],
-  ["饿", "è", "hungry", "Food & drink"],
-  ["好吃", "hǎochī", "tasty; delicious", "Food & drink"],
-  ["辣", "là", "spicy", "Food & drink"],
-
-  // Restaurant
-  ["饭店", "fàndiàn", "restaurant", "Restaurant"],
-  ["服务员", "fúwùyuán", "server; waiter", "Restaurant"],
-  ["要", "yào", "to want", "Restaurant"],
-  ["还要", "hái yào", "also want; want more", "Restaurant"],
-  ["有", "yǒu", "to have; there is", "Restaurant"],
-  ["没有", "méi yǒu", "not have; there is not", "Restaurant"],
-  ["请客", "qǐngkè", "to treat someone; pay for guests", "Restaurant"],
-  ["买单", "mǎidān", "to ask for or pay the bill", "Restaurant"],
-  ["一共", "yígòng", "altogether; in total", "Restaurant"],
-  ["打包", "dǎbāo", "to pack food to go", "Restaurant"],
-  ["杯", "bēi", "cup; measure word for cups", "Restaurant"],
-  ["碗", "wǎn", "bowl; measure word for bowls", "Restaurant"],
-  ["块", "kuài", "informal unit for yuan", "Restaurant"],
-  ["钱", "qián", "money", "Restaurant"],
-  ["好的", "hǎo de", "okay; all right", "Restaurant"],
-  ["多少钱？", "duōshao qián?", "How much money?", "Restaurant"],
-
-  // Descriptions
-  ["大", "dà", "big; large", "Descriptions"],
-  ["小", "xiǎo", "small", "Descriptions"],
-  ["热", "rè", "hot", "Descriptions"],
-  ["冰", "bīng", "ice; iced", "Descriptions"],
-  ["很", "hěn", "very; linking degree word", "Descriptions"],
-  ["非常", "fēicháng", "extremely; very", "Descriptions"],
-  ["太…了", "tài…le", "too…; extremely…", "Descriptions"],
-  ["大的", "dà de", "the large one", "Descriptions"],
-  ["小的", "xiǎo de", "the small one", "Descriptions"],
-  ["热的", "rè de", "the hot one", "Descriptions"],
-  ["冰的", "bīng de", "the iced or cold one", "Descriptions"],
-  ["辣的", "là de", "the spicy one", "Descriptions"],
-
-  // Numbers
-  ["零", "líng", "zero", "Numbers"],
-  ["一", "yī", "one", "Numbers"],
-  ["二", "èr", "two in counting", "Numbers"],
-  ["两", "liǎng", "two before most measure words", "Numbers"],
-  ["三", "sān", "three", "Numbers"],
-  ["四", "sì", "four", "Numbers"],
-  ["五", "wǔ", "five", "Numbers"],
-  ["六", "liù", "six", "Numbers"],
-  ["七", "qī", "seven", "Numbers"],
-  ["八", "bā", "eight", "Numbers"],
-  ["九", "jiǔ", "nine", "Numbers"],
-  ["十", "shí", "ten", "Numbers"],
-  ["百", "bǎi", "one hundred", "Numbers"],
-  ["个", "ge", "general measure word", "Numbers"],
-
-  // Calendar and time
-  ["今天", "jīntiān", "today", "Time"],
-  ["昨天", "zuótiān", "yesterday", "Time"],
-  ["明天", "míngtiān", "tomorrow", "Time"],
-  ["星期", "xīngqī", "week", "Time"],
-  ["星期一", "xīngqīyī", "Monday", "Time"],
-  ["星期五", "xīngqīwǔ", "Friday", "Time"],
-  ["星期日", "xīngqīrì", "Sunday", "Time"],
-  ["月", "yuè", "month", "Time"],
-  ["号 / 日", "hào / rì", "day of the month", "Time"],
-  ["生日", "shēngrì", "birthday", "Time"],
-  ["时间", "shíjiān", "time", "Time"],
-  ["现在", "xiànzài", "now", "Time"],
-  ["点", "diǎn", "o'clock", "Time"],
-  ["分", "fēn", "minute", "Time"],
-  ["刻", "kè", "quarter hour", "Time"],
-  ["半", "bàn", "half", "Time"],
-  ["上午", "shàngwǔ", "morning", "Time"],
-  ["下午", "xiàwǔ", "afternoon", "Time"],
-  ["晚上", "wǎnshang", "evening; night", "Time"],
-
-  // Places and movement
-  ["去", "qù", "to go", "Places"],
-  ["在", "zài", "to be at; in; on", "Places"],
-  ["到", "dào", "to arrive; reach", "Places"],
-  ["到了", "dào le", "arrived", "Places"],
-  ["哪里", "nǎlǐ", "where", "Places"],
-  ["操场", "cāochǎng", "playground; athletic field", "Places"],
-  ["上课", "shàngkè", "to attend or start class", "Places"],
-  ["太阳", "tàiyáng", "sun", "Places"],
-  ["云", "yún", "cloud", "Places"],
-
-  // Grammar tools
-  ["是", "shì", "to be; identifies or classifies", "Grammar"],
-  ["不", "bù", "not; negates habits and descriptions", "Grammar"],
-  ["没 / 没有", "méi / méi yǒu", "not have; there is not", "Grammar"],
-  ["吗", "ma", "yes or no question particle", "Grammar"],
-  ["呢", "ne", "and…?; what about…?", "Grammar"],
-  ["了", "le", "new situation or completed action", "Grammar"],
-  ["的", "de", "links possession or description", "Grammar"],
-  ["吧", "ba", "softens a suggestion", "Grammar"],
-  ["什么", "shénme", "what", "Grammar"],
-  ["怎么", "zěnme", "how; by what method", "Grammar"],
-  ["怎么样", "zěnmeyàng", "how is it?; how are things?", "Grammar"],
-  ["几", "jǐ", "how many; usually a small number", "Grammar"],
-  ["多少", "duōshao", "how many; how much", "Grammar"],
-  ["谁", "shéi", "who", "Grammar"],
-];
-
-const patternGroups = {
-  "Introductions": [
-    ["我叫…", "Wǒ jiào…", "My name is…"],
-    ["我是美国人。", "Wǒ shì měiguó rén.", "I am American."],
-    ["我不是中国人。", "Wǒ bú shì zhōngguó rén.", "I am not Chinese."],
-    ["你是哪国人？", "Nǐ shì nǎ guó rén?", "What country are you from?"],
-    ["你叫什么名字？", "Nǐ jiào shénme míngzi?", "What is your name?"],
-    ["你呢？", "Nǐ ne?", "What about you?"],
-  ],
-  "Likes & food": [
-    ["我喜欢饺子。", "Wǒ xǐhuan jiǎozi.", "I like dumplings."],
-    ["我不喜欢面条。", "Wǒ bù xǐhuan miàntiáo.", "I do not like noodles."],
-    ["你喜欢吃什么？", "Nǐ xǐhuan chī shénme?", "What do you like to eat?"],
-    ["你喜欢喝什么？", "Nǐ xǐhuan hē shénme?", "What do you like to drink?"],
-    ["他不喜欢吃鸡肉。", "Tā bù xǐhuan chī jīròu.", "He does not like eating chicken."],
-    ["我饿了。", "Wǒ è le.", "I am hungry now."],
-  ],
-  "Restaurant": [
-    ["我们去吃饭吧。", "Wǒmen qù chīfàn ba.", "Let's go eat."],
-    ["我要一碗米饭。", "Wǒ yào yì wǎn mǐfàn.", "I want one bowl of rice."],
-    ["我还要两杯冰水。", "Wǒ hái yào liǎng bēi bīngshuǐ.", "I also want two cups of ice water."],
-    ["你要大的还是小的？", "Nǐ yào dà de háishi xiǎo de?", "Do you want the large one or the small one?"],
-    ["一共多少钱？", "Yígòng duōshao qián?", "How much is it altogether?"],
-    ["我请客。", "Wǒ qǐngkè.", "It's my treat."],
-    ["我要打包。", "Wǒ yào dǎbāo.", "I want it packed to go."],
-  ],
-  "Time & place": [
-    ["今天星期几？", "Jīntiān xīngqī jǐ?", "What day of the week is today?"],
-    ["今天是几月几号？", "Jīntiān shì jǐ yuè jǐ hào?", "What is today's date?"],
-    ["现在几点？", "Xiànzài jǐ diǎn?", "What time is it now?"],
-    ["现在七点半。", "Xiànzài qī diǎn bàn.", "It is 7:30 now."],
-    ["你在哪里？", "Nǐ zài nǎlǐ?", "Where are you?"],
-    ["明天下午你有时间吗？", "Míngtiān xiàwǔ nǐ yǒu shíjiān ma?", "Do you have time tomorrow afternoon?"],
-    ["你到了吗？", "Nǐ dào le ma?", "Have you arrived?"],
-  ],
-  "Possession": [
-    ["这是我的面包。", "Zhè shì wǒ de miànbāo.", "This is my bread."],
-    ["这杯咖啡是你的。", "Zhè bēi kāfēi shì nǐ de.", "This cup of coffee is yours."],
-    ["他是我们的朋友。", "Tā shì wǒmen de péngyou.", "He is our friend."],
-    ["我要辣的。", "Wǒ yào là de.", "I want the spicy one."],
-  ],
+const VISITOR_HASH = "685e365003f3413bb077e7b6d5cf3b498c51df12fc883ca818d0344231fc4cd4";
+const ADMIN_HASH = "1e67aef3b01e797309c5588def71607f40a4facc6b8993af9a62306f727a2e5a";
+const KEYS = {
+  theme: "anthony_portal_theme",
+  resume: "anthony_resume_v1",
+  book: "anthony_book_workbook_v1",
+  playlists: "anthony_music_playlists_v1",
+  connector: "anthony_private_gateway_v1",
 };
 
-const readings = {
-  chinese: [
-    "今天是7月31号，星期五。今天是我的生日。我问我的朋友小李：“你有时间吗？我们去小猫饭店吃饭吧，我请客。”",
-    "11点半，我们到了饭店。今天太热了。我问服务员：“有冰水吗？”",
-    "我要两杯冰水。这个饭店的鸡肉西兰花和馄饨很好吃。",
-    "我吃了一碗鸡肉西兰花和一碗馄饨。小李不喜欢吃鸡肉。他饿了，吃了三碗馄饨。",
-    "我去买单。服务员说：“你的中文很好。一共153块。”",
-    "我说：“谢谢。我还要打包一碗面条。”",
-  ],
-  pinyin: [
-    "Jīntiān shì qī yuè sānshíyī hào, xīngqīwǔ. Jīntiān shì wǒ de shēngrì. Wǒ wèn wǒ de péngyou Xiǎo Lǐ: “Nǐ yǒu shíjiān ma? Wǒmen qù Xiǎomāo Fàndiàn chīfàn ba, wǒ qǐngkè.”",
-    "Shíyī diǎn bàn, wǒmen dào le fàndiàn. Jīntiān tài rè le. Wǒ wèn fúwùyuán: “Yǒu bīngshuǐ ma?”",
-    "Wǒ yào liǎng bēi bīngshuǐ. Zhè ge fàndiàn de jīròu xīlánhuā hé húntun hěn hǎochī.",
-    "Wǒ chī le yì wǎn jīròu xīlánhuā hé yì wǎn húntun. Xiǎo Lǐ bù xǐhuan chī jīròu. Tā è le, chī le sān wǎn húntun.",
-    "Wǒ qù mǎidān. Fúwùyuán shuō: “Nǐ de zhōngwén hěn hǎo. Yígòng yìbǎi wǔshísān kuài.”",
-    "Wǒ shuō: “Xièxie. Wǒ hái yào dǎbāo yì wǎn miàntiáo.”",
-  ],
-  english: [
-    "Today is Friday, July 31. Today is my birthday. I ask my friend Xiao Li, “Do you have time? Let's go eat at Little Cat Restaurant. It's my treat.”",
-    "At 11:30, we arrive at the restaurant. It is very hot today. I ask the server, “Do you have ice water?”",
-    "I want two cups of ice water. This restaurant's chicken with broccoli and wontons are delicious.",
-    "I eat one bowl of chicken with broccoli and one bowl of wontons. Xiao Li does not like chicken. He gets hungry and eats three bowls of wontons.",
-    "I go to pay the bill. The server says, “Your Chinese is very good. The total is 153 yuan.”",
-    "I say, “Thank you. I also want one bowl of noodles packed to go.”",
-  ],
+const $ = (selector, root = document) => root.querySelector(selector);
+const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+
+let pendingAdminResolve = null;
+let toastTimer = null;
+let bookSaveTimer = null;
+let currentBookChapter = 0;
+let currentPlaylist = "all";
+let tracks = [];
+let visibleTracks = [];
+let currentTrackId = null;
+let trackObjectUrl = null;
+let mediaObjectUrls = [];
+
+const resumeDefaults = {
+  work: [{ title: "Add your first work role", organization: "Work experience", dates: "Dates", location: "Location", description: "Use Edit to replace this starter card with your position, accomplishments, and responsibilities." }],
+  education: [{ title: "Add your education", organization: "School or program", dates: "Dates", location: "Location", description: "Add your degree, area of study, credentials, or relevant training." }],
 };
 
-const characters = [
-  ["我", "wǒ", "I; me"], ["你", "nǐ", "you"], ["他", "tā", "he"], ["们", "men", "plural marker"],
-  ["人", "rén", "person"], ["爱", "ài", "love"], ["想", "xiǎng", "think; want"], ["不", "bù", "not"],
-  ["没", "méi", "not have"], ["是", "shì", "to be"], ["有", "yǒu", "have"], ["要", "yào", "want"],
-  ["吃", "chī", "eat"], ["喝", "hē", "drink"], ["说", "shuō", "speak"], ["问", "wèn", "ask"],
-  ["去", "qù", "go"], ["到", "dào", "arrive"], ["在", "zài", "at"], ["叫", "jiào", "be called"],
-  ["天", "tiān", "day; sky"], ["月", "yuè", "month"], ["日", "rì", "day; sun"], ["时", "shí", "time"],
-  ["现", "xiàn", "present"], ["中", "zhōng", "middle; China"], ["文", "wén", "language"], ["水", "shuǐ", "water"],
-  ["饭", "fàn", "rice; meal"], ["面", "miàn", "noodles; flour"], ["鸡", "jī", "chicken"], ["肉", "ròu", "meat"],
-  ["鱼", "yú", "fish"], ["茶", "chá", "tea"], ["钱", "qián", "money"], ["大", "dà", "big"],
-  ["小", "xiǎo", "small"], ["热", "rè", "hot"], ["好", "hǎo", "good"], ["朋", "péng", "friend"],
-];
-
-const state = {
-  activeCategory: "All",
-  query: "",
-  showPinyin: true,
-  patternGroup: Object.keys(patternGroups)[0],
-  readingLayer: "chinese",
-  session: [],
-  sessionIndex: 0,
-  known: new Set(JSON.parse(localStorage.getItem("mandarin-known") || "[]")),
+const bookDefaults = {
+  title: "A Hypothesis of Man",
+  updatedAt: null,
+  chapters: [
+    "Chapter 1 — Genesis", "Chapter 2 — Judaism, Islam, Buddhism and Amish", "Chapter 3 — Principles",
+    "Chapter 4 — Principles in Practice", "Chapter 5 — Vices We Must Avoid", "Chapter 6 — Finding a Wife",
+    "Chapter 7 — Why Are We Men?", "Chapter 8 — Fatherhood", "Chapter 9 — Adapting to Modern Society vs. Standing Firm",
+    "Chapter 10 — Plant the Seed", "Chapter 11 — A Warning to My Brothers and Sons", "Chapter 12 — A Hypothesis Becomes a Theory",
+    "Dedication", "Back-cover Summary", "Cover Instruction",
+  ].map((title, index) => ({ id: `chapter-${index + 1}`, title, content: "" })),
 };
 
-const $ = (selector) => document.querySelector(selector);
-const shuffle = (items) => [...items].sort(() => Math.random() - 0.5);
-
-function updateProgress() {
-  const percent = Math.round((state.known.size / vocabulary.length) * 100);
-  $("#hero-progress").textContent = `${percent}%`;
-  $("#hero-progress-bar").style.width = `${percent}%`;
+async function digest(value) {
+  const bytes = new TextEncoder().encode(value);
+  const hash = await crypto.subtle.digest("SHA-256", bytes);
+  return [...new Uint8Array(hash)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
-function makeSession() {
-  state.session = shuffle(vocabulary).slice(0, 5);
-  state.sessionIndex = 0;
-  renderSession();
-  renderFlashcard();
+function readJson(key, fallback) {
+  try {
+    const value = JSON.parse(localStorage.getItem(key));
+    return value ?? structuredClone(fallback);
+  } catch {
+    return structuredClone(fallback);
+  }
 }
 
-function renderSession() {
-  const list = $("#session-list");
-  list.replaceChildren();
-  state.session.forEach((word, index) => {
-    const item = document.createElement("li");
-    if (index === state.sessionIndex) item.classList.add("active");
-    if (state.known.has(word[0])) item.classList.add("known");
-    const number = document.createElement("span");
-    number.className = "session-number";
-    number.textContent = state.known.has(word[0]) ? "✓" : index + 1;
-    const label = document.createElement("span");
-    label.textContent = word[0];
-    item.append(number, label);
-    list.append(item);
+function writeJson(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[character]);
+}
+
+function toast(message) {
+  const element = $("#toast");
+  element.textContent = message;
+  element.classList.add("visible");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => element.classList.remove("visible"), 2800);
+}
+
+function setModalOpen(open) {
+  document.body.classList.toggle("modal-open", open);
+}
+
+function showPortal() {
+  $("#entry-gate").hidden = true;
+  $("#portal").hidden = false;
+  refreshDashboard();
+}
+
+function applyTheme(theme) {
+  const next = theme === "dark" ? "dark" : "light";
+  document.documentElement.dataset.theme = next;
+  localStorage.setItem(KEYS.theme, next);
+  $("#theme-toggle span").textContent = next === "dark" ? "☀" : "☾";
+  $("meta[name='theme-color']").setAttribute("content", next === "dark" ? "#17201e" : "#f7f5ef");
+}
+
+function routeTo(route) {
+  const page = $("[data-page='" + route + "']");
+  if (!page) return;
+  $$(".page-panel").forEach((panel) => panel.classList.toggle("active", panel === page));
+  $$(".nav-link").forEach((link) => link.classList.toggle("active", link.dataset.route === route));
+  $("#primary-nav").classList.remove("open");
+  $("#mobile-menu-button").setAttribute("aria-expanded", "false");
+  history.replaceState(null, "", `#${route}`);
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  if (route === "music") renderMusic();
+  if (route === "media") renderMedia();
+  if (route === "resume") renderResume();
+  if (route === "interests") refreshDashboard();
+}
+
+function adminIsUnlocked() {
+  return sessionStorage.getItem("anthony_admin_unlocked") === "1";
+}
+
+function updateAdminStatus() {
+  const chip = $("#admin-status");
+  const unlocked = adminIsUnlocked();
+  chip.classList.toggle("unlocked", unlocked);
+  $("span:last-child", chip).textContent = unlocked ? "Admin unlocked" : "Admin locked";
+}
+
+function ensureAdmin() {
+  if (adminIsUnlocked()) return Promise.resolve(true);
+  $("#admin-modal").hidden = false;
+  $("#admin-error").textContent = "";
+  $("#admin-password").value = "";
+  setModalOpen(true);
+  requestAnimationFrame(() => $("#admin-password").focus());
+  return new Promise((resolve) => { pendingAdminResolve = resolve; });
+}
+
+function closeAdminModal(result = false) {
+  $("#admin-modal").hidden = true;
+  setModalOpen(false);
+  if (pendingAdminResolve) pendingAdminResolve(result);
+  pendingAdminResolve = null;
+}
+
+function getResume() {
+  const data = readJson(KEYS.resume, resumeDefaults);
+  if (!Array.isArray(data.work)) data.work = [];
+  if (!Array.isArray(data.education)) data.education = [];
+  return data;
+}
+
+function renderResume() {
+  const resume = getResume();
+  $("#work-list").innerHTML = resume.work.length ? resume.work.map((entry, index) => `
+    <article class="timeline-item">
+      <div class="timeline-meta">${escapeHtml(entry.dates)}<br />${escapeHtml(entry.location)}</div>
+      <div class="timeline-copy"><h3>${escapeHtml(entry.title)}</h3><p class="organization">${escapeHtml(entry.organization)}</p><p class="description">${escapeHtml(entry.description)}</p></div>
+      <div class="entry-actions"><button type="button" data-edit-entry="work:${index}">Edit</button><button type="button" data-delete-entry="work:${index}">Delete</button></div>
+    </article>`).join("") : '<p class="empty-state">No work experience added yet.</p>';
+  $("#education-list").innerHTML = resume.education.length ? resume.education.map((entry, index) => `
+    <article class="education-item">
+      <div class="entry-actions"><button type="button" data-edit-entry="education:${index}">Edit</button><button type="button" data-delete-entry="education:${index}">Delete</button></div>
+      <h3>${escapeHtml(entry.title)}</h3><p class="organization">${escapeHtml(entry.organization)}</p><p class="meta">${escapeHtml(entry.dates)} · ${escapeHtml(entry.location)}</p><p class="description">${escapeHtml(entry.description)}</p>
+    </article>`).join("") : '<p class="empty-state">No education added yet.</p>';
+}
+
+async function openEntryEditor(kind, index = "") {
+  if (!(await ensureAdmin())) return;
+  const resume = getResume();
+  const entry = index === "" ? { title: "", organization: "", dates: "", location: "", description: "" } : resume[kind][Number(index)];
+  $("#entry-kind").value = kind;
+  $("#entry-index").value = index;
+  $("#entry-editor-title").textContent = `${index === "" ? "Add" : "Edit"} ${kind === "work" ? "work experience" : "education"}`;
+  $("#entry-title").value = entry.title || "";
+  $("#entry-organization").value = entry.organization || "";
+  $("#entry-dates").value = entry.dates || "";
+  $("#entry-location").value = entry.location || "";
+  $("#entry-description").value = entry.description || "";
+  $("#entry-editor-modal").hidden = false;
+  setModalOpen(true);
+  requestAnimationFrame(() => $("#entry-title").focus());
+}
+
+async function deleteResumeEntry(kind, index) {
+  if (!(await ensureAdmin())) return;
+  if (!confirm("Delete this resume entry from this device?")) return;
+  const resume = getResume();
+  resume[kind].splice(Number(index), 1);
+  writeJson(KEYS.resume, resume);
+  renderResume();
+  toast("Resume entry deleted.");
+}
+
+function getBook() {
+  const book = readJson(KEYS.book, bookDefaults);
+  if (!Array.isArray(book.chapters) || !book.chapters.length) return structuredClone(bookDefaults);
+  return book;
+}
+
+function saveBook(book, status = "Saved locally") {
+  book.updatedAt = new Date().toISOString();
+  writeJson(KEYS.book, book);
+  $("#book-save-status").textContent = status;
+  $("#book-updated").textContent = `Updated ${new Date(book.updatedAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`;
+  refreshDashboard();
+}
+
+function renderChapterList() {
+  const book = getBook();
+  currentBookChapter = Math.min(currentBookChapter, book.chapters.length - 1);
+  $("#chapter-list").innerHTML = book.chapters.map((chapter, index) => `<button class="chapter-button ${index === currentBookChapter ? "active" : ""}" type="button" data-chapter-index="${index}">${escapeHtml(chapter.title)}</button>`).join("");
+}
+
+function loadBookChapter(index) {
+  const book = getBook();
+  if (!book.chapters[index]) return;
+  currentBookChapter = index;
+  $("#book-chapter-title").value = book.chapters[index].title;
+  $("#book-chapter-content").value = book.chapters[index].content || "";
+  updateBookCounts();
+  renderChapterList();
+  $(".chapter-rail").classList.remove("open");
+}
+
+function updateBookCounts() {
+  const content = $("#book-chapter-content").value.trim();
+  const words = content ? content.split(/\s+/).length : 0;
+  $("#book-word-count").textContent = `${words.toLocaleString()} word${words === 1 ? "" : "s"}`;
+}
+
+function queueBookSave() {
+  $("#book-save-status").textContent = "Saving…";
+  updateBookCounts();
+  clearTimeout(bookSaveTimer);
+  bookSaveTimer = setTimeout(() => {
+    const book = getBook();
+    const chapter = book.chapters[currentBookChapter];
+    if (!chapter) return;
+    chapter.title = $("#book-chapter-title").value.trim() || "Untitled chapter";
+    chapter.content = $("#book-chapter-content").value;
+    saveBook(book);
+    renderChapterList();
+  }, 420);
+}
+
+async function openBookStudio() {
+  if (!(await ensureAdmin())) return;
+  $("#book-modal").hidden = false;
+  setModalOpen(true);
+  currentBookChapter = 0;
+  renderChapterList();
+  loadBookChapter(0);
+  updateConnectorStatus();
+}
+
+function closeBookStudio() {
+  clearTimeout(bookSaveTimer);
+  queueBookSave();
+  $("#book-modal").hidden = true;
+  setModalOpen(false);
+}
+
+function parseMarkdownBook(text) {
+  const matches = [...text.matchAll(/^#{1,3}\s+(.+)$/gm)];
+  if (!matches.length) return [{ id: `chapter-${Date.now()}`, title: "Imported manuscript", content: text.trim() }];
+  return matches.map((match, index) => {
+    const start = match.index + match[0].length;
+    const end = matches[index + 1]?.index ?? text.length;
+    return { id: `chapter-${Date.now()}-${index}`, title: match[1].trim(), content: text.slice(start, end).trim() };
   });
 }
 
-function renderFlashcard() {
-  const word = state.session[state.sessionIndex];
-  if (!word) return;
-  $("#flashcard").classList.remove("revealed");
-  $("#flash-answer").setAttribute("aria-hidden", "true");
-  $("#flash-category").textContent = word[3];
-  $("#flash-position").textContent = `${state.sessionIndex + 1} / ${state.session.length}`;
-  $("#flash-hanzi").textContent = word[0];
-  $("#flash-pinyin").textContent = word[1];
-  $("#flash-meaning").textContent = word[2];
-  renderSession();
+async function importBookFile(file) {
+  if (!file) return;
+  try {
+    const text = await file.text();
+    let imported;
+    if (file.name.toLowerCase().endsWith(".json")) {
+      const parsed = JSON.parse(text);
+      if (!Array.isArray(parsed.chapters)) throw new Error("The backup does not contain a chapters list.");
+      imported = { title: parsed.title || "A Hypothesis of Man", updatedAt: new Date().toISOString(), chapters: parsed.chapters.map((chapter, index) => ({ id: chapter.id || `chapter-${Date.now()}-${index}`, title: chapter.title || `Chapter ${index + 1}`, content: chapter.content || "" })) };
+    } else {
+      imported = { title: "A Hypothesis of Man", updatedAt: new Date().toISOString(), chapters: parseMarkdownBook(text) };
+    }
+    writeJson(KEYS.book, imported);
+    currentBookChapter = 0;
+    renderChapterList();
+    loadBookChapter(0);
+    toast(`Imported ${imported.chapters.length} chapter${imported.chapters.length === 1 ? "" : "s"}.`);
+  } catch (error) {
+    toast(`Import failed: ${error.message}`);
+  }
 }
 
-function revealCard() {
-  $("#flashcard").classList.toggle("revealed");
-  const revealed = $("#flashcard").classList.contains("revealed");
-  $("#flash-answer").setAttribute("aria-hidden", String(!revealed));
+function downloadFile(name, content, type) {
+  const url = URL.createObjectURL(new Blob([content], { type }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = name;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-function advanceCard(markKnown) {
-  const word = state.session[state.sessionIndex];
-  if (markKnown) state.known.add(word[0]);
-  localStorage.setItem("mandarin-known", JSON.stringify([...state.known]));
-  updateProgress();
-  state.sessionIndex = (state.sessionIndex + 1) % state.session.length;
-  renderFlashcard();
+function exportBookJson() {
+  downloadFile("A_Hypothesis_of_Man_backup.json", JSON.stringify(getBook(), null, 2), "application/json");
+  toast("Private book backup downloaded.");
 }
 
-function renderFilters() {
-  const categories = ["All", ...new Set(vocabulary.map((word) => word[3]))];
-  const row = $("#category-filters");
-  categories.forEach((category) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "filter-chip";
-    button.textContent = category;
-    if (category === state.activeCategory) button.classList.add("active");
-    button.addEventListener("click", () => {
-      state.activeCategory = category;
-      row.querySelectorAll("button").forEach((chip) => chip.classList.toggle("active", chip === button));
-      renderVocabulary();
-    });
-    row.append(button);
+function exportBookMarkdown() {
+  const book = getBook();
+  const markdown = `# ${book.title}\n\n${book.chapters.map((chapter) => `## ${chapter.title}\n\n${chapter.content || ""}`).join("\n\n")}`;
+  downloadFile("A_Hypothesis_of_Man.md", markdown, "text/markdown");
+  toast("Markdown manuscript downloaded.");
+}
+
+async function sendChapterToAssistant() {
+  if (!(await ensureAdmin())) return;
+  const endpoint = localStorage.getItem(KEYS.connector);
+  if (!endpoint) return toast("Add a private gateway URL first.");
+  const book = getBook();
+  const chapter = book.chapters[currentBookChapter];
+  const button = $("#send-to-assistant");
+  button.disabled = true;
+  button.textContent = "Sending securely…";
+  try {
+    const response = await fetch(endpoint, { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ scope: "book", model: "opencode/big-pickle", action: "edit", chapter: { title: chapter.title, content: chapter.content } }) });
+    if (!response.ok) throw new Error(`Gateway returned ${response.status}`);
+    const result = await response.json();
+    if (typeof result.content !== "string") throw new Error("Gateway response did not include revised content.");
+    if (confirm("Big Pickle returned a revision. Replace this chapter with it?")) {
+      chapter.content = result.content;
+      saveBook(book, "AI revision saved locally");
+      $("#book-chapter-content").value = chapter.content;
+      updateBookCounts();
+    }
+  } catch (error) {
+    toast(`Assistant connection failed: ${error.message}`);
+  } finally {
+    updateConnectorStatus();
+  }
+}
+
+function updateConnectorStatus() {
+  const endpoint = localStorage.getItem(KEYS.connector) || "";
+  $("#connector-url").value = endpoint;
+  $("#connector-status").textContent = endpoint ? "Gateway configured" : "Not connected";
+  $("#connector-status").classList.toggle("connected", Boolean(endpoint));
+  const send = $("#send-to-assistant");
+  if (send) {
+    send.disabled = !endpoint;
+    send.textContent = endpoint ? "Send chapter to Big Pickle" : "Big Pickle connection required";
+  }
+}
+
+function openDatabase() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open("anthony_personal_portal", 1);
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains("tracks")) db.createObjectStore("tracks", { keyPath: "id", autoIncrement: true });
+      if (!db.objectStoreNames.contains("media")) db.createObjectStore("media", { keyPath: "id", autoIncrement: true });
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
   });
 }
 
-function renderVocabulary() {
-  const query = state.query.trim().toLocaleLowerCase();
-  const filtered = vocabulary.filter((word) => {
-    const inCategory = state.activeCategory === "All" || word[3] === state.activeCategory;
-    const matches = !query || word.slice(0, 3).some((value) => value.toLocaleLowerCase().includes(query));
-    return inCategory && matches;
-  });
-
-  const grid = $("#vocab-grid");
-  grid.replaceChildren();
-  grid.classList.toggle("hide-pinyin", !state.showPinyin);
-  filtered.forEach(([hanzi, pinyin, meaning, category]) => {
-    const article = document.createElement("article");
-    article.className = "word-card";
-    const h3 = document.createElement("h3");
-    h3.className = "word-hanzi";
-    h3.lang = "zh-Hans";
-    h3.textContent = hanzi;
-    const py = document.createElement("p");
-    py.className = "word-pinyin";
-    py.textContent = pinyin;
-    const en = document.createElement("p");
-    en.className = "word-meaning";
-    en.textContent = meaning;
-    const tag = document.createElement("span");
-    tag.className = "word-category";
-    tag.textContent = category;
-    article.append(h3, py, en, tag);
-    grid.append(article);
-  });
-  $("#visible-count").textContent = filtered.length;
-  $("#vocab-empty").hidden = filtered.length !== 0;
-}
-
-function renderPatternTabs() {
-  const tabs = $("#pattern-tabs");
-  Object.keys(patternGroups).forEach((group) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "pattern-tab";
-    button.setAttribute("role", "tab");
-    button.setAttribute("aria-selected", String(group === state.patternGroup));
-    button.textContent = group;
-    button.addEventListener("click", () => {
-      state.patternGroup = group;
-      tabs.querySelectorAll("button").forEach((tab) => tab.setAttribute("aria-selected", String(tab === button)));
-      renderPatterns();
-    });
-    tabs.append(button);
+async function dbGetAll(storeName) {
+  const db = await openDatabase();
+  return new Promise((resolve, reject) => {
+    const request = db.transaction(storeName, "readonly").objectStore(storeName).getAll();
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
   });
 }
 
-function renderPatterns() {
-  const list = $("#pattern-list");
-  list.replaceChildren();
-  patternGroups[state.patternGroup].forEach(([chinese, pinyin, english]) => {
-    const row = document.createElement("article");
-    row.className = "pattern-item";
-    const zh = document.createElement("p");
-    zh.className = "pattern-chinese";
-    zh.lang = "zh-Hans";
-    zh.textContent = chinese;
-    const py = document.createElement("p");
-    py.className = "pattern-pinyin";
-    py.textContent = pinyin;
-    const en = document.createElement("p");
-    en.className = "pattern-english";
-    en.textContent = english;
-    row.append(zh, py, en);
-    list.append(row);
+async function dbAdd(storeName, value) {
+  const db = await openDatabase();
+  return new Promise((resolve, reject) => {
+    const request = db.transaction(storeName, "readwrite").objectStore(storeName).add(value);
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
   });
 }
 
-function renderReading() {
-  const article = $("#reading-copy");
-  article.replaceChildren();
-  readings[state.readingLayer].forEach((line) => {
-    const paragraph = document.createElement("p");
-    paragraph.className = "reading-paragraph";
-    paragraph.dataset.layer = state.readingLayer;
-    paragraph.textContent = line;
-    if (state.readingLayer === "chinese") paragraph.lang = "zh-Hans";
-    article.append(paragraph);
+async function dbDelete(storeName, id) {
+  const db = await openDatabase();
+  return new Promise((resolve, reject) => {
+    const request = db.transaction(storeName, "readwrite").objectStore(storeName).delete(id);
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
   });
 }
 
-function renderCharacters() {
-  const grid = $("#character-grid");
-  characters.forEach(([character, pinyin, meaning], index) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "character-button";
-    button.lang = "zh-Hans";
-    button.textContent = character;
-    button.setAttribute("aria-label", `${character}, ${pinyin}, ${meaning}`);
-    if (index === 0) button.classList.add("active");
-    button.addEventListener("click", () => {
-      grid.querySelectorAll("button").forEach((item) => item.classList.toggle("active", item === button));
-      $("#focus-character").textContent = character;
-      $("#focus-pinyin").textContent = pinyin;
-      $("#focus-meaning").textContent = meaning;
-    });
-    grid.append(button);
-  });
+function getPlaylists() {
+  const value = readJson(KEYS.playlists, []);
+  return Array.isArray(value) ? value : [];
 }
 
-$("#word-count").textContent = vocabulary.length;
-$("#flashcard").addEventListener("click", revealCard);
-$("#flashcard").addEventListener("keydown", (event) => {
-  if (event.code === "Space" || event.code === "Enter") {
-    event.preventDefault();
-    revealCard();
+function savePlaylists(playlists) {
+  writeJson(KEYS.playlists, playlists);
+}
+
+async function renderMusic() {
+  try { tracks = (await dbGetAll("tracks")).sort((a, b) => b.createdAt - a.createdAt); } catch { tracks = []; }
+  const playlists = getPlaylists();
+  $("#all-track-count").textContent = tracks.length;
+  $("#playlist-list").innerHTML = playlists.map((playlist) => `<button class="playlist-row ${currentPlaylist === String(playlist.id) ? "active" : ""}" type="button" data-playlist="${playlist.id}"><span>♬</span><strong>${escapeHtml(playlist.name)}</strong><small>${playlist.trackIds.length}</small></button>`).join("");
+  $$(".playlist-row[data-playlist='all']").forEach((button) => button.classList.toggle("active", currentPlaylist === "all"));
+  const selectedPlaylist = playlists.find((playlist) => String(playlist.id) === currentPlaylist);
+  visibleTracks = currentPlaylist === "all" ? tracks : tracks.filter((track) => selectedPlaylist?.trackIds.includes(track.id));
+  $("#library-title").textContent = currentPlaylist === "all" ? "All music" : selectedPlaylist?.name || "Playlist";
+  const playlistOptions = playlists.map((playlist) => `<option value="${playlist.id}">${escapeHtml(playlist.name)}</option>`).join("");
+  $("#track-list").innerHTML = visibleTracks.length ? visibleTracks.map((track) => {
+    const assigned = playlists.find((playlist) => playlist.trackIds.includes(track.id));
+    return `<article class="track-row"><button class="track-play" type="button" data-play-track="${track.id}" aria-label="Play ${escapeHtml(track.name)}">▶</button><div class="track-copy"><strong>${escapeHtml(track.name)}</strong><small>${formatBytes(track.size)}</small></div><select data-assign-track="${track.id}" aria-label="Move ${escapeHtml(track.name)} to playlist"><option value="">No playlist</option>${playlistOptions}</select><button class="track-delete" type="button" data-delete-track="${track.id}" aria-label="Delete ${escapeHtml(track.name)}">×</button></article>`;
+  }).join("") : '<div class="library-empty"><p>No songs here yet.</p><small>Add audio files from your device to begin.</small></div>';
+  $$('[data-assign-track]').forEach((select) => { const trackId = Number(select.dataset.assignTrack); const assigned = playlists.find((playlist) => playlist.trackIds.includes(trackId)); select.value = assigned ? String(assigned.id) : ""; });
+  renderDock();
+}
+
+function renderDock() {
+  const select = $("#dock-track-select");
+  select.innerHTML = tracks.length ? '<option value="">Choose a song</option>' + tracks.map((track) => `<option value="${track.id}">${escapeHtml(track.name)}</option>`).join("") : '<option value="">No music added yet</option>';
+  if (currentTrackId) select.value = String(currentTrackId);
+}
+
+async function playTrack(id) {
+  const track = tracks.find((item) => item.id === Number(id));
+  if (!track) return;
+  if (trackObjectUrl) URL.revokeObjectURL(trackObjectUrl);
+  trackObjectUrl = URL.createObjectURL(track.blob);
+  currentTrackId = track.id;
+  const audio = $("#audio-player");
+  audio.src = trackObjectUrl;
+  $("#dock-title").textContent = track.name;
+  $("#dock-track-select").value = String(track.id);
+  try { await audio.play(); } catch { toast("Tap play to start this song."); }
+  updatePlayButton();
+}
+
+function updatePlayButton() {
+  $("#dock-play").textContent = $("#audio-player").paused ? "▶" : "❚❚";
+}
+
+function stepTrack(direction) {
+  const pool = visibleTracks.length ? visibleTracks : tracks;
+  if (!pool.length) return;
+  const index = Math.max(0, pool.findIndex((track) => track.id === currentTrackId));
+  playTrack(pool[(index + direction + pool.length) % pool.length].id);
+}
+
+async function addMusicFiles(files) {
+  if (!(await ensureAdmin()) || !files.length) return;
+  let added = 0;
+  for (const file of files) {
+    try { await dbAdd("tracks", { name: file.name.replace(/\.[^.]+$/, ""), fileName: file.name, type: file.type, size: file.size, createdAt: Date.now() + added, blob: file }); added += 1; } catch (error) { toast(`Could not store ${file.name}: ${error.message}`); }
+  }
+  toast(`${added} song${added === 1 ? "" : "s"} added to this device.`);
+  await renderMusic();
+}
+
+async function assignTrack(trackId, playlistId) {
+  if (!(await ensureAdmin())) return renderMusic();
+  const playlists = getPlaylists();
+  playlists.forEach((playlist) => { playlist.trackIds = playlist.trackIds.filter((id) => id !== trackId); });
+  const target = playlists.find((playlist) => String(playlist.id) === playlistId);
+  if (target) target.trackIds.push(trackId);
+  savePlaylists(playlists);
+  toast(target ? `Song moved to ${target.name}.` : "Song removed from playlists.");
+  renderMusic();
+}
+
+async function deleteTrack(id) {
+  if (!(await ensureAdmin()) || !confirm("Delete this song from this browser?")) return;
+  await dbDelete("tracks", id);
+  const playlists = getPlaylists();
+  playlists.forEach((playlist) => { playlist.trackIds = playlist.trackIds.filter((trackId) => trackId !== id); });
+  savePlaylists(playlists);
+  if (currentTrackId === id) { $("#audio-player").pause(); currentTrackId = null; $("#dock-title").textContent = "Nothing selected"; }
+  renderMusic();
+}
+
+async function createPlaylist() {
+  if (!(await ensureAdmin())) return;
+  const name = prompt("Name this playlist:");
+  if (!name?.trim()) return;
+  const playlists = getPlaylists();
+  playlists.push({ id: Date.now(), name: name.trim(), trackIds: [] });
+  savePlaylists(playlists);
+  renderMusic();
+}
+
+async function renderMedia() {
+  mediaObjectUrls.forEach(URL.revokeObjectURL);
+  mediaObjectUrls = [];
+  let items = [];
+  try { items = (await dbGetAll("media")).sort((a, b) => b.createdAt - a.createdAt); } catch { /* empty */ }
+  $("#media-empty").hidden = items.length > 0;
+  $("#media-gallery").innerHTML = items.map((item) => {
+    const url = URL.createObjectURL(item.blob);
+    mediaObjectUrls.push(url);
+    const visual = item.type.startsWith("video/") ? `<video src="${url}" controls preload="metadata"></video>` : `<img src="${url}" alt="${escapeHtml(item.name)}" loading="lazy" />`;
+    return `<figure class="media-item">${visual}<figcaption class="media-caption"><span>${escapeHtml(item.name)}</span><button class="media-delete" type="button" data-delete-media="${item.id}" aria-label="Delete ${escapeHtml(item.name)}">×</button></figcaption></figure>`;
+  }).join("");
+}
+
+async function addMediaFiles(files) {
+  if (!(await ensureAdmin()) || !files.length) return;
+  let added = 0;
+  for (const file of files) {
+    try { await dbAdd("media", { name: file.name, type: file.type, size: file.size, createdAt: Date.now() + added, blob: file }); added += 1; } catch (error) { toast(`Could not store ${file.name}: ${error.message}`); }
+  }
+  toast(`${added} media file${added === 1 ? "" : "s"} added.`);
+  renderMedia();
+}
+
+async function deleteMedia(id) {
+  if (!(await ensureAdmin()) || !confirm("Delete this media file from this browser?")) return;
+  await dbDelete("media", id);
+  renderMedia();
+}
+
+function formatBytes(bytes) {
+  if (!bytes) return "0 B";
+  const units = ["B", "KB", "MB", "GB"];
+  const index = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+  return `${(bytes / 1024 ** index).toFixed(index ? 1 : 0)} ${units[index]}`;
+}
+
+async function openStudyApp(name, needsAdmin) {
+  if (needsAdmin && !(await ensureAdmin())) return;
+  const apps = {
+    aviation: { title: "Aviation practice", src: "aviation/index.html" },
+    mandarin: { title: "Mandarin notebook", src: "mandarin/index.html" },
+    "mandarin-quiz": { title: "Mandarin practice", src: "mandarin/quiz.html" },
+  };
+  const app = apps[name];
+  if (!app) return;
+  $("#app-modal-title").textContent = app.title;
+  $("#app-frame").src = app.src;
+  $("#open-app-new-tab").href = app.src;
+  $("#app-modal").hidden = false;
+  setModalOpen(true);
+}
+
+function closeStudyApp() {
+  $("#app-frame").src = "about:blank";
+  $("#app-modal").hidden = true;
+  setModalOpen(false);
+  refreshDashboard();
+}
+
+function refreshDashboard() {
+  const aviation = readJson("anthony_aviation_history_v1", []);
+  const mandarin = readJson("anthony_mandarin_history_v1", []);
+  $("#aviation-last-score").textContent = aviation.length ? `${aviation[0].percent}%` : "—";
+  $("#aviation-test-count").textContent = aviation.length;
+  $("#mandarin-last-score").textContent = mandarin.length ? `${mandarin[0].percent}%` : "—";
+  $("#home-aviation-score").textContent = aviation.length ? `${aviation[0].percent}% · ${aviation[0].correct}/${aviation[0].total}` : "No aviation score yet";
+  $("#home-mandarin-score").textContent = mandarin.length ? `${mandarin[0].percent}% · ${mandarin[0].correct}/${mandarin[0].total}` : "No Mandarin score yet";
+  const rawBook = localStorage.getItem(KEYS.book);
+  const book = getBook();
+  $("#home-book-status").textContent = rawBook ? `${book.chapters.length} chapters · saved locally` : "Book not imported";
+  updateConnectorStatus();
+  updateAdminStatus();
+}
+
+/* Event wiring */
+$("#entry-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const password = $("#entry-password").value;
+  if (await digest(password) === VISITOR_HASH) {
+    sessionStorage.setItem("anthony_visitor_unlocked", "1");
+    $("#entry-error").textContent = "";
+    $("#entry-password").value = "";
+    showPortal();
+  } else {
+    $("#entry-error").textContent = "That password did not match.";
   }
 });
-$("#review-again").addEventListener("click", () => advanceCard(false));
-$("#know-word").addEventListener("click", () => advanceCard(true));
-$("#new-session").addEventListener("click", makeSession);
-$("#vocab-search").addEventListener("input", (event) => {
-  state.query = event.target.value;
-  renderVocabulary();
-});
-$("#toggle-pinyin").addEventListener("click", (event) => {
-  state.showPinyin = !state.showPinyin;
-  event.currentTarget.textContent = state.showPinyin ? "Hide pinyin" : "Show pinyin";
-  event.currentTarget.setAttribute("aria-pressed", String(!state.showPinyin));
-  renderVocabulary();
-});
-$("#reading-controls").addEventListener("click", (event) => {
-  const button = event.target.closest("button[data-layer]");
-  if (!button) return;
-  state.readingLayer = button.dataset.layer;
-  $("#reading-controls").querySelectorAll("button").forEach((item) => {
-    const active = item === button;
-    item.classList.toggle("active", active);
-    item.setAttribute("aria-pressed", String(active));
-  });
-  renderReading();
-});
-$(".menu-button").addEventListener("click", (event) => {
-  const open = $("#site-nav").classList.toggle("open");
-  event.currentTarget.setAttribute("aria-expanded", String(open));
-});
-$("#site-nav").addEventListener("click", () => {
-  $("#site-nav").classList.remove("open");
-  $(".menu-button").setAttribute("aria-expanded", "false");
-});
-window.addEventListener("scroll", () => $(".site-header").classList.toggle("scrolled", window.scrollY > 10), { passive: true });
 
-renderFilters();
-renderVocabulary();
-renderPatternTabs();
-renderPatterns();
-renderReading();
-renderCharacters();
-makeSession();
-updateProgress();
+$("#theme-toggle").addEventListener("click", () => applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
+$("#mobile-menu-button").addEventListener("click", () => {
+  const nav = $("#primary-nav");
+  const open = nav.classList.toggle("open");
+  $("#mobile-menu-button").setAttribute("aria-expanded", String(open));
+});
+document.addEventListener("click", (event) => {
+  const route = event.target.closest("[data-route]");
+  if (route) { event.preventDefault(); routeTo(route.dataset.route); }
+});
+
+$("#admin-status").addEventListener("click", async () => {
+  if (adminIsUnlocked()) toast("Admin tools are unlocked for this session.");
+  else if (await ensureAdmin()) toast("Admin tools unlocked.");
+});
+$("#admin-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (await digest($("#admin-password").value) === ADMIN_HASH) {
+    sessionStorage.setItem("anthony_admin_unlocked", "1");
+    updateAdminStatus();
+    closeAdminModal(true);
+  } else {
+    $("#admin-error").textContent = "That admin password did not match.";
+  }
+});
+
+$$('[data-close-modal]').forEach((button) => button.addEventListener("click", () => {
+  const id = button.dataset.closeModal;
+  if (id === "admin-modal") closeAdminModal(false);
+  else { $("#" + id).hidden = true; setModalOpen(false); }
+}));
+
+$$('.admin-action[data-entry-type]').forEach((button) => button.addEventListener("click", () => openEntryEditor(button.dataset.entryType)));
+$("#page-resume").addEventListener("click", (event) => {
+  const edit = event.target.closest("[data-edit-entry]");
+  const remove = event.target.closest("[data-delete-entry]");
+  if (edit) { const [kind, index] = edit.dataset.editEntry.split(":"); openEntryEditor(kind, index); }
+  if (remove) { const [kind, index] = remove.dataset.deleteEntry.split(":"); deleteResumeEntry(kind, index); }
+});
+$("#entry-editor-form").addEventListener("submit", (event) => {
+  event.preventDefault();
+  const kind = $("#entry-kind").value;
+  const index = $("#entry-index").value;
+  const entry = { title: $("#entry-title").value.trim(), organization: $("#entry-organization").value.trim(), dates: $("#entry-dates").value.trim(), location: $("#entry-location").value.trim(), description: $("#entry-description").value.trim() };
+  const resume = getResume();
+  if (index === "") resume[kind].push(entry); else resume[kind][Number(index)] = entry;
+  writeJson(KEYS.resume, resume);
+  $("#entry-editor-modal").hidden = true;
+  setModalOpen(false);
+  renderResume();
+  toast("Resume saved on this device.");
+});
+
+$$('.launch-app').forEach((button) => button.addEventListener("click", () => openStudyApp(button.dataset.app, button.dataset.admin === "true")));
+$("#close-app").addEventListener("click", closeStudyApp);
+
+$("#open-book-studio").addEventListener("click", openBookStudio);
+$("#close-book").addEventListener("click", closeBookStudio);
+$("#chapter-menu").addEventListener("click", () => $(".chapter-rail").classList.toggle("open"));
+$("#chapter-list").addEventListener("click", (event) => { const button = event.target.closest("[data-chapter-index]"); if (button) loadBookChapter(Number(button.dataset.chapterIndex)); });
+$("#book-chapter-title").addEventListener("input", queueBookSave);
+$("#book-chapter-content").addEventListener("input", queueBookSave);
+$("#add-chapter").addEventListener("click", () => {
+  const title = prompt("New chapter title:");
+  if (!title?.trim()) return;
+  const book = getBook();
+  book.chapters.push({ id: `chapter-${Date.now()}`, title: title.trim(), content: "" });
+  saveBook(book);
+  loadBookChapter(book.chapters.length - 1);
+});
+$("#import-book").addEventListener("click", () => $("#book-file-input").click());
+$("#book-file-input").addEventListener("change", (event) => { importBookFile(event.target.files[0]); event.target.value = ""; });
+$("#export-book-json").addEventListener("click", exportBookJson);
+$("#export-book-markdown").addEventListener("click", exportBookMarkdown);
+$("#send-to-assistant").addEventListener("click", sendChapterToAssistant);
+
+$("#connector-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (!(await ensureAdmin())) return;
+  const url = $("#connector-url").value.trim();
+  if (url && !/^https:\/\//i.test(url)) return toast("Use an HTTPS private gateway URL.");
+  if (url) localStorage.setItem(KEYS.connector, url); else localStorage.removeItem(KEYS.connector);
+  updateConnectorStatus();
+  toast(url ? "Private gateway saved on this device." : "Gateway connection removed.");
+});
+
+$("#new-playlist").addEventListener("click", createPlaylist);
+$("#add-music").addEventListener("click", async () => { if (await ensureAdmin()) $("#music-file-input").click(); });
+$("#music-file-input").addEventListener("change", (event) => { addMusicFiles([...event.target.files]); event.target.value = ""; });
+$("#page-music").addEventListener("click", (event) => {
+  const playlist = event.target.closest("[data-playlist]");
+  const play = event.target.closest("[data-play-track]");
+  const remove = event.target.closest("[data-delete-track]");
+  if (playlist) { currentPlaylist = playlist.dataset.playlist; renderMusic(); }
+  if (play) playTrack(Number(play.dataset.playTrack));
+  if (remove) deleteTrack(Number(remove.dataset.deleteTrack));
+});
+$("#page-music").addEventListener("change", (event) => { const select = event.target.closest("[data-assign-track]"); if (select) assignTrack(Number(select.dataset.assignTrack), select.value); });
+$("#dock-toggle").addEventListener("click", () => { const expanded = $("#dock-expanded"); expanded.hidden = !expanded.hidden; $("#dock-toggle").setAttribute("aria-expanded", String(!expanded.hidden)); });
+$("#dock-play").addEventListener("click", () => { const audio = $("#audio-player"); if (!audio.src && tracks.length) return playTrack(tracks[0].id); if (audio.paused) audio.play(); else audio.pause(); });
+$("#dock-previous").addEventListener("click", () => stepTrack(-1));
+$("#dock-next").addEventListener("click", () => stepTrack(1));
+$("#dock-track-select").addEventListener("change", (event) => { if (event.target.value) playTrack(Number(event.target.value)); });
+$("#audio-player").addEventListener("play", updatePlayButton);
+$("#audio-player").addEventListener("pause", updatePlayButton);
+$("#audio-player").addEventListener("ended", () => stepTrack(1));
+
+$("#add-media").addEventListener("click", async () => { if (await ensureAdmin()) $("#media-file-input").click(); });
+$("#media-file-input").addEventListener("change", (event) => { addMediaFiles([...event.target.files]); event.target.value = ""; });
+$("#media-gallery").addEventListener("click", (event) => { const remove = event.target.closest("[data-delete-media]"); if (remove) deleteMedia(Number(remove.dataset.deleteMedia)); });
+
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "Escape") return;
+  if (!$("#app-modal").hidden) closeStudyApp();
+  else if (!$("#book-modal").hidden) closeBookStudio();
+  else if (!$("#entry-editor-modal").hidden) { $("#entry-editor-modal").hidden = true; setModalOpen(false); }
+  else if (!$("#admin-modal").hidden) closeAdminModal(false);
+});
+
+/* Initial state */
+applyTheme(localStorage.getItem(KEYS.theme) || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+renderResume();
+renderMusic();
+renderMedia();
+refreshDashboard();
+const initialRoute = location.hash.slice(1);
+if (["home", "resume", "interests", "music", "media"].includes(initialRoute)) routeTo(initialRoute);
+if (sessionStorage.getItem("anthony_visitor_unlocked") === "1") showPortal();
