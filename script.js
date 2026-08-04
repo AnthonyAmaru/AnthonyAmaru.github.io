@@ -7,7 +7,6 @@ const KEYS = {
   resume: "anthony_resume_v1",
   book: "anthony_book_workbook_v1",
   playlists: "anthony_music_playlists_v1",
-  connector: "anthony_private_gateway_v1",
 };
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -469,7 +468,6 @@ async function openBookStudio() {
   bookEditorReady = false;
   renderChapterList();
   loadBookChapter(0, 0, false);
-  updateConnectorStatus();
 }
 
 function closeBookStudio() {
@@ -543,45 +541,6 @@ function exportBookMarkdown() {
   const markdown = `# ${book.title}\n\n${book.chapters.map((chapter) => `## ${chapter.title}\n\n${chapter.pages.map((page, index) => `${chapter.pages.length > 1 ? `### Page ${index + 1}\n\n` : ""}${page.content || ""}`).join("\n\n")}`).join("\n\n")}`;
   downloadFile("A_Hypothesis_of_Man.md", markdown, "text/markdown");
   toast("Markdown manuscript downloaded.");
-}
-
-async function sendChapterToAssistant() {
-  if (!(await ensureCloudMusicAdmin())) return;
-  commitBookEditor();
-  const book = getBook();
-  const chapter = book.chapters[currentBookChapter];
-  const page = chapter?.pages?.[currentBookPage];
-  if (!page || !confirm("Send this page to Big Pickle? During its free period, submitted text may be collected and used to improve the model.")) return;
-  const button = $("#send-to-assistant");
-  button.disabled = true;
-  button.textContent = "Sending securely…";
-  try {
-    const result = await musicCloud.invokeFunction("big-pickle", { scope: "book", action: "edit", chapter: { title: chapter.title, page: currentBookPage + 1, content: page.content } });
-    if (typeof result.content !== "string") throw new Error("Gateway response did not include revised content.");
-    if (confirm("Big Pickle returned a revision. Replace this page with it?")) {
-      page.content = result.content;
-      saveBook(book, "AI revision saving to cloud");
-      $("#book-chapter-content").value = page.content;
-      updateBookCounts();
-    }
-  } catch (error) {
-    toast(`Assistant connection failed: ${error.message}`);
-  } finally {
-    updateConnectorStatus();
-  }
-}
-
-function updateConnectorStatus() {
-  const status = $("#connector-status");
-  if (status) {
-    status.textContent = "Ready";
-    status.classList.add("connected");
-  }
-  const send = $("#send-to-assistant");
-  if (send) {
-    send.disabled = false;
-    send.textContent = "Send page to Big Pickle";
-  }
 }
 
 function toggleQuickAi(force) {
@@ -898,7 +857,6 @@ function refreshDashboard() {
   const book = getBook();
   const pageCount = book.chapters.reduce((total, chapter) => total + chapter.pages.length, 0);
   $("#home-book-status").textContent = rawBook ? `${book.chapters.length} sections · ${pageCount} pages` : "Book ready";
-  updateConnectorStatus();
   updateAdminStatus();
 }
 
@@ -1025,7 +983,6 @@ $("#add-chapter").addEventListener("click", () => {
   currentBookPage = 0;
   loadBookChapter(book.chapters.length - 1, 0, false);
 });
-$("#send-to-assistant").addEventListener("click", sendChapterToAssistant);
 $("#quick-ai-toggle").addEventListener("click", () => toggleQuickAi());
 $("#quick-ai-close").addEventListener("click", () => toggleQuickAi(false));
 $("#quick-ai-form").addEventListener("submit", askQuickAi);
