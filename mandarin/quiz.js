@@ -15,6 +15,8 @@ const wordBank = [
   ["现在", "xiànzài", "now"], ["饭店", "fàndiàn", "restaurant"], ["操场", "cāochǎng", "playground"],
   ["时间", "shíjiān", "time"], ["哪里", "nǎlǐ", "where"], ["没有", "méi yǒu", "do not have"],
   ["非常", "fēicháng", "extremely"], ["太…了", "tài…le", "too or extremely"], ["两", "liǎng", "two before measure words"],
+  ["上午", "shàngwǔ", "morning"], ["下午", "xiàwǔ", "afternoon"], ["几点", "jǐ diǎn", "what time"],
+  ["披萨", "pīsà", "pizza"], ["好的", "hǎo de", "okay or all right"], ["小猫饭店", "Xiǎomāo Fàndiàn", "Little Cat Restaurant"],
 ];
 
 const sentenceBank = [
@@ -33,6 +35,13 @@ const sentenceBank = [
   ["我还要一碗面条。", "Wǒ hái yào yì wǎn miàntiáo.", "I also want a bowl of noodles."],
   ["一共一百五十三块。", "Yígòng yì bǎi wǔ shí sān kuài.", "The total is 153 yuan."],
   ["明天见！", "Míngtiān jiàn!", "See you tomorrow!"],
+  ["你明天上午有时间吗？", "Nǐ míngtiān shàngwǔ yǒu shíjiān ma?", "Do you have time tomorrow morning?"],
+  ["明天上午没有。", "Míngtiān shàngwǔ méiyǒu.", "I do not have time tomorrow morning."],
+  ["下午呢？", "Xiàwǔ ne?", "What about the afternoon?"],
+  ["下午有时间。", "Xiàwǔ yǒu shíjiān.", "I have time in the afternoon."],
+  ["我们去吃披萨吧。", "Wǒmen qù chī pīsà ba.", "Let's go eat pizza."],
+  ["好的，几点？在哪里？", "Hǎo de, jǐ diǎn? Zài nǎlǐ?", "Okay. What time? Where?"],
+  ["5点，在小猫饭店。", "Wǔ diǎn, zài Xiǎomāo Fàndiàn.", "At five, at Little Cat Restaurant."],
 ];
 
 const $ = (selector) => document.querySelector(selector);

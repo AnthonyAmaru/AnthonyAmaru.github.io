@@ -30,8 +30,8 @@
       href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Noto+Serif+SC:wght@500;600;700;900&amp;display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=20260803-palette1" />
-    <script src="script.js" defer></script>
+    <link rel="stylesheet" href="styles.css?v=20260803-plans1" />
+    <script src="script.js?v=20260803-plans1" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to the notebook</a>
@@ -51,6 +51,7 @@
         <a href="#study">Study</a>
         <a href="#vocabulary">Vocabulary</a>
         <a href="#patterns">Patterns</a>
+        <a href="#dialogue">Dialogue</a>
         <a href="#reading">Reading</a>
         <a href="#characters">Characters</a>
       </nav>
@@ -59,7 +60,7 @@
     <main id="main">
       <section id="top" class="hero section-shell">
         <div class="hero-copy">
-          <p class="eyebrow">Lessons 1–4 · Beginner Mandarin</p>
+          <p class="eyebrow">Lessons 1–5 · Beginner Mandarin</p>
           <h1>Learn the Mandarin<br /><em>you already know.</em></h1>
           <p class="hero-lede">
             A living study notebook for vocabulary, pronunciation, conversation,
@@ -70,7 +71,7 @@
             <a class="button button-quiet" href="#vocabulary">Open the word bank</a>
           </div>
           <dl class="hero-stats" aria-label="Notebook statistics">
-            <div><dt>4</dt><dd>lessons</dd></div>
+            <div><dt>5</dt><dd>lessons</dd></div>
             <div><dt id="word-count">100+</dt><dd>words</dd></div>
             <div><dt>40</dt><dd>characters</dd></div>
             <div><dt>1</dt><dd>full reading</dd></div>
@@ -78,18 +79,19 @@
         </div>
 
         <div class="hero-study-card" aria-label="Featured Mandarin phrase">
-          <span class="seal" aria-hidden="true">加油</span>
+          <span class="seal" aria-hidden="true">明天见</span>
           <p class="card-kicker">Phrase for today</p>
-          <p class="featured-hanzi" lang="zh-Hans">你好，欢迎学习！</p>
-          <p class="featured-pinyin">Nǐ hǎo, huānyíng xuéxí!</p>
-          <p class="featured-meaning">Hello, and welcome to learning!</p>
+          <p class="featured-hanzi" lang="zh-Hans">我们去吃披萨吧！</p>
+          <p class="featured-pinyin">Wǒmen qù chī pīsà ba!</p>
+          <p class="featured-meaning">Let's go eat pizza!</p>
           <div class="tone-line" aria-hidden="true">
-            <span class="tone tone-3">nǐ</span>
-            <span class="tone tone-3">hǎo</span>
-            <span class="tone tone-1">huān</span>
-            <span class="tone tone-2">yíng</span>
-            <span class="tone tone-2">xué</span>
-            <span class="tone tone-2">xí</span>
+            <span class="tone tone-3">wǒ</span>
+            <span class="tone">men</span>
+            <span class="tone tone-4">qù</span>
+            <span class="tone tone-1">chī</span>
+            <span class="tone tone-1">pī</span>
+            <span class="tone tone-4">sà</span>
+            <span class="tone">ba</span>
           </div>
           <div class="progress-row">
             <span>Notebook progress</span>
@@ -175,6 +177,17 @@
         </div>
         <div id="pattern-tabs" class="pattern-tabs" role="tablist" aria-label="Sentence pattern topics"></div>
         <div id="pattern-list" class="pattern-list"></div>
+      </section>
+
+      <section id="dialogue" class="dialogue-section section-shell">
+        <div class="section-heading split-heading">
+          <div>
+            <p class="eyebrow">Making plans</p>
+            <h2>Pizza tomorrow.</h2>
+          </div>
+          <p>Read each turn aloud, then cover the English and answer as the other speaker.</p>
+        </div>
+        <div id="dialogue-list" class="dialogue-list" aria-label="Mandarin dialogue about making plans"></div>
       </section>
 
       <section id="reading" class="reading-section">

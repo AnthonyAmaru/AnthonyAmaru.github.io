@@ -108,7 +108,7 @@ a { color: inherit; }
 .progress-track { height: 6px; overflow: hidden; background: rgba(255,255,255,.12); border-radius: 99px; }
 .progress-track span { display: block; width: 0; height: 100%; background: var(--red); transition: width .4s ease; }
 
-.study-section, .vocab-section, .pattern-section, .character-section { padding-block: 120px; }
+.study-section, .vocab-section, .pattern-section, .dialogue-section, .character-section { padding-block: 120px; }
 .section-heading { margin-bottom: 48px; }
 .section-heading h2, .reading-intro h2, .closing-section h2 { font-size: clamp(2.5rem, 5vw, 4.8rem); }
 .section-heading > p:last-child { max-width: 660px; color: var(--ink-soft); }
@@ -178,6 +178,15 @@ a { color: inherit; }
 .pattern-pinyin { color: var(--teal); font-size: .9rem; }
 .pattern-english { color: var(--ink-soft); }
 
+.dialogue-section { border-top: 1px solid var(--line); }
+.dialogue-list { border-top: 1px solid var(--line); }
+.dialogue-turn { display: grid; grid-template-columns: 42px minmax(280px,.9fr) 1fr; align-items: center; gap: 24px; border-bottom: 1px solid var(--line); padding: 25px 0; }
+.dialogue-speaker { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 50%; background: var(--ink); color: white; font-size: .72rem; font-weight: 800; }
+.dialogue-turn p { margin: 0; }
+.dialogue-chinese { font-family: var(--serif-sc); font-size: 1.55rem; font-weight: 600; }
+.dialogue-pinyin { margin-top: 4px !important; color: var(--teal); font-size: .88rem; }
+.dialogue-english { color: var(--ink-soft); }
+
 .reading-section { padding-block: 120px; background: var(--ink); color: white; }
 .reading-inner { display: grid; grid-template-columns: .72fr 1.28fr; gap: 80px; }
 .reading-intro { position: sticky; top: 120px; align-self: start; }
@@ -238,7 +247,7 @@ a { color: inherit; }
   .hero-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
   .hero-study-card { padding: 36px 26px; }
   .seal { width: 66px; height: 66px; right: 20px; }
-  .study-section, .vocab-section, .pattern-section, .character-section, .reading-section { padding-block: 82px; }
+  .study-section, .vocab-section, .pattern-section, .dialogue-section, .character-section, .reading-section { padding-block: 82px; }
   .split-heading { grid-template-columns: 1fr; gap: 18px; }
   .section-heading { margin-bottom: 34px; }
   .section-heading h2, .reading-intro h2, .closing-section h2 { font-size: clamp(2.5rem, 13vw, 4rem); }
@@ -251,6 +260,8 @@ a { color: inherit; }
   .word-card { min-height: 170px; padding: 18px; }
   .word-hanzi { font-size: 1.95rem; }
   .pattern-item { grid-template-columns: 1fr; gap: 6px; padding: 22px 0; }
+  .dialogue-turn { grid-template-columns: 34px 1fr; gap: 12px; padding: 22px 0; }
+  .dialogue-english { grid-column: 2; }
   .reading-paragraph { padding-left: 36px; }
   .reading-paragraph[data-layer="chinese"] { font-size: 1.4rem; }
   .character-layout { grid-template-columns: 1fr; }

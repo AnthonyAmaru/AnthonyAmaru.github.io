@@ -55,6 +55,7 @@ const vocabulary = [
   ["饿", "è", "hungry", "Food & drink"],
   ["好吃", "hǎochī", "tasty; delicious", "Food & drink"],
   ["辣", "là", "spicy", "Food & drink"],
+  ["披萨", "pīsà", "pizza", "Food & drink"],
 
   // Restaurant
   ["饭店", "fàndiàn", "restaurant", "Restaurant"],
@@ -124,6 +125,7 @@ const vocabulary = [
   ["上午", "shàngwǔ", "morning", "Time"],
   ["下午", "xiàwǔ", "afternoon", "Time"],
   ["晚上", "wǎnshang", "evening; night", "Time"],
+  ["几点", "jǐ diǎn", "what time", "Time"],
 
   // Places and movement
   ["去", "qù", "to go", "Places"],
@@ -135,6 +137,8 @@ const vocabulary = [
   ["上课", "shàngkè", "to attend or start class", "Places"],
   ["太阳", "tàiyáng", "sun", "Places"],
   ["云", "yún", "cloud", "Places"],
+  ["猫", "māo", "cat", "Places"],
+  ["小猫饭店", "Xiǎomāo Fàndiàn", "Little Cat Restaurant", "Places"],
 
   // Grammar tools
   ["是", "shì", "to be; identifies or classifies", "Grammar"],
@@ -188,6 +192,16 @@ const patternGroups = {
     ["明天下午你有时间吗？", "Míngtiān xiàwǔ nǐ yǒu shíjiān ma?", "Do you have time tomorrow afternoon?"],
     ["你到了吗？", "Nǐ dào le ma?", "Have you arrived?"],
   ],
+  "Making plans": [
+    ["你明天上午有时间吗？", "Nǐ míngtiān shàngwǔ yǒu shíjiān ma?", "Do you have time tomorrow morning?"],
+    ["明天上午没有。", "Míngtiān shàngwǔ méiyǒu.", "I do not have time tomorrow morning."],
+    ["下午呢？", "Xiàwǔ ne?", "What about the afternoon?"],
+    ["下午有时间。", "Xiàwǔ yǒu shíjiān.", "I have time in the afternoon."],
+    ["我们去吃披萨吧。", "Wǒmen qù chī pīsà ba.", "Let's go eat pizza."],
+    ["好的，几点？在哪里？", "Hǎo de, jǐ diǎn? Zài nǎlǐ?", "Okay. What time? Where?"],
+    ["5点，在小猫饭店。", "Wǔ diǎn, zài Xiǎomāo Fàndiàn.", "At five, at Little Cat Restaurant."],
+    ["明天见。", "Míngtiān jiàn.", "See you tomorrow."],
+  ],
   "Possession": [
     ["这是我的面包。", "Zhè shì wǒ de miànbāo.", "This is my bread."],
     ["这杯咖啡是你的。", "Zhè bēi kāfēi shì nǐ de.", "This cup of coffee is yours."],
@@ -195,6 +209,17 @@ const patternGroups = {
     ["我要辣的。", "Wǒ yào là de.", "I want the spicy one."],
   ],
 };
+
+const planDialogue = [
+  ["A", "你明天上午有时间吗？", "Nǐ míngtiān shàngwǔ yǒu shíjiān ma?", "Do you have time tomorrow morning?"],
+  ["B", "明天上午没有。", "Míngtiān shàngwǔ méiyǒu.", "I do not have time tomorrow morning."],
+  ["A", "下午呢？", "Xiàwǔ ne?", "What about the afternoon?"],
+  ["B", "下午有时间。", "Xiàwǔ yǒu shíjiān.", "I have time in the afternoon."],
+  ["A", "我们去吃披萨吧。", "Wǒmen qù chī pīsà ba.", "Let's go eat pizza."],
+  ["B", "好的，几点？在哪里？", "Hǎo de, jǐ diǎn? Zài nǎlǐ?", "Okay. What time? Where?"],
+  ["A", "5点，在小猫饭店。", "Wǔ diǎn, zài Xiǎomāo Fàndiàn.", "At five, at Little Cat Restaurant."],
+  ["B", "明天见。", "Míngtiān jiàn.", "See you tomorrow."],
+];
 
 const readings = {
   chinese: [
@@ -412,6 +437,16 @@ function renderReading() {
   });
 }
 
+function renderDialogue() {
+  const list = $("#dialogue-list");
+  planDialogue.forEach(([speaker, chinese, pinyin, english]) => {
+    const row = document.createElement("article");
+    row.className = "dialogue-turn";
+    row.innerHTML = `<span class="dialogue-speaker">${speaker}</span><div><p class="dialogue-chinese" lang="zh-Hans">${chinese}</p><p class="dialogue-pinyin">${pinyin}</p></div><p class="dialogue-english">${english}</p>`;
+    list.append(row);
+  });
+}
+
 function renderCharacters() {
   const grid = $("#character-grid");
   characters.forEach(([character, pinyin, meaning], index) => {
@@ -478,6 +513,7 @@ renderFilters();
 renderVocabulary();
 renderPatternTabs();
 renderPatterns();
+renderDialogue();
 renderReading();
 renderCharacters();
 makeSession();
