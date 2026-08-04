@@ -24,6 +24,9 @@ let currentBookPage = 0;
 let bookEditorReady = false;
 let currentPlaylist = "all";
 let currentArtist = "all";
+let currentSongQuery = "";
+let musicPlaylists = [];
+let musicCloudError = "";
 let tracks = [];
 let visibleTracks = [];
 let currentTrackId = null;
@@ -615,39 +618,54 @@ async function askQuickAi(event) {
 
 async function renderMusic() {
   const previousBulkPlaylist = $("#bulk-playlist-select").value;
-  let playlists = [];
-  let cloudError = "";
   try {
     const library = await musicCloud.list("anthony");
     tracks = library.tracks;
-    playlists = library.playlists;
+    musicPlaylists = library.playlists;
+    musicCloudError = "";
   } catch (error) {
     tracks = [];
-    cloudError = error.message;
+    musicPlaylists = [];
+    musicCloudError = error.message;
   }
   $("#all-track-count").textContent = tracks.length;
-  $("#playlist-list").innerHTML = playlists.map((playlist) => `<button class="playlist-row ${currentPlaylist === String(playlist.id) ? "active" : ""}" type="button" data-playlist="${playlist.id}"><span>♬</span><strong>${escapeHtml(playlist.name)}</strong><small>${tracks.filter((track) => track.playlist_id === playlist.id).length}</small></button>`).join("");
-  $$(".playlist-row[data-playlist='all']").forEach((button) => button.classList.toggle("active", currentPlaylist === "all"));
-  const selectedPlaylist = playlists.find((playlist) => String(playlist.id) === currentPlaylist);
-  const playlistTracks = currentPlaylist === "all" ? tracks : tracks.filter((track) => track.playlist_id === selectedPlaylist?.id);
-  const artists = [...new Set(playlistTracks.map(trackArtist))].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
+  $("#playlist-list").innerHTML = musicPlaylists.map((playlist) => `<button class="playlist-row" type="button" data-playlist="${playlist.id}"><span>♬</span><strong>${escapeHtml(playlist.name)}</strong><small>${tracks.filter((track) => String(track.playlist_id) === String(playlist.id)).length}</small></button>`).join("");
+  const artists = [...new Set(tracks.map(trackArtist))].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
   if (currentArtist !== "all" && !artists.includes(currentArtist)) currentArtist = "all";
   $("#artist-filter").innerHTML = `<option value="all">All artists</option>${artists.map((artist) => `<option value="${escapeHtml(artist)}">${escapeHtml(artist)}</option>`).join("")}`;
   $("#artist-filter").value = currentArtist;
-  visibleTracks = currentArtist === "all" ? playlistTracks : playlistTracks.filter((track) => trackArtist(track) === currentArtist);
-  const availableIds = new Set(tracks.map((track) => String(track.id)));
-  [...selectedTrackIds].forEach((id) => { if (!availableIds.has(id)) selectedTrackIds.delete(id); });
-  $("#library-title").textContent = currentPlaylist === "all" ? "All music" : selectedPlaylist?.name || "Playlist";
-  const playlistOptions = playlists.map((playlist) => `<option value="${playlist.id}">${escapeHtml(playlist.name)}</option>`).join("");
+  const playlistOptions = musicPlaylists.map((playlist) => `<option value="${playlist.id}">${escapeHtml(playlist.name)}</option>`).join("");
+  if (currentPlaylist !== "all" && currentPlaylist !== "none" && !musicPlaylists.some((playlist) => String(playlist.id) === currentPlaylist)) currentPlaylist = "all";
+  $("#playlist-filter").innerHTML = `<option value="all">All playlists</option><option value="none">No playlist</option>${playlistOptions}`;
+  $("#playlist-filter").value = currentPlaylist;
   $("#bulk-playlist-select").innerHTML = `<option value="">Playlist</option>${playlistOptions}`;
-  if (playlists.some((playlist) => String(playlist.id) === previousBulkPlaylist)) $("#bulk-playlist-select").value = previousBulkPlaylist;
-  $("#track-list").innerHTML = cloudError ? `<div class="library-empty"><p>Cloud library unavailable.</p><small>${escapeHtml(cloudError)}</small></div>` : visibleTracks.length ? visibleTracks.map((track) => {
-    return `<article class="track-row"><input class="track-select" type="checkbox" data-select-track="${track.id}" aria-label="Select ${escapeHtml(track.title)}" ${selectedTrackIds.has(String(track.id)) ? "checked" : ""} /><button class="track-play" type="button" data-play-track="${track.id}" aria-label="Play ${escapeHtml(track.title)}">▶</button><div class="track-copy"><strong>${escapeHtml(track.title)}</strong><small>${escapeHtml(trackArtist(track))} · ${formatBytes(track.size_bytes)}</small></div><select data-assign-track="${track.id}" aria-label="Move ${escapeHtml(track.title)} to playlist"><option value="">No playlist</option>${playlistOptions}</select><button class="track-delete" type="button" data-delete-track="${track.id}" aria-label="Delete ${escapeHtml(track.title)}">×</button></article>`;
-  }).join("") : `<div class="library-empty"><p>${playlistTracks.length ? "No songs match this artist." : "No songs here yet."}</p></div>`;
-  $$('[data-assign-track]').forEach((select) => { const track = tracks.find((item) => item.id === select.dataset.assignTrack); select.value = track?.playlist_id || ""; });
-  updateTrackSelectionControls();
+  if (musicPlaylists.some((playlist) => String(playlist.id) === previousBulkPlaylist)) $("#bulk-playlist-select").value = previousBulkPlaylist;
+  applyMusicFilters();
   renderDock();
   restoreMusicPlayerState();
+}
+
+function applyMusicFilters() {
+  const selectedPlaylist = musicPlaylists.find((playlist) => String(playlist.id) === currentPlaylist);
+  const normalizedQuery = currentSongQuery.trim().toLocaleLowerCase();
+  visibleTracks = tracks.filter((track) => {
+    const matchesSong = !normalizedQuery || String(track.title || "").toLocaleLowerCase().includes(normalizedQuery);
+    const matchesArtist = currentArtist === "all" || trackArtist(track) === currentArtist;
+    const matchesPlaylist = currentPlaylist === "all" || (currentPlaylist === "none" ? !track.playlist_id : String(track.playlist_id) === currentPlaylist);
+    return matchesSong && matchesArtist && matchesPlaylist;
+  });
+  const availableIds = new Set(tracks.map((track) => String(track.id)));
+  [...selectedTrackIds].forEach((id) => { if (!availableIds.has(id)) selectedTrackIds.delete(id); });
+  $$(".playlist-row[data-playlist]").forEach((button) => button.classList.toggle("active", button.dataset.playlist === currentPlaylist));
+  $("#artist-filter").value = currentArtist;
+  $("#playlist-filter").value = currentPlaylist;
+  $("#library-title").textContent = currentPlaylist === "all" ? "All music" : currentPlaylist === "none" ? "No playlist" : selectedPlaylist?.name || "Playlist";
+  const playlistOptions = musicPlaylists.map((playlist) => `<option value="${playlist.id}">${escapeHtml(playlist.name)}</option>`).join("");
+  $("#track-list").innerHTML = musicCloudError ? `<div class="library-empty"><p>Cloud library unavailable.</p><small>${escapeHtml(musicCloudError)}</small></div>` : visibleTracks.length ? visibleTracks.map((track) => {
+    return `<article class="track-row"><input class="track-select" type="checkbox" data-select-track="${track.id}" aria-label="Select ${escapeHtml(track.title)}" ${selectedTrackIds.has(String(track.id)) ? "checked" : ""} /><button class="track-play" type="button" data-play-track="${track.id}" aria-label="Play ${escapeHtml(track.title)}">▶</button><div class="track-song"><strong>${escapeHtml(track.title)}</strong><small>${formatBytes(track.size_bytes)}</small></div><div class="track-artist" title="${escapeHtml(trackArtist(track))}">${escapeHtml(trackArtist(track))}</div><select class="track-playlist-select" data-assign-track="${track.id}" aria-label="Playlist for ${escapeHtml(track.title)}"><option value="">No playlist</option>${playlistOptions}</select><button class="track-delete" type="button" data-delete-track="${track.id}" aria-label="Delete ${escapeHtml(track.title)}">×</button></article>`;
+  }).join("") : `<div class="library-empty"><p>${tracks.length ? "No songs match these filters." : "No songs here yet."}</p></div>`;
+  $$('[data-assign-track]').forEach((select) => { const track = tracks.find((item) => String(item.id) === select.dataset.assignTrack); select.value = track?.playlist_id || ""; });
+  updateTrackSelectionControls();
 }
 
 function updateTrackSelectionControls() {
@@ -1001,7 +1019,9 @@ $("#quick-ai-input").addEventListener("keydown", (event) => {
 $("#new-playlist").addEventListener("click", createPlaylist);
 $("#assign-selected-tracks").addEventListener("click", assignSelectedTracks);
 $("#bulk-playlist-select").addEventListener("change", updateTrackSelectionControls);
-$("#artist-filter").addEventListener("change", (event) => { selectedTrackIds.clear(); currentArtist = event.target.value; renderMusic(); });
+$("#song-filter").addEventListener("input", (event) => { selectedTrackIds.clear(); currentSongQuery = event.target.value; applyMusicFilters(); });
+$("#artist-filter").addEventListener("change", (event) => { selectedTrackIds.clear(); currentArtist = event.target.value; applyMusicFilters(); });
+$("#playlist-filter").addEventListener("change", (event) => { selectedTrackIds.clear(); currentPlaylist = event.target.value; applyMusicFilters(); });
 $("#delete-selected-tracks").addEventListener("click", deleteSelectedTracks);
 $("#select-all-tracks").addEventListener("change", (event) => {
   visibleTracks.forEach((track) => event.target.checked ? selectedTrackIds.add(String(track.id)) : selectedTrackIds.delete(String(track.id)));
@@ -1021,7 +1041,7 @@ $("#page-music").addEventListener("click", (event) => {
   const playlist = event.target.closest("[data-playlist]");
   const play = event.target.closest("[data-play-track]");
   const remove = event.target.closest("[data-delete-track]");
-  if (playlist) { selectedTrackIds.clear(); currentPlaylist = playlist.dataset.playlist; currentArtist = "all"; renderMusic(); }
+  if (playlist) { selectedTrackIds.clear(); currentPlaylist = playlist.dataset.playlist; applyMusicFilters(); }
   if (play) playTrack(play.dataset.playTrack);
   if (remove) deleteTrack(remove.dataset.deleteTrack);
 });
