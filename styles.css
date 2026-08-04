@@ -485,16 +485,19 @@ body.has-back-button .app-modal,body.has-back-button .book-modal { left: var(--b
 }
 
 @media (max-width: 720px) {
-  :root { --header-height: 70px; --back-button-left: max(6px, env(safe-area-inset-left)); --back-button-width: clamp(58px, 11vw, 70px); --back-gutter: calc(var(--back-button-left) + var(--back-button-width) + 10px); --back-button-center-offset: 69px; }
+  :root { --header-height: 70px; --back-gutter: 0px; }
+  .go-back-button { display: none !important; }
+  body.has-back-button #main-content { padding-left: 0; }
+  body.has-back-button .app-modal,body.has-back-button .book-modal { left: 0; }
   .section-shell { width: min(100% - 24px, 1180px); }
   .site-header { gap: 10px; padding: 0 12px; }
   .brand img { width: 40px; height: 40px; }
   .brand small { display: none; }
   .mobile-menu-button { padding-inline: 10px; }
-  .music-dock { top: var(--header-height); grid-template-columns: auto 1fr auto auto; padding-inline: 12px; }
-  .dock-control { display: none; }
-  .dock-play { grid-column: 3; }
-  .quick-ai-toggle { grid-column: 4; }
+  .music-dock { top: var(--header-height); grid-template-columns: minmax(0, 1fr) repeat(4, auto); gap: 5px; padding-inline: 12px; }
+  .dock-art { display: none; }
+  .dock-control { display: grid; }
+  .dock-play,.quick-ai-toggle { grid-column: auto; }
   .quick-ai-popover { right: 12px; }
   .page-panel { padding-top: 48px; padding-bottom: 76px; }
   .page-heading { display: block; margin-bottom: 30px; }

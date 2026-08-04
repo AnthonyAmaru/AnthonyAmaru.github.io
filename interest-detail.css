@@ -1,0 +1,11 @@
+:root { color-scheme:light; --bg:#eef1ea; --surface:#fbfcf8; --ink:#18231b; --muted:#667069; --line:rgba(24,35,27,.14); font-family:"DM Sans",system-ui,sans-serif; }
+:root[data-theme="dark"] { color-scheme:dark; --bg:#101511; --surface:#1b241d; --ink:#f1f4ef; --muted:#a9b3ab; --line:rgba(241,244,239,.13); }
+* { box-sizing:border-box; }
+body { min-width:320px; margin:0; background:var(--bg); color:var(--ink); }
+.skip-link { position:fixed; z-index:100; top:8px; left:8px; transform:translateY(-160%); border-radius:8px; background:var(--ink); color:var(--bg); padding:10px 14px; }
+.skip-link:focus { transform:none; }
+main { display:grid; width:min(920px,calc(100% - 32px)); min-height:calc(100svh - 140px); align-content:center; gap:28px; margin:0 auto; padding:50px 0; }
+h1 { margin:0; font:500 clamp(3.7rem,11vw,8rem)/.86 "Newsreader",serif; letter-spacing:-.05em; }
+.interest-placeholder { display:flex; min-height:190px; align-items:center; gap:18px; border:1px solid var(--line); border-radius:18px; background:var(--surface); padding:28px; }
+.interest-placeholder span { font-size:2.5rem; }
+.interest-placeholder strong { font-size:clamp(1.2rem,3vw,2rem); }

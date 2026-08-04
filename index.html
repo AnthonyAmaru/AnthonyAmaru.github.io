@@ -23,10 +23,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&amp;family=Noto+Serif+SC:wght@500;700&amp;display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=20260804-musicsort1" />
+    <link rel="stylesheet" href="styles.css?v=20260804-mobileglobe1" />
     <script src="music-cloud.js?v=20260804-musicsort1" defer></script>
     <script src="book-data.js?v=20260804-book2" defer></script>
-    <script src="script.js?v=20260804-musicsort1" defer></script>
+    <script src="script.js?v=20260804-mobileglobe1" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -81,7 +81,7 @@
         <div id="quick-ai-popover" class="quick-ai-popover" hidden>
           <form id="quick-ai-form">
             <div class="quick-ai-heading"><strong>Ask AI</strong><button id="quick-ai-close" type="button" aria-label="Close AI">×</button></div>
-            <select id="quick-ai-topic" aria-label="AI topic"><option value="General">General</option><option value="Aviation">Aviation</option><option value="Mandarin">Mandarin</option><option value="Book">Book</option></select>
+            <select id="quick-ai-topic" aria-label="AI topic"><option value="General">General</option><option value="Aviation">Aviation</option><option value="Mandarin">Mandarin</option><option value="Book">Book</option><option value="Fatherhood">Fatherhood</option></select>
             <textarea id="quick-ai-input" rows="2" maxlength="8000" placeholder="Ask one question" aria-label="Question for AI" required></textarea>
             <button id="quick-ai-send" class="button primary" type="submit">Ask</button>
           </form>
@@ -168,6 +168,18 @@
               <div class="interest-icon" aria-hidden="true">📚</div>
               <h2>Books</h2>
               <button class="button primary launch-app" type="button" data-app="books">Open</button>
+            </article>
+
+            <article class="interest-card ai-interest-card">
+              <div class="interest-icon" aria-hidden="true">🤖</div>
+              <h2>AI</h2>
+              <button class="button primary" type="button" data-open-quick-ai>Open</button>
+            </article>
+
+            <article class="interest-card fatherhood-card">
+              <div class="interest-icon" aria-hidden="true">👨‍👦</div>
+              <h2>Fatherhood</h2>
+              <a class="button primary" href="fatherhood.html">Open</a>
             </article>
           </div>
         </section>

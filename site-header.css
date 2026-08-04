@@ -116,7 +116,7 @@
 }
 
 @media (max-width: 760px) {
-  .go-back-button { left: max(6px, env(safe-area-inset-left)); width: 62px; height: 190px; font-size: 0.76rem; }
+  .go-back-button { display: none !important; }
   .main-site-header {
     grid-template-columns: 1fr auto;
     min-height: 70px;

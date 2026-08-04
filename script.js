@@ -985,7 +985,7 @@ $("#mobile-menu-button").addEventListener("click", () => {
 });
 document.addEventListener("click", (event) => {
   const popover = $("#quick-ai-popover");
-  if (!popover.hidden && !event.target.closest("#quick-ai-popover") && !event.target.closest("#quick-ai-toggle")) toggleQuickAi(false);
+  if (!popover.hidden && !event.target.closest("#quick-ai-popover") && !event.target.closest("#quick-ai-toggle") && !event.target.closest("[data-open-quick-ai]")) toggleQuickAi(false);
 });
 
 $("#admin-status").addEventListener("click", async () => {
@@ -1021,6 +1021,11 @@ $$('[data-close-modal]').forEach((button) => button.addEventListener("click", ()
 }));
 
 $$('.launch-app').forEach((button) => button.addEventListener("click", () => openStudyApp(button.dataset.app, button.dataset.admin === "true")));
+$$('[data-open-quick-ai]').forEach((button) => button.addEventListener("click", () => {
+  const topic = $("#quick-ai-topic");
+  if (topic) topic.value = "General";
+  toggleQuickAi(true);
+}));
 
 $("#open-book-studio").addEventListener("click", openBookStudio);
 $("#chapter-menu").addEventListener("click", () => $(".chapter-rail").classList.toggle("open"));

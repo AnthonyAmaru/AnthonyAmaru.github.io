@@ -39,8 +39,8 @@
 .site-music-bar audio { display: none; }
 
 @media (max-width: 760px) {
-  .site-music-bar { top: 70px; grid-template-columns: minmax(0, 1fr) auto; padding-inline: 14px; }
-  .site-music-bar select,
+  .site-music-bar { top: 70px; grid-template-columns: minmax(0, 1fr) auto auto auto; gap: 5px; padding-inline: 14px; }
+  .site-music-bar select { display: none; }
   .site-music-bar [data-site-music-previous],
-  .site-music-bar [data-site-music-next] { display: none; }
+  .site-music-bar [data-site-music-next] { display: grid; }
 }
