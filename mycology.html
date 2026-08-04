@@ -14,11 +14,11 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Newsreader:opsz,wght@6..72,500&amp;display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="site-header.css?v=20260804-audio1" />
     <link rel="stylesheet" href="site-music.css?v=20260804-audio1" />
-    <link rel="stylesheet" href="mycology.css?v=20260804-myco2" />
+    <link rel="stylesheet" href="mycology.css?v=20260804-psy1" />
     <script src="music-cloud.js?v=20260803-ai2"></script>
     <script src="site-header.js?v=20260803-nav1" defer></script>
     <script src="site-music.js?v=20260804-audio1" defer></script>
-    <script src="mycology.js?v=20260804-myco2" defer></script>
+    <script src="mycology.js?v=20260804-psy1" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -50,11 +50,11 @@
       </header>
 
       <section class="mushroom-filters" aria-label="Filter mushrooms">
-        <label><span>Type</span><select id="edibility-filter"><option value="all">All</option><option value="edible">Edible</option><option value="poisonous">Poisonous</option><option value="inedible">Inedible</option><option value="dye">Dye</option><option value="research">Research</option></select></label>
+        <label><span>Type</span><select id="edibility-filter"><option value="all">All</option><option value="edible">Edible</option><option value="poisonous">Poisonous</option><option value="psychedelic">Psychedelic</option><option value="inedible">Inedible</option><option value="dye">Dye</option><option value="research">Research</option></select></label>
         <label><span>Location</span><select id="location-filter"><option value="all">All</option><option value="north-america">North America</option><option value="europe">Europe</option><option value="asia">Asia</option><option value="norway">Norway</option><option value="australia">Australia</option><option value="worldwide">Worldwide</option></select></label>
         <label><span>Season</span><select id="season-filter"><option value="all">All</option><option value="spring">Spring</option><option value="summer">Summer</option><option value="fall">Fall</option><option value="winter">Winter</option><option value="year-round">Year-round</option></select></label>
         <button id="clear-mushroom-filters" type="button">Clear</button>
-        <strong id="mushroom-count" aria-live="polite">8 mushrooms</strong>
+        <strong id="mushroom-count" aria-live="polite">12 mushrooms</strong>
       </section>
 
       <section class="mushroom-list" aria-label="Mushroom profiles">
@@ -71,6 +71,74 @@
               <li><strong>Season</strong> Late summer through fall.</li>
               <li><strong>Range</strong> Northern Hemisphere, including North America and Norway; introduced elsewhere.</li>
               <li><strong>Characteristics</strong> Red to orange cap, white warts, white gills and stem.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="mushroom-card" data-edibility="psychedelic inedible" data-locations="worldwide north-america asia australia" data-seasons="summer fall year-round">
+          <figure>
+            <img src="assets/mushrooms/psilocybe-cubensis.jpg" alt="Psilocybe cubensis mushrooms showing pale stems and dark gills" />
+            <figcaption>Golden top</figcaption>
+          </figure>
+          <div class="mushroom-facts">
+            <header><span class="psychedelic-tag">Psychedelic</span><h2>Golden top</h2><i>Psilocybe cubensis</i></header>
+            <ul>
+              <li><strong>Edible?</strong> No. Psychoactive and not treated as food.</li>
+              <li><strong>Risk</strong> Contains psilocybin; misidentification and altered judgment can cause serious harm.</li>
+              <li><strong>Season</strong> Warm, wet periods; timing follows local rainy seasons.</li>
+              <li><strong>Range</strong> Tropical and subtropical regions in the Americas, Asia and Australia.</li>
+              <li><strong>Characteristics</strong> Golden-brown cap, dark purplish-brown spores, a stem ring and possible blue bruising. Bruising alone does not confirm identity.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="mushroom-card" data-edibility="psychedelic inedible" data-locations="north-america europe norway australia" data-seasons="summer fall winter">
+          <figure>
+            <img src="assets/mushrooms/liberty-cap.jpg" alt="Small brown liberty cap mushrooms growing in grass" />
+            <figcaption>Liberty cap</figcaption>
+          </figure>
+          <div class="mushroom-facts">
+            <header><span class="psychedelic-tag">Psychedelic</span><h2>Liberty cap</h2><i>Psilocybe semilanceata</i></header>
+            <ul>
+              <li><strong>Edible?</strong> No. Psychoactive and unsafe to identify from a photo.</li>
+              <li><strong>Risk</strong> Contains psilocybin and has dangerous small brown lookalikes.</li>
+              <li><strong>Season</strong> Cool, wet weather from late summer into early winter.</li>
+              <li><strong>Range</strong> Temperate grasslands in Europe, North America and parts of the Southern Hemisphere.</li>
+              <li><strong>Characteristics</strong> Small conical brown cap with a pointed tip and slender stem; the cap changes color as it dries.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="mushroom-card" data-edibility="psychedelic inedible" data-locations="north-america europe asia australia" data-seasons="fall winter">
+          <figure>
+            <img src="assets/mushrooms/wavy-caps.jpg" alt="Cluster of caramel-brown wavy cap mushrooms among autumn leaves" />
+            <figcaption>Wavy caps</figcaption>
+          </figure>
+          <div class="mushroom-facts">
+            <header><span class="psychedelic-tag">Psychedelic</span><h2>Wavy caps</h2><i>Psilocybe cyanescens</i></header>
+            <ul>
+              <li><strong>Edible?</strong> No. Psychoactive and easily confused with harmful species.</li>
+              <li><strong>Risk</strong> Contains psilocybin; deadly Galerina mushrooms can share the same habitat.</li>
+              <li><strong>Season</strong> Fall into early winter during cool, wet weather.</li>
+              <li><strong>Range</strong> Pacific Northwest, western and central Europe, with introduced populations elsewhere.</li>
+              <li><strong>Characteristics</strong> Caramel-brown cap with a wavy edge, clustered growth on woody debris and possible blue bruising.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="mushroom-card" data-edibility="psychedelic inedible" data-locations="worldwide north-america asia australia" data-seasons="summer fall year-round">
+          <figure>
+            <img src="assets/mushrooms/panaeolus-cyanescens.jpg" alt="Group of pale Panaeolus cyanescens mushrooms with thin stems" />
+            <figcaption>Blue meanie</figcaption>
+          </figure>
+          <div class="mushroom-facts">
+            <header><span class="psychedelic-tag">Psychedelic</span><h2>Blue meanie</h2><i>Panaeolus cyanescens</i></header>
+            <ul>
+              <li><strong>Edible?</strong> No. Psychoactive and not treated as food.</li>
+              <li><strong>Risk</strong> Contains psilocybin; small pale mushrooms often require microscopic identification.</li>
+              <li><strong>Season</strong> Warm, rainy periods in tropical and subtropical climates.</li>
+              <li><strong>Range</strong> Tropical and subtropical regions worldwide.</li>
+              <li><strong>Characteristics</strong> Pale gray to tan cap, slender stem, dark mottled gills and strong blue bruising when damaged.</li>
             </ul>
           </div>
         </article>
@@ -205,6 +273,12 @@
         <a href="https://extension.umn.edu/gathering-wild-grown-plants-and-fungi/harvesting-morel-mushrooms">UMN morels</a>
         <a href="https://www.nps.gov/muwo/learn/nature/mushrooms-of-muir-woods.htm">NPS lion's mane</a>
         <a href="https://www.poison.org/articles/wild-mushroom-warning">Poison Control</a>
+        <a href="https://nida.nih.gov/research-topics/psychedelic-dissociative-drugs">NIDA psychedelics</a>
+        <a href="https://www.dea.gov/factsheets/hallucinogens">DEA hallucinogens</a>
+        <a href="https://commons.wikimedia.org/wiki/File:Psilocybe_cubensis,_2008.jpg">Cubensis photo: Zergboy, public domain</a>
+        <a href="https://commons.wikimedia.org/wiki/File:Psilocybe_semilanceata_6514.jpg">Liberty cap photo: Alan Rockefeller, CC BY-SA 3.0</a>
+        <a href="https://commons.wikimedia.org/wiki/File:Psilocybe_cyanescens_(31351541944).jpg">Wavy caps photo: Lukas, CC BY-SA 2.0</a>
+        <a href="https://commons.wikimedia.org/wiki/File:Panaeolus-cyanescens.jpg">Blue meanie photo: Prankster239 / Photohound, CC BY-SA 3.0</a>
         <a href="https://commons.wikimedia.org/wiki/File:Speise-Morchel_Morchella_esculenta.jpg">Morel photo: Holger Krisp, CC BY 3.0</a>
         <a href="https://commons.wikimedia.org/wiki/File:Hericium_erinaceus%2B.JPG">Lion's mane photo: SKas, CC BY-SA 4.0</a>
         <a href="https://commons.wikimedia.org/wiki/File:Chicken_of_the_Woods_Laetiporus_sulphureus.jpg">Chicken photo: Jonathan Sadlowe, public domain</a>
