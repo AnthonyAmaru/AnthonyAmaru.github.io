@@ -119,7 +119,9 @@ function applyTheme(theme) {
 function routeTo(route) {
   const page = $("[data-page='" + route + "']");
   if (!page) return;
-  $("#go-back-button").hidden = route === "home";
+  const hasBackButton = route !== "home";
+  $("#go-back-button").hidden = !hasBackButton;
+  document.body.classList.toggle("has-back-button", hasBackButton);
   $$(".page-panel").forEach((panel) => panel.classList.toggle("active", panel === page));
   $$(".nav-link").forEach((link) => {
     const active = link.dataset.pageLink === route;
