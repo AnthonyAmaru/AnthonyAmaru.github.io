@@ -337,6 +337,7 @@ const state = {
 };
 
 const $ = (selector) => document.querySelector(selector);
+const $$ = (selector) => document.querySelectorAll(selector);
 const shuffle = (items) => [...items].sort(() => Math.random() - 0.5);
 
 function updateProgress() {
@@ -591,7 +592,6 @@ $$('[data-page-link]').forEach((link) => {
   if (link.dataset.pageLink === activePage) link.setAttribute("aria-current", "page");
   else link.removeAttribute("aria-current");
 });
-document.documentElement.classList.add("mandarin-ready");
 
 renderFilters();
 renderVocabulary();

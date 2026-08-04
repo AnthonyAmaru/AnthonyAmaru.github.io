@@ -659,8 +659,8 @@ async function openStudyApp(name, needsAdmin) {
   if (needsAdmin && !(await ensureAdmin())) return;
   const apps = {
     aviation: { title: "Aviation practice", src: "aviation/index.html" },
-    mandarin: { title: "Mandarin notebook", src: "mandarin/index.html?v=20260803-pages1" },
-    "mandarin-quiz": { title: "Mandarin practice", src: "mandarin/quiz.html?v=20260803-pages1" },
+    mandarin: { title: "Mandarin notebook", src: "mandarin/index.html?v=20260803-pages2" },
+    "mandarin-quiz": { title: "Mandarin practice", src: "mandarin/quiz.html?v=20260803-pages2" },
   };
   const app = apps[name];
   if (!app) return;

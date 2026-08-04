@@ -27,7 +27,6 @@ body {
 button, input { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
 a { color: inherit; }
-html:not(.mandarin-ready) .mandarin-page { display: none; }
 .mandarin-page[hidden] { display: none; }
 .section-shell { width: min(1180px, calc(100% - 40px)); margin-inline: auto; }
 .visually-hidden {
