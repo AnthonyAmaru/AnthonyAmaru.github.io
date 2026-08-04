@@ -215,44 +215,15 @@ function organizationMark(entry) {
 
 function renderResume() {
   const resume = getResume();
-  $("#work-list").innerHTML = resume.work.length ? resume.work.map((entry, index) => `
+  $("#work-list").innerHTML = resume.work.length ? resume.work.map((entry) => `
     <article class="timeline-item">
       ${organizationMark(entry)}
       <div class="timeline-copy"><h3>${escapeHtml(entry.title)}</h3><p class="organization">${escapeHtml(entry.organization)}</p><p class="timeline-meta">${escapeHtml(entry.dates)}${entry.location ? ` · ${escapeHtml(entry.location)}` : ""}</p>${entry.description ? `<details class="resume-details"><summary>Responsibilities</summary><ul>${String(entry.description).split("\n").filter(Boolean).map((line) => `<li>${escapeHtml(line)}</li>`).join("")}</ul></details>` : ""}</div>
-      <div class="entry-actions"><button type="button" data-edit-entry="work:${index}">Edit</button><button type="button" data-delete-entry="work:${index}">Delete</button></div>
     </article>`).join("") : '<p class="empty-state">No work experience added yet.</p>';
-  $("#education-list").innerHTML = resume.education.length ? resume.education.map((entry, index) => `
+  $("#education-list").innerHTML = resume.education.length ? resume.education.map((entry) => `
     <article class="education-item">
-      <div class="entry-actions"><button type="button" data-edit-entry="education:${index}">Edit</button><button type="button" data-delete-entry="education:${index}">Delete</button></div>
       ${organizationMark(entry)}<h3>${escapeHtml(entry.organization)}</h3><p class="organization">${escapeHtml(entry.title)}</p>${entry.dates || entry.location ? `<p class="meta">${escapeHtml(entry.dates)}${entry.location ? ` · ${escapeHtml(entry.location)}` : ""}</p>` : ""}
     </article>`).join("") : '<p class="empty-state">No education added yet.</p>';
-}
-
-async function openEntryEditor(kind, index = "") {
-  if (!(await ensureAdmin())) return;
-  const resume = getResume();
-  const entry = index === "" ? { title: "", organization: "", dates: "", location: "", description: "" } : resume[kind][Number(index)];
-  $("#entry-kind").value = kind;
-  $("#entry-index").value = index;
-  $("#entry-editor-title").textContent = `${index === "" ? "Add" : "Edit"} ${kind === "work" ? "work experience" : "education"}`;
-  $("#entry-title").value = entry.title || "";
-  $("#entry-organization").value = entry.organization || "";
-  $("#entry-dates").value = entry.dates || "";
-  $("#entry-location").value = entry.location || "";
-  $("#entry-description").value = entry.description || "";
-  $("#entry-editor-modal").hidden = false;
-  setModalOpen(true);
-  requestAnimationFrame(() => $("#entry-title").focus());
-}
-
-async function deleteResumeEntry(kind, index) {
-  if (!(await ensureAdmin())) return;
-  if (!confirm("Delete this resume entry from this device?")) return;
-  const resume = getResume();
-  resume[kind].splice(Number(index), 1);
-  writeJson(KEYS.resume, resume);
-  renderResume();
-  toast("Resume entry deleted.");
 }
 
 function getBook() {
@@ -762,27 +733,6 @@ $$('[data-close-modal]').forEach((button) => button.addEventListener("click", ()
   else { $("#" + id).hidden = true; setModalOpen(false); }
 }));
 
-$$('.admin-action[data-entry-type]').forEach((button) => button.addEventListener("click", () => openEntryEditor(button.dataset.entryType)));
-$("#page-resume").addEventListener("click", (event) => {
-  const edit = event.target.closest("[data-edit-entry]");
-  const remove = event.target.closest("[data-delete-entry]");
-  if (edit) { const [kind, index] = edit.dataset.editEntry.split(":"); openEntryEditor(kind, index); }
-  if (remove) { const [kind, index] = remove.dataset.deleteEntry.split(":"); deleteResumeEntry(kind, index); }
-});
-$("#entry-editor-form").addEventListener("submit", (event) => {
-  event.preventDefault();
-  const kind = $("#entry-kind").value;
-  const index = $("#entry-index").value;
-  const entry = { title: $("#entry-title").value.trim(), organization: $("#entry-organization").value.trim(), dates: $("#entry-dates").value.trim(), location: $("#entry-location").value.trim(), description: $("#entry-description").value.trim() };
-  const resume = getResume();
-  if (index === "") resume[kind].push(entry); else resume[kind][Number(index)] = entry;
-  writeJson(KEYS.resume, resume);
-  $("#entry-editor-modal").hidden = true;
-  setModalOpen(false);
-  renderResume();
-  toast("Resume saved on this device.");
-});
-
 $$('.launch-app').forEach((button) => button.addEventListener("click", () => openStudyApp(button.dataset.app, button.dataset.admin === "true")));
 
 $("#open-book-studio").addEventListener("click", openBookStudio);
@@ -862,7 +812,6 @@ document.addEventListener("keydown", (event) => {
   if (!$("#quick-ai-popover").hidden) toggleQuickAi(false);
   else if (!$("#app-modal").hidden) closeStudyApp();
   else if (!$("#book-modal").hidden) closeBookStudio();
-  else if (!$("#entry-editor-modal").hidden) { $("#entry-editor-modal").hidden = true; setModalOpen(false); }
   else if (!$("#admin-modal").hidden) closeAdminModal(false);
 });
 

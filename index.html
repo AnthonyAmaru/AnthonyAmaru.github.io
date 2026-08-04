@@ -23,9 +23,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&amp;family=Noto+Serif+SC:wght@500;700&amp;display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=20260804-frame1" />
+    <link rel="stylesheet" href="styles.css?v=20260804-resume2" />
     <script src="music-cloud.js?v=20260803-ai2" defer></script>
-    <script src="script.js?v=20260804-bookdetails1" defer></script>
+    <script src="script.js?v=20260804-resume2" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -94,7 +94,7 @@
             <header class="command-heading"><img src="anthony-brand-icon.png" alt="" /><div><h1>Anthony Amaru</h1></div></header>
             <div class="command-grid">
               <a href="index.html?page=resume&amp;v=20260804-clean1"><span class="command-emoji" aria-hidden="true">📄</span><strong>Resume</strong><b>→</b></a>
-              <a href="index.html?page=interests&amp;v=20260804-clean1"><span class="command-emoji" aria-hidden="true">🧭</span><strong>Interests</strong><b>→</b></a>
+              <a href="index.html?page=interests&amp;v=20260804-clean1"><span class="command-emoji" aria-hidden="true">🧠</span><strong>Interests</strong><b>→</b></a>
               <a href="index.html?page=music&amp;v=20260804-clean1"><span class="command-emoji" aria-hidden="true">🎵</span><strong>Music</strong><b>→</b></a>
             </div>
             <div class="command-status">
@@ -111,19 +111,19 @@
           </header>
           <div class="resume-layout">
             <div class="resume-main">
-              <div class="section-title-row"><h2>Experience</h2><button class="small-button admin-action" type="button" data-entry-type="work">+ Add</button></div>
+              <div class="section-title-row"><h2>Experience</h2></div>
               <div id="work-list" class="timeline-list"></div>
             </div>
             <aside class="resume-side">
-              <div class="section-title-row"><h2>Education</h2><button class="small-button admin-action" type="button" data-entry-type="education">+ Add</button></div>
+              <div class="section-title-row"><h2>Education</h2></div>
               <div id="education-list" class="education-list"></div>
             </aside>
           </div>
           <div class="resume-highlights" aria-label="Professional credentials and languages">
             <article><span aria-hidden="true">₿</span><div><h2>Blockchain Specialist (7 years)</h2></div></article>
             <article><span aria-hidden="true">✈️</span><div><h2>Private Pilot Certificate</h2><small>Coming soon</small></div></article>
-            <article><span aria-hidden="true">📖</span><div><h2>Author</h2><small>Known for: Hypothesis Of Man</small></div></article>
-            <article><span aria-hidden="true">🌐</span><div><h2>Languages</h2><ul><li>Spanish</li><li>Mandarin</li><li>English</li></ul></div></article>
+            <article class="author-highlight"><span aria-hidden="true">✒️</span><div><h2>Author</h2><p class="author-work">A Hypothesis of Man</p><small>Coming soon</small></div></article>
+            <article><span aria-hidden="true">🌐</span><div><h2>Languages</h2><ul class="language-list"><li>Spanish</li><li>Mandarin</li><li>English</li></ul></div></article>
           </div>
         </section>
 
@@ -147,8 +147,10 @@
 
             <article class="interest-card book-card">
               <div class="book-card-copy">
-                <div class="interest-icon" aria-hidden="true">📖</div>
+                <div class="interest-icon" aria-hidden="true">✒️</div>
                 <h2>Author</h2>
+                <p class="author-card-title">A Hypothesis of Man</p>
+                <small class="author-card-status">Coming soon</small>
                 <button id="open-book-studio" class="button primary" type="button">Open</button>
               </div>
             </article>
@@ -214,21 +216,6 @@
           <label><span>Admin password</span><input id="admin-password" type="password" autocomplete="current-password" required /></label>
           <p id="admin-error" class="form-error" role="alert"></p>
           <button class="button primary full" type="submit">Unlock this session</button>
-        </form>
-      </section>
-    </div>
-
-    <div id="entry-editor-modal" class="modal-backdrop" hidden>
-      <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="entry-editor-title">
-        <button class="modal-close" type="button" data-close-modal="entry-editor-modal" aria-label="Close">×</button>
-        <p class="eyebrow">Resume editor</p><h2 id="entry-editor-title">Add experience</h2>
-        <form id="entry-editor-form" class="stack-form">
-          <input id="entry-kind" type="hidden" /><input id="entry-index" type="hidden" />
-          <label><span>Title or degree</span><input id="entry-title" required /></label>
-          <label><span>Organization or school</span><input id="entry-organization" required /></label>
-          <div class="two-fields"><label><span>Dates</span><input id="entry-dates" placeholder="2024 — Present" /></label><label><span>Location</span><input id="entry-location" /></label></div>
-          <label><span>Description</span><textarea id="entry-description" rows="5"></textarea></label>
-          <button class="button primary" type="submit">Save entry</button>
         </form>
       </section>
     </div>
