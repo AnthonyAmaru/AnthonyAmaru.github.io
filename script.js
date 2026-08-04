@@ -639,7 +639,7 @@ async function openStudyApp(name, needsAdmin) {
     aviation: { title: "Aviation practice", src: "aviation/index.html?v=20260804-audio1" },
     mandarin: { title: "Mandarin notebook", src: "mandarin/index.html?v=20260804-audio1" },
     "mandarin-quiz": { title: "Mandarin practice", src: "mandarin/quiz.html?v=20260804-audio1" },
-    mycology: { title: "Mycology", src: "mycology.html?v=20260804-audio1" },
+    mycology: { title: "Mycology", src: "mycology.html?v=20260804-myco2" },
     books: { title: "Books", src: "books.html?v=20260804-books1" },
   };
   const app = apps[name];

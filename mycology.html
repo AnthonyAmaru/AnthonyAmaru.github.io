@@ -14,10 +14,11 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Newsreader:opsz,wght@6..72,500&amp;display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="site-header.css?v=20260804-audio1" />
     <link rel="stylesheet" href="site-music.css?v=20260804-audio1" />
-    <link rel="stylesheet" href="mycology.css?v=20260804-myco1" />
+    <link rel="stylesheet" href="mycology.css?v=20260804-myco2" />
     <script src="music-cloud.js?v=20260803-ai2"></script>
     <script src="site-header.js?v=20260803-nav1" defer></script>
     <script src="site-music.js?v=20260804-audio1" defer></script>
+    <script src="mycology.js?v=20260804-myco2" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -48,8 +49,16 @@
         <p>Field notes only. Never eat a wild mushroom without expert confirmation.</p>
       </header>
 
+      <section class="mushroom-filters" aria-label="Filter mushrooms">
+        <label><span>Type</span><select id="edibility-filter"><option value="all">All</option><option value="edible">Edible</option><option value="poisonous">Poisonous</option><option value="inedible">Inedible</option><option value="dye">Dye</option><option value="research">Research</option></select></label>
+        <label><span>Location</span><select id="location-filter"><option value="all">All</option><option value="north-america">North America</option><option value="europe">Europe</option><option value="asia">Asia</option><option value="norway">Norway</option><option value="australia">Australia</option><option value="worldwide">Worldwide</option></select></label>
+        <label><span>Season</span><select id="season-filter"><option value="all">All</option><option value="spring">Spring</option><option value="summer">Summer</option><option value="fall">Fall</option><option value="winter">Winter</option><option value="year-round">Year-round</option></select></label>
+        <button id="clear-mushroom-filters" type="button">Clear</button>
+        <strong id="mushroom-count" aria-live="polite">8 mushrooms</strong>
+      </section>
+
       <section class="mushroom-list" aria-label="Mushroom profiles">
-        <article class="mushroom-card">
+        <article class="mushroom-card" data-edibility="poisonous" data-locations="north-america europe asia norway" data-seasons="summer fall">
           <figure>
             <img src="assets/mushrooms/fly-agaric.jpg" alt="Red fly agaric mushrooms with white spots on a forest floor" />
             <figcaption>Fly agaric</figcaption>
@@ -66,7 +75,7 @@
           </div>
         </article>
 
-        <article class="mushroom-card">
+        <article class="mushroom-card" data-edibility="edible" data-locations="north-america europe norway" data-seasons="summer fall">
           <figure>
             <img src="assets/mushrooms/golden-chanterelle.jpg" alt="Golden chanterelle mushrooms growing among moss and leaves" />
             <figcaption>Golden chanterelle</figcaption>
@@ -83,7 +92,7 @@
           </div>
         </article>
 
-        <article class="mushroom-card">
+        <article class="mushroom-card" data-edibility="inedible dye" data-locations="north-america europe asia" data-seasons="summer fall">
           <figure>
             <img src="assets/mushrooms/dyers-polypore.jpg" alt="Brown and yellow dyer's polypore growing near a tree" />
             <figcaption>Dyer's polypore</figcaption>
@@ -100,7 +109,7 @@
           </div>
         </article>
 
-        <article class="mushroom-card">
+        <article class="mushroom-card" data-edibility="inedible research" data-locations="worldwide north-america europe asia" data-seasons="spring summer fall winter year-round">
           <figure>
             <img src="assets/mushrooms/turkey-tail.jpg" alt="Layered brown turkey tail mushrooms growing on a tree trunk" />
             <figcaption>Turkey tail</figcaption>
@@ -116,6 +125,74 @@
             </ul>
           </div>
         </article>
+
+        <article class="mushroom-card" data-edibility="edible" data-locations="north-america europe asia" data-seasons="spring">
+          <figure>
+            <img src="assets/mushrooms/common-morel.jpg" alt="Common morel mushrooms growing on a woodland floor" />
+            <figcaption>Common morel</figcaption>
+          </figure>
+          <div class="mushroom-facts">
+            <header><span class="edible-tag">Edible</span><h2>Common morel</h2><i>Morchella esculenta</i></header>
+            <ul>
+              <li><strong>Edible?</strong> Choice edible after expert identification and thorough cooking.</li>
+              <li><strong>Uses</strong> Culinary.</li>
+              <li><strong>Season</strong> Brief spring season after adequate rain.</li>
+              <li><strong>Range</strong> Most prevalent across the Northern Hemisphere.</li>
+              <li><strong>Characteristics</strong> Honeycomb-like cap with deep pits; hollow stem and cap. Poisonous false morels can look similar.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="mushroom-card" data-edibility="edible research" data-locations="north-america europe asia" data-seasons="fall winter">
+          <figure>
+            <img src="assets/mushrooms/lions-mane.jpg" alt="White lion's mane mushroom with long hanging spines" />
+            <figcaption>Lion's mane</figcaption>
+          </figure>
+          <div class="mushroom-facts">
+            <header><span class="edible-tag">Edible</span><h2>Lion's mane</h2><i>Hericium erinaceus</i></header>
+            <ul>
+              <li><strong>Edible?</strong> Edible after expert identification.</li>
+              <li><strong>Uses</strong> Culinary; supplements are sold, but health claims require more research.</li>
+              <li><strong>Season</strong> Late fall through mid-winter in coastal California; timing varies by region.</li>
+              <li><strong>Range</strong> North America, Europe and Asia on living or dead hardwoods.</li>
+              <li><strong>Characteristics</strong> Rounded white clusters with long, downward-pointing spines that yellow with age.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="mushroom-card" data-edibility="edible" data-locations="north-america europe asia" data-seasons="summer fall">
+          <figure>
+            <img src="assets/mushrooms/chicken-of-the-woods.jpg" alt="Bright orange and yellow chicken of the woods shelves on a tree" />
+            <figcaption>Chicken of the woods</figcaption>
+          </figure>
+          <div class="mushroom-facts">
+            <header><span class="edible-tag">Edible</span><h2>Chicken of the woods</h2><i>Laetiporus sulphureus</i></header>
+            <ul>
+              <li><strong>Edible?</strong> Young specimens are considered edible after expert identification and cooking.</li>
+              <li><strong>Uses</strong> Culinary.</li>
+              <li><strong>Season</strong> Summer through fall.</li>
+              <li><strong>Range</strong> Temperate forests of North America, Europe and Asia.</li>
+              <li><strong>Characteristics</strong> Overlapping yellow-orange shelves on wood; soft when young and hard with age.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="mushroom-card" data-edibility="poisonous" data-locations="north-america europe australia" data-seasons="summer fall">
+          <figure>
+            <img src="assets/mushrooms/death-cap.jpg" alt="Two mature death cap mushrooms on a forest floor" />
+            <figcaption>Death cap</figcaption>
+          </figure>
+          <div class="mushroom-facts">
+            <header><span class="danger-tag">Deadly</span><h2>Death cap</h2><i>Amanita phalloides</i></header>
+            <ul>
+              <li><strong>Edible?</strong> No. Deadly poisonous; cooking does not make it safe.</li>
+              <li><strong>Risk</strong> Amatoxins can cause delayed liver and kidney failure.</li>
+              <li><strong>Season</strong> Summer through fall.</li>
+              <li><strong>Range</strong> Native to Europe and introduced in parts of North America and Australia.</li>
+              <li><strong>Characteristics</strong> Olive to yellow-green cap, white gills, a stem ring and a cup-like volva at the base.</li>
+            </ul>
+          </div>
+        </article>
       </section>
 
       <footer class="sources">
@@ -125,6 +202,13 @@
         <a href="https://www.fs.usda.gov/media/225912">USDA dye guide</a>
         <a href="https://www.nps.gov/muwo/learn/nature/decomposing-fungi.htm">NPS turkey tail</a>
         <a href="https://www.cancer.gov/about-cancer/treatment/cam/patient/mushrooms-pdq">NCI</a>
+        <a href="https://extension.umn.edu/gathering-wild-grown-plants-and-fungi/harvesting-morel-mushrooms">UMN morels</a>
+        <a href="https://www.nps.gov/muwo/learn/nature/mushrooms-of-muir-woods.htm">NPS lion's mane</a>
+        <a href="https://www.poison.org/articles/wild-mushroom-warning">Poison Control</a>
+        <a href="https://commons.wikimedia.org/wiki/File:Speise-Morchel_Morchella_esculenta.jpg">Morel photo: Holger Krisp, CC BY 3.0</a>
+        <a href="https://commons.wikimedia.org/wiki/File:Hericium_erinaceus%2B.JPG">Lion's mane photo: SKas, CC BY-SA 4.0</a>
+        <a href="https://commons.wikimedia.org/wiki/File:Chicken_of_the_Woods_Laetiporus_sulphureus.jpg">Chicken photo: Jonathan Sadlowe, public domain</a>
+        <a href="https://commons.wikimedia.org/wiki/File:Amanita_phalloides_adult.jpg">Death cap photo: Stanisław Skowron, rights released</a>
         <a href="https://commons.wikimedia.org/wiki/File:Phaeolus_schweinitzii_433858897.jpg">Dyer's polypore photo: Matej Frančeškin, CC BY 4.0</a>
       </footer>
     </main>
