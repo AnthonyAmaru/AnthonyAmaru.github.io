@@ -279,7 +279,7 @@ h1, h2 { font-family: var(--sans); font-weight: 750; letter-spacing: -.035em; }
 .library-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid var(--line); padding-bottom: 20px; }
 .library-heading h2 { margin: 0; font-size: 2rem; }
 .library-actions { display: flex; align-items: center; gap: 8px; }
-.bulk-playlist-select { max-width: 165px; min-height: 42px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface-solid); color: var(--ink); padding: 0 11px; font: inherit; font-size: .72rem; font-weight: 700; }
+.bulk-playlist-select, .artist-filter { max-width: 165px; min-height: 42px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface-solid); color: var(--ink); padding: 0 11px; font: inherit; font-size: .72rem; font-weight: 700; }
 .bulk-playlist-select:disabled { opacity: .45; }
 .select-all-control { display: inline-flex; min-height: 42px; align-items: center; gap: 7px; border: 1px solid var(--line); border-radius: 14px; padding: 0 12px; cursor: pointer; color: var(--muted); font-size: .74rem; font-weight: 750; }
 .select-all-control input,.track-select { width: 17px; height: 17px; margin: 0; accent-color: var(--ink); cursor: pointer; }
@@ -560,6 +560,7 @@ h1, h2 { font-family: var(--sans); font-weight: 750; letter-spacing: -.035em; }
   .library-heading { display: grid; align-items: start; }
   .library-actions { width: 100%; flex-wrap: wrap; justify-content: flex-start; }
   .bulk-playlist-select { max-width: none; flex: 1 1 150px; }
+  .artist-filter { max-width: none; flex: 1 1 150px; }
   .library-heading .button { min-height: 40px; padding-inline: 13px; }
   .go-back-button { left: max(6px, env(safe-area-inset-left)); width: 62px; height: 190px; font-size: .76rem; }
 }
