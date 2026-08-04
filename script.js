@@ -640,14 +640,12 @@ async function openStudyApp(name, needsAdmin) {
     mandarin: { title: "Mandarin notebook", src: "mandarin/index.html?v=20260804-audio1" },
     "mandarin-quiz": { title: "Mandarin practice", src: "mandarin/quiz.html?v=20260804-audio1" },
     mycology: { title: "Mycology", src: "mycology.html?v=20260804-myco2" },
-    books: { title: "Books", src: "books.html?v=20260804-books1" },
+    books: { title: "Books", src: "books.html?v=20260804-books2" },
   };
   const app = apps[name];
   if (!app) return;
   const embeddedUrl = new URL(app.src, location.href);
   embeddedUrl.searchParams.set("embedded", "1");
-  $("#app-modal-title").textContent = app.title;
-  $("#open-app-new-tab").href = app.src;
   $("#app-frame").src = embeddedUrl.href;
   $("#app-modal").hidden = false;
   setModalOpen(true);
@@ -709,6 +707,8 @@ document.addEventListener("click", (event) => {
   const rootPath = location.pathname.replace(/index\.html$/, "");
   if (url.origin !== location.origin || url.pathname.replace(/index\.html$/, "") !== rootPath) return;
   event.preventDefault();
+  if (!$("#app-modal").hidden) closeStudyApp();
+  if (!$("#book-modal").hidden) closeBookStudio();
   navigatePortal(portalRouteFromUrl(url));
 });
 
@@ -779,7 +779,6 @@ $("#entry-editor-form").addEventListener("submit", (event) => {
 });
 
 $$('.launch-app').forEach((button) => button.addEventListener("click", () => openStudyApp(button.dataset.app, button.dataset.admin === "true")));
-$("#close-app").addEventListener("click", closeStudyApp);
 
 $("#open-book-studio").addEventListener("click", openBookStudio);
 $("#close-book").addEventListener("click", closeBookStudio);
