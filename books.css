@@ -32,10 +32,10 @@ main { width: min(1000px, calc(100% - 32px)); margin: 0 auto; padding: clamp(32p
 .page-heading a { width: max-content; color: var(--green); font-size: 0.82rem; font-weight: 800; text-decoration: none; }
 .page-heading h1 { margin: 0; font: 500 clamp(3rem, 8vw, 6rem)/0.9 "Newsreader", serif; letter-spacing: -0.05em; }
 
-.book-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin: 0; }
-.book-card { display: grid; min-width: 0; grid-template-rows: auto 1fr; overflow: hidden; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
-.book-card img { width: 100%; aspect-ratio: 2 / 3; object-fit: contain; background: #fff; }
-.book-card > div { padding: 18px; }
+.book-list { display: grid; gap: 10px; margin: 0; }
+.book-card { display: grid; min-width: 0; min-height: 132px; grid-template-columns: 88px minmax(0, 1fr); align-items: center; overflow: hidden; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
+.book-card img { width: 88px; height: 132px; object-fit: contain; background: #fff; }
+.book-card > div { padding: 20px 24px; }
 .book-list h2 { margin: 0; font-size: clamp(1.2rem, 3vw, 1.8rem); letter-spacing: -0.035em; }
 .book-list p { margin: 5px 0 0; color: var(--muted); font-size: 0.9rem; }
 .cover-credit { margin: 18px 0 0; text-align: right; }
@@ -43,8 +43,8 @@ main { width: min(1000px, calc(100% - 32px)); margin: 0 auto; padding: clamp(32p
 
 @media (max-width: 760px) {
   main { width: calc(100% - 24px); padding-top: 30px; }
-  .book-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-  .book-card { border-radius: 14px; }
-  .book-card > div { padding: 13px; }
-  .book-list h2 { font-size: clamp(1rem, 4.3vw, 1.35rem); }
+  .book-card { min-height: 108px; grid-template-columns: 72px minmax(0, 1fr); border-radius: 14px; }
+  .book-card img { width: 72px; height: 108px; }
+  .book-card > div { padding: 14px 16px; }
+  .book-list h2 { font-size: clamp(1rem, 4.3vw, 1.3rem); }
 }
