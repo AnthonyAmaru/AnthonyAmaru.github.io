@@ -118,6 +118,29 @@ alter table public.site_content enable row level security;
 alter table public.art_items enable row level security;
 alter table public.shopping_products enable row level security;
 
+-- New Supabase projects require explicit Data API grants. Grants decide which
+-- objects a role can reach; the RLS policies below still decide which rows the
+-- role may read or change.
+grant usage on schema public to anon, authenticated;
+grant select on table public.music_playlists, public.music_tracks, public.shopping_products to anon;
+grant select on table
+  public.site_admins,
+  public.music_playlists,
+  public.music_tracks,
+  public.test_attempts,
+  public.site_content,
+  public.art_items,
+  public.shopping_products
+to authenticated;
+grant insert, update, delete on table
+  public.music_playlists,
+  public.music_tracks,
+  public.test_attempts,
+  public.site_content,
+  public.art_items,
+  public.shopping_products
+to authenticated;
+
 drop policy if exists "Admins can read their membership" on public.site_admins;
 create policy "Admins can read their membership"
   on public.site_admins for select to authenticated
