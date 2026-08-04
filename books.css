@@ -34,17 +34,20 @@ main { width: min(1000px, calc(100% - 32px)); margin: 0 auto; padding: clamp(32p
 
 .book-list { display: grid; gap: 10px; margin: 0; }
 .book-card { display: grid; min-width: 0; min-height: 132px; grid-template-columns: 88px minmax(0, 1fr); align-items: center; overflow: hidden; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
-.book-card img { width: 88px; height: 132px; object-fit: contain; background: #fff; }
+.book-card img { width: 88px; height: 100%; min-height: 132px; object-fit: contain; background: #fff; }
 .book-card > div { padding: 20px 24px; }
 .book-list h2 { margin: 0; font-size: clamp(1.2rem, 3vw, 1.8rem); letter-spacing: -0.035em; }
 .book-list p { margin: 5px 0 0; color: var(--muted); font-size: 0.9rem; }
+.book-list .book-meta { color: var(--gold); font-size: 0.76rem; font-weight: 700; }
+.book-list .book-summary { max-width: 720px; margin-top: 10px; line-height: 1.5; }
 .cover-credit { margin: 18px 0 0; text-align: right; }
 .cover-credit a { color: var(--muted); font-size: 0.7rem; text-decoration: none; }
 
 @media (max-width: 760px) {
   main { width: calc(100% - 24px); padding-top: 30px; }
   .book-card { min-height: 108px; grid-template-columns: 72px minmax(0, 1fr); border-radius: 14px; }
-  .book-card img { width: 72px; height: 108px; }
+  .book-card img { width: 72px; min-height: 108px; }
   .book-card > div { padding: 14px 16px; }
   .book-list h2 { font-size: clamp(1rem, 4.3vw, 1.3rem); }
+  .book-list .book-summary { font-size: 0.8rem; }
 }
