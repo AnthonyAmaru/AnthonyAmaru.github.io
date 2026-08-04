@@ -28,7 +28,7 @@ const selectedTrackIds = new Set();
 const resumeDefaults = {
   work: [
     {
-      title: "Data Specialist",
+      title: "Forward Deployed Engineer",
       organization: "Bitwave · Full-time",
       dates: "Jan 2023 — Present",
       location: "Remote",
@@ -191,6 +191,11 @@ function getResume() {
   if (data.work?.length === 1 && data.work[0]?.title === "Add your first work role") return structuredClone(resumeDefaults);
   if (!Array.isArray(data.work)) data.work = [];
   if (!Array.isArray(data.education)) data.education = [];
+  const formerBitwaveRole = data.work.find((entry) => entry.title === "Data Specialist" && String(entry.organization || "").toLowerCase().includes("bitwave"));
+  if (formerBitwaveRole) {
+    formerBitwaveRole.title = "Forward Deployed Engineer";
+    writeJson(KEYS.resume, data);
+  }
   return data;
 }
 
