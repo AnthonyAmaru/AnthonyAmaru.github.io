@@ -341,15 +341,26 @@ h1, h2 { font-family: var(--sans); font-weight: 750; letter-spacing: -.035em; }
 .chapter-rail-heading { display: flex; align-items: center; justify-content: space-between; padding: 3px 8px 12px; color: var(--muted); font-size: .72rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
 .chapter-rail-heading button { display: grid; width: 28px; height: 28px; place-items: center; border: 1px solid var(--line); border-radius: 50%; background: var(--surface-solid); cursor: pointer; }
 .chapter-rail nav { display: grid; gap: 3px; overflow: auto; }
-.chapter-button { width: 100%; border: 0; border-radius: 12px; background: transparent; padding: 10px 11px; cursor: pointer; color: var(--muted); text-align: left; font-size: .78rem; line-height: 1.35; }
+.chapter-button { display: grid; width: 100%; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 10px; border: 0; border-radius: 12px; background: transparent; padding: 10px 11px; cursor: pointer; color: var(--muted); text-align: left; font-size: .78rem; line-height: 1.35; }
+.chapter-button span { min-width: 0; }
+.chapter-button small { color: inherit; font-size: .61rem; font-weight: 800; opacity: .65; }
 .chapter-button.active { background: var(--sage); color: var(--ink); font-weight: 800; }
 .book-privacy { display: flex; gap: 8px; margin-top: auto; border-radius: 13px; background: var(--surface-solid); padding: 11px; }
 .book-privacy p { margin: 0; color: var(--muted); font-size: .67rem; line-height: 1.45; }
-.book-editor-area { display: grid; grid-template-rows: auto 1fr auto; min-height: 0; padding: clamp(24px, 5vw, 62px) clamp(24px, 8vw, 110px) 22px; }
+.book-editor-area { display: grid; min-height: 0; grid-template-rows: auto auto auto minmax(0,1fr) auto; padding: clamp(24px, 5vw, 62px) clamp(24px, 8vw, 110px) 22px; }
+.book-title-label { grid-row: 1; }
 .book-title-label input { width: 100%; border: 0; border-bottom: 1px solid var(--line); background: transparent; color: var(--ink); padding: 0 0 16px; font-family: var(--serif); font-size: clamp(2.2rem, 5vw, 4.7rem); line-height: 1; outline: none; }
-.book-content-label { display: grid; min-height: 0; grid-template-rows: auto 1fr; margin-top: 22px; }
+.book-page-toolbar { display: flex; grid-row: 2; align-items: center; gap: 8px; padding: 14px 0 4px; }
+.book-page-toolbar button { min-width: 38px; min-height: 34px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface-solid); color: var(--ink); padding: 7px 12px; cursor: pointer; font-size: .72rem; font-weight: 850; }
+.book-page-toolbar button:disabled { cursor: default; opacity: .35; }
+.book-page-toolbar strong { min-width: 92px; color: var(--muted); font-size: .69rem; text-align: center; }
+#add-book-page { margin-left: auto; background: var(--butter); }
+.book-page-figure { grid-row: 3; max-height: 310px; overflow: auto; margin-top: 10px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface-solid); padding: 10px 12px; }
+.book-page-figure summary { cursor: pointer; color: var(--muted); font-size: .7rem; font-weight: 850; }
+.book-page-figure img { display: block; width: 100%; max-height: 255px; object-fit: contain; margin-top: 10px; border-radius: 8px; }
+.book-content-label { display: grid; min-height: 0; grid-row: 4; grid-template-rows: auto minmax(0,1fr); margin-top: 12px; overflow: hidden; border: 1px solid var(--line); border-radius: 16px; background: var(--surface-solid); box-shadow: var(--shadow-sm); padding: 15px 18px; }
 .book-content-label textarea { width: 100%; min-height: 0; border: 0; background: transparent; color: var(--ink); padding: 8px 0; outline: none; resize: none; font-family: var(--serif); font-size: 1.22rem; line-height: 1.7; }
-.book-editor-area > footer { display: flex; align-items: center; gap: 18px; border-top: 1px solid var(--line); padding-top: 14px; color: var(--muted); font-size: .72rem; }
+.book-editor-area > footer { display: flex; grid-row: 5; align-items: center; gap: 18px; border-top: 1px solid var(--line); padding-top: 14px; color: var(--muted); font-size: .72rem; }
 .book-editor-area > footer button { margin-left: auto; border: 1px solid var(--line); border-radius: 999px; background: transparent; padding: 8px 11px; color: var(--muted); }
 
 .toast { position: fixed; z-index: 220; right: 22px; bottom: 22px; max-width: min(380px, calc(100vw - 44px)); border-radius: 15px; background: var(--ink); color: var(--canvas-soft); box-shadow: var(--shadow-lg); padding: 12px 16px; opacity: 0; pointer-events: none; transform: translateY(12px); transition: .2s ease; }
@@ -520,6 +531,12 @@ h1, h2 { font-family: var(--sans); font-weight: 750; letter-spacing: -.035em; }
   .chapter-rail.open { transform: none; }
   .book-editor-area { padding: 24px 18px 14px; }
   .book-title-label input { font-size: 2.3rem; }
+  .book-page-toolbar { gap: 5px; }
+  .book-page-toolbar button { min-width: 36px; padding-inline: 10px; }
+  .book-page-toolbar strong { min-width: 78px; font-size: .64rem; }
+  .book-page-figure { max-height: 245px; }
+  .book-page-figure img { max-height: 195px; }
+  .book-content-label { padding: 13px 14px; }
   .book-content-label textarea { font-size: 1.08rem; }
   .book-editor-area > footer { flex-wrap: wrap; }
   .book-editor-area > footer button { width: 100%; margin-left: 0; }

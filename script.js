@@ -17,7 +17,11 @@ let pendingAdminResolve = null;
 let adminPasswordForSession = null;
 let toastTimer = null;
 let bookSaveTimer = null;
+let bookCloudSaveTimer = null;
+let bookCloudSaveGeneration = 0;
 let currentBookChapter = 0;
+let currentBookPage = 0;
+let bookEditorReady = false;
 let currentPlaylist = "all";
 let tracks = [];
 let visibleTracks = [];
@@ -50,16 +54,16 @@ const resumeDefaults = {
   ],
 };
 
-const bookDefaults = {
+const BOOK_CLOUD_KEY = "hypothesis_of_man_workbook_v2";
+const bookDefaults = window.HYPOTHESIS_BOOK_DEFAULTS || {
+  version: 2,
   title: "A Hypothesis of Man",
   updatedAt: null,
-  chapters: [
-    "Chapter 1 — Genesis", "Chapter 2 — Judaism, Islam, Buddhism and Amish", "Chapter 3 — Principles",
-    "Chapter 4 — Principles in Practice", "Chapter 5 — Vices We Must Avoid", "Chapter 6 — Finding a Wife",
-    "Chapter 7 — Why Are We Men?", "Chapter 8 — Fatherhood", "Chapter 9 — Adapting to Modern Society vs. Standing Firm",
-    "Chapter 10 — Plant the Seed", "Chapter 11 — A Warning to My Brothers and Sons", "Chapter 12 — A Hypothesis Becomes a Theory",
-    "Dedication", "Back-cover Summary", "Cover Instruction",
-  ].map((title, index) => ({ id: `chapter-${index + 1}`, title, content: "" })),
+  chapters: ["Chapter 1 — Genesis"].map((title, index) => ({
+    id: `chapter-${index + 1}`,
+    title,
+    pages: [{ id: `chapter-${index + 1}-page-1`, content: "" }],
+  })),
 };
 
 async function digest(value) {
@@ -227,33 +231,189 @@ function renderResume() {
     </article>`).join("") : '<p class="empty-state">No education added yet.</p>';
 }
 
+function createBookPage(content = "", extras = {}) {
+  const id = crypto.randomUUID ? `page-${crypto.randomUUID()}` : `page-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  return { id, content, ...extras };
+}
+
+function normalizeBook(rawBook) {
+  const defaults = structuredClone(bookDefaults);
+  if (!rawBook || !Array.isArray(rawBook.chapters) || !rawBook.chapters.length) return defaults;
+  const sourceVersion = Number(rawBook.version || 1);
+  const usedDefaultIds = new Set();
+  const chapters = rawBook.chapters.map((chapter, index) => {
+    const fallback = defaults.chapters.find((item) => item.id === chapter.id || item.title === chapter.title) || defaults.chapters[index];
+    if (fallback) usedDefaultIds.add(fallback.id);
+    let pages;
+    if (Array.isArray(chapter.pages) && chapter.pages.length) {
+      pages = chapter.pages.map((page, pageIndex) => ({
+        id: page.id || `${chapter.id || `chapter-${index + 1}`}-page-${pageIndex + 1}`,
+        content: typeof page.content === "string" ? page.content : "",
+        ...(page.image ? { image: page.image, imageAlt: page.imageAlt || "Chapter figure" } : {}),
+      }));
+    } else {
+      const legacyContent = typeof chapter.content === "string" ? chapter.content : "";
+      const fallbackPage = fallback?.pages?.[0];
+      const useImportedNotes = sourceVersion < 2 && !legacyContent.trim() && fallbackPage;
+      pages = [{
+        id: `${chapter.id || fallback?.id || `chapter-${index + 1}`}-page-1`,
+        content: useImportedNotes ? fallbackPage.content : legacyContent,
+        ...(fallbackPage?.image ? { image: fallbackPage.image, imageAlt: fallbackPage.imageAlt || "Chapter figure" } : {}),
+      }];
+    }
+    return {
+      id: chapter.id || fallback?.id || `chapter-${Date.now()}-${index}`,
+      title: chapter.title || fallback?.title || `Chapter ${index + 1}`,
+      pages,
+    };
+  });
+  defaults.chapters.forEach((chapter) => {
+    if (!usedDefaultIds.has(chapter.id)) chapters.push(chapter);
+  });
+  return {
+    version: 2,
+    title: rawBook.title || defaults.title,
+    updatedAt: rawBook.updatedAt || null,
+    chapters,
+  };
+}
+
 function getBook() {
-  const book = readJson(KEYS.book, bookDefaults);
-  if (!Array.isArray(book.chapters) || !book.chapters.length) return structuredClone(bookDefaults);
+  const rawBook = readJson(KEYS.book, null);
+  const book = normalizeBook(rawBook);
+  if (!rawBook || Number(rawBook.version || 1) < 2 || rawBook.chapters?.some((chapter) => !Array.isArray(chapter.pages))) {
+    writeJson(KEYS.book, book);
+  }
   return book;
 }
 
-function saveBook(book, status = "Saved locally") {
+function setBookUpdatedTime(book) {
+  if (!book.updatedAt) return $("#book-updated").textContent = "Not edited yet";
+  $("#book-updated").textContent = `Updated ${new Date(book.updatedAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`;
+}
+
+function queueBookCloudSave(book) {
+  clearTimeout(bookCloudSaveTimer);
+  const generation = ++bookCloudSaveGeneration;
+  if (!window.musicCloud?.isSignedIn()) {
+    $("#book-save-status").textContent = "Saved on this device";
+    return;
+  }
+  $("#book-save-status").textContent = "Saving to cloud…";
+  const snapshot = structuredClone(book);
+  bookCloudSaveTimer = setTimeout(async () => {
+    try {
+      await musicCloud.saveContent("anthony", BOOK_CLOUD_KEY, snapshot);
+      if (generation === bookCloudSaveGeneration) $("#book-save-status").textContent = "Saved to cloud";
+    } catch (error) {
+      if (generation === bookCloudSaveGeneration) $("#book-save-status").textContent = "Saved on device · cloud unavailable";
+      console.warn("Book cloud save failed", error);
+    }
+  }, 850);
+}
+
+function saveBook(book, status, syncCloud = true) {
+  book.version = 2;
   book.updatedAt = new Date().toISOString();
   writeJson(KEYS.book, book);
-  $("#book-save-status").textContent = status;
-  $("#book-updated").textContent = `Updated ${new Date(book.updatedAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`;
+  $("#book-save-status").textContent = status || (musicCloud.isSignedIn() ? "Saving to cloud…" : "Saved on this device");
+  setBookUpdatedTime(book);
+  if (syncCloud) queueBookCloudSave(book);
   refreshDashboard();
+}
+
+function bookContentSignature(book) {
+  return JSON.stringify(book.chapters.map((chapter) => ({
+    title: chapter.title,
+    pages: chapter.pages.map((page) => ({ content: page.content || "", image: page.image || "" })),
+  })));
+}
+
+async function syncBookFromCloud() {
+  const localBook = getBook();
+  if (!musicCloud.isSignedIn()) return localBook;
+  $("#book-save-status").textContent = "Loading cloud copy…";
+  try {
+    const row = await musicCloud.getContent("anthony", BOOK_CLOUD_KEY);
+    if (!row?.value) {
+      const seeded = { ...localBook, updatedAt: localBook.updatedAt || new Date().toISOString() };
+      await musicCloud.saveContent("anthony", BOOK_CLOUD_KEY, seeded);
+      writeJson(KEYS.book, seeded);
+      $("#book-save-status").textContent = "Saved to cloud";
+      return seeded;
+    }
+    const cloudBook = normalizeBook(row.value);
+    cloudBook.updatedAt = cloudBook.updatedAt || row.updated_at;
+    const localTime = Date.parse(localBook.updatedAt || 0);
+    const cloudTime = Date.parse(cloudBook.updatedAt || 0);
+    const defaultSignature = bookContentSignature(normalizeBook(bookDefaults));
+    const localHasWriting = bookContentSignature(localBook) !== defaultSignature;
+    const cloudHasWriting = bookContentSignature(cloudBook) !== defaultSignature;
+    if ((localHasWriting && !cloudHasWriting) || localTime > cloudTime) {
+      await musicCloud.saveContent("anthony", BOOK_CLOUD_KEY, localBook);
+      $("#book-save-status").textContent = "Saved to cloud";
+      return localBook;
+    }
+    writeJson(KEYS.book, cloudBook);
+    $("#book-save-status").textContent = "Cloud copy loaded";
+    return cloudBook;
+  } catch (error) {
+    $("#book-save-status").textContent = "Saved on device · cloud unavailable";
+    console.warn("Book cloud load failed", error);
+    return localBook;
+  }
 }
 
 function renderChapterList() {
   const book = getBook();
   currentBookChapter = Math.min(currentBookChapter, book.chapters.length - 1);
-  $("#chapter-list").innerHTML = book.chapters.map((chapter, index) => `<button class="chapter-button ${index === currentBookChapter ? "active" : ""}" type="button" data-chapter-index="${index}">${escapeHtml(chapter.title)}</button>`).join("");
+  $("#chapter-list").innerHTML = book.chapters.map((chapter, index) => `<button class="chapter-button ${index === currentBookChapter ? "active" : ""}" type="button" data-chapter-index="${index}"><span>${escapeHtml(chapter.title)}</span><small>${chapter.pages.length}p</small></button>`).join("");
 }
 
-function loadBookChapter(index) {
+function updateBookPageControls(chapter) {
+  const total = chapter.pages.length;
+  $("#book-page-position").textContent = `Page ${currentBookPage + 1} of ${total}`;
+  $("#book-prev-page").disabled = currentBookPage === 0;
+  $("#book-next-page").disabled = currentBookPage >= total - 1;
+  const page = chapter.pages[currentBookPage];
+  const figure = $("#book-page-figure");
+  figure.hidden = !page.image;
+  if (page.image) {
+    $("#book-page-image").src = page.image;
+    $("#book-page-image").alt = page.imageAlt || "Chapter figure";
+  } else {
+    $("#book-page-image").removeAttribute("src");
+    $("#book-page-image").alt = "";
+  }
+}
+
+function commitBookEditor(syncCloud = true) {
+  if (!bookEditorReady) return getBook();
+  clearTimeout(bookSaveTimer);
   const book = getBook();
-  if (!book.chapters[index]) return;
+  const chapter = book.chapters[currentBookChapter];
+  const page = chapter?.pages?.[currentBookPage];
+  if (!chapter || !page) return book;
+  chapter.title = $("#book-chapter-title").value.trim() || "Untitled chapter";
+  page.content = $("#book-chapter-content").value;
+  saveBook(book, undefined, syncCloud);
+  renderChapterList();
+  return book;
+}
+
+function loadBookChapter(index, pageIndex = 0, commitCurrent = true) {
+  if (commitCurrent) commitBookEditor();
+  const book = getBook();
+  const chapter = book.chapters[index];
+  if (!chapter) return;
   currentBookChapter = index;
-  $("#book-chapter-title").value = book.chapters[index].title;
-  $("#book-chapter-content").value = book.chapters[index].content || "";
+  currentBookPage = Math.max(0, Math.min(pageIndex, chapter.pages.length - 1));
+  $("#book-chapter-title").value = chapter.title;
+  $("#book-chapter-content").value = chapter.pages[currentBookPage].content || "";
+  bookEditorReady = true;
   updateBookCounts();
+  updateBookPageControls(chapter);
+  setBookUpdatedTime(book);
   renderChapterList();
   $(".chapter-rail").classList.remove("open");
 }
@@ -268,41 +428,43 @@ function queueBookSave() {
   $("#book-save-status").textContent = "Saving…";
   updateBookCounts();
   clearTimeout(bookSaveTimer);
-  bookSaveTimer = setTimeout(() => {
-    const book = getBook();
-    const chapter = book.chapters[currentBookChapter];
-    if (!chapter) return;
-    chapter.title = $("#book-chapter-title").value.trim() || "Untitled chapter";
-    chapter.content = $("#book-chapter-content").value;
-    saveBook(book);
-    renderChapterList();
-  }, 420);
+  bookSaveTimer = setTimeout(() => commitBookEditor(), 420);
 }
 
 async function openBookStudio() {
-  if (!(await ensureAdmin())) return;
+  if (!(await ensureCloudMusicAdmin())) return;
+  await syncBookFromCloud();
   $("#book-modal").hidden = false;
   setModalOpen(true);
   currentBookChapter = 0;
+  currentBookPage = 0;
+  bookEditorReady = false;
   renderChapterList();
-  loadBookChapter(0);
+  loadBookChapter(0, 0, false);
   updateConnectorStatus();
 }
 
 function closeBookStudio() {
-  clearTimeout(bookSaveTimer);
-  queueBookSave();
+  commitBookEditor();
+  bookEditorReady = false;
   $("#book-modal").hidden = true;
   setModalOpen(false);
 }
 
 function parseMarkdownBook(text) {
-  const matches = [...text.matchAll(/^#{1,3}\s+(.+)$/gm)];
-  if (!matches.length) return [{ id: `chapter-${Date.now()}`, title: "Imported manuscript", content: text.trim() }];
+  const matches = [...text.matchAll(/^##\s+(.+)$/gm)];
+  if (!matches.length) return [{ id: `chapter-${Date.now()}`, title: "Imported manuscript", pages: [createBookPage(text.trim())] }];
   return matches.map((match, index) => {
     const start = match.index + match[0].length;
     const end = matches[index + 1]?.index ?? text.length;
-    return { id: `chapter-${Date.now()}-${index}`, title: match[1].trim(), content: text.slice(start, end).trim() };
+    const section = text.slice(start, end).trim();
+    const pageMatches = [...section.matchAll(/^###\s+Page\s+\d+\s*$/gmi)];
+    const pages = pageMatches.length ? pageMatches.map((pageMatch, pageIndex) => {
+      const pageStart = pageMatch.index + pageMatch[0].length;
+      const pageEnd = pageMatches[pageIndex + 1]?.index ?? section.length;
+      return createBookPage(section.slice(pageStart, pageEnd).trim());
+    }) : [createBookPage(section)];
+    return { id: `chapter-${Date.now()}-${index}`, title: match[1].trim(), pages };
   });
 }
 
@@ -314,15 +476,17 @@ async function importBookFile(file) {
     if (file.name.toLowerCase().endsWith(".json")) {
       const parsed = JSON.parse(text);
       if (!Array.isArray(parsed.chapters)) throw new Error("The backup does not contain a chapters list.");
-      imported = { title: parsed.title || "A Hypothesis of Man", updatedAt: new Date().toISOString(), chapters: parsed.chapters.map((chapter, index) => ({ id: chapter.id || `chapter-${Date.now()}-${index}`, title: chapter.title || `Chapter ${index + 1}`, content: chapter.content || "" })) };
+      imported = normalizeBook(parsed);
     } else {
-      imported = { title: "A Hypothesis of Man", updatedAt: new Date().toISOString(), chapters: parseMarkdownBook(text) };
+      imported = normalizeBook({ version: 2, title: "A Hypothesis of Man", updatedAt: null, chapters: parseMarkdownBook(text) });
     }
-    writeJson(KEYS.book, imported);
+    saveBook(imported);
     currentBookChapter = 0;
+    currentBookPage = 0;
+    bookEditorReady = false;
     renderChapterList();
-    loadBookChapter(0);
-    toast(`Imported ${imported.chapters.length} chapter${imported.chapters.length === 1 ? "" : "s"}.`);
+    loadBookChapter(0, 0, false);
+    toast(`Imported ${imported.chapters.length} section${imported.chapters.length === 1 ? "" : "s"}.`);
   } catch (error) {
     toast(`Import failed: ${error.message}`);
   }
@@ -340,32 +504,36 @@ function downloadFile(name, content, type) {
 }
 
 function exportBookJson() {
+  commitBookEditor();
   downloadFile("A_Hypothesis_of_Man_backup.json", JSON.stringify(getBook(), null, 2), "application/json");
   toast("Private book backup downloaded.");
 }
 
 function exportBookMarkdown() {
+  commitBookEditor();
   const book = getBook();
-  const markdown = `# ${book.title}\n\n${book.chapters.map((chapter) => `## ${chapter.title}\n\n${chapter.content || ""}`).join("\n\n")}`;
+  const markdown = `# ${book.title}\n\n${book.chapters.map((chapter) => `## ${chapter.title}\n\n${chapter.pages.map((page, index) => `${chapter.pages.length > 1 ? `### Page ${index + 1}\n\n` : ""}${page.content || ""}`).join("\n\n")}`).join("\n\n")}`;
   downloadFile("A_Hypothesis_of_Man.md", markdown, "text/markdown");
   toast("Markdown manuscript downloaded.");
 }
 
 async function sendChapterToAssistant() {
   if (!(await ensureCloudMusicAdmin())) return;
+  commitBookEditor();
   const book = getBook();
   const chapter = book.chapters[currentBookChapter];
-  if (!confirm("Send this chapter to Big Pickle? During its free period, submitted text may be collected and used to improve the model.")) return;
+  const page = chapter?.pages?.[currentBookPage];
+  if (!page || !confirm("Send this page to Big Pickle? During its free period, submitted text may be collected and used to improve the model.")) return;
   const button = $("#send-to-assistant");
   button.disabled = true;
   button.textContent = "Sending securely…";
   try {
-    const result = await musicCloud.invokeFunction("big-pickle", { scope: "book", action: "edit", chapter: { title: chapter.title, content: chapter.content } });
+    const result = await musicCloud.invokeFunction("big-pickle", { scope: "book", action: "edit", chapter: { title: chapter.title, page: currentBookPage + 1, content: page.content } });
     if (typeof result.content !== "string") throw new Error("Gateway response did not include revised content.");
-    if (confirm("Big Pickle returned a revision. Replace this chapter with it?")) {
-      chapter.content = result.content;
-      saveBook(book, "AI revision saved locally");
-      $("#book-chapter-content").value = chapter.content;
+    if (confirm("Big Pickle returned a revision. Replace this page with it?")) {
+      page.content = result.content;
+      saveBook(book, "AI revision saving to cloud");
+      $("#book-chapter-content").value = page.content;
       updateBookCounts();
     }
   } catch (error) {
@@ -384,7 +552,7 @@ function updateConnectorStatus() {
   const send = $("#send-to-assistant");
   if (send) {
     send.disabled = false;
-    send.textContent = "Send chapter to Big Pickle";
+    send.textContent = "Send page to Big Pickle";
   }
 }
 
@@ -673,7 +841,8 @@ function refreshDashboard() {
   $("#home-mandarin-score").textContent = mandarin.length ? `${mandarin[0].percent}% · ${mandarin[0].correct}/${mandarin[0].total}` : "No Mandarin score yet";
   const rawBook = localStorage.getItem(KEYS.book);
   const book = getBook();
-  $("#home-book-status").textContent = rawBook ? `${book.chapters.length} chapters · saved locally` : "Book not imported";
+  const pageCount = book.chapters.reduce((total, chapter) => total + chapter.pages.length, 0);
+  $("#home-book-status").textContent = rawBook ? `${book.chapters.length} sections · ${pageCount} pages` : "Book ready";
   updateConnectorStatus();
   updateAdminStatus();
 }
@@ -776,16 +945,31 @@ $$('.launch-app').forEach((button) => button.addEventListener("click", () => ope
 $("#open-book-studio").addEventListener("click", openBookStudio);
 $("#close-book").addEventListener("click", closeBookStudio);
 $("#chapter-menu").addEventListener("click", () => $(".chapter-rail").classList.toggle("open"));
-$("#chapter-list").addEventListener("click", (event) => { const button = event.target.closest("[data-chapter-index]"); if (button) loadBookChapter(Number(button.dataset.chapterIndex)); });
+$("#chapter-list").addEventListener("click", (event) => { const button = event.target.closest("[data-chapter-index]"); if (button) loadBookChapter(Number(button.dataset.chapterIndex), 0); });
 $("#book-chapter-title").addEventListener("input", queueBookSave);
 $("#book-chapter-content").addEventListener("input", queueBookSave);
+$("#book-prev-page").addEventListener("click", () => loadBookChapter(currentBookChapter, currentBookPage - 1));
+$("#book-next-page").addEventListener("click", () => loadBookChapter(currentBookChapter, currentBookPage + 1));
+$("#add-book-page").addEventListener("click", () => {
+  commitBookEditor();
+  const book = getBook();
+  const chapter = book.chapters[currentBookChapter];
+  if (!chapter) return;
+  chapter.pages.push(createBookPage());
+  saveBook(book);
+  currentBookPage = chapter.pages.length - 1;
+  loadBookChapter(currentBookChapter, currentBookPage, false);
+  $("#book-chapter-content").focus();
+});
 $("#add-chapter").addEventListener("click", () => {
+  commitBookEditor();
   const title = prompt("New chapter title:");
   if (!title?.trim()) return;
   const book = getBook();
-  book.chapters.push({ id: `chapter-${Date.now()}`, title: title.trim(), content: "" });
+  book.chapters.push({ id: `chapter-${Date.now()}`, title: title.trim(), pages: [createBookPage()] });
   saveBook(book);
-  loadBookChapter(book.chapters.length - 1);
+  currentBookPage = 0;
+  loadBookChapter(book.chapters.length - 1, 0, false);
 });
 $("#import-book").addEventListener("click", () => $("#book-file-input").click());
 $("#book-file-input").addEventListener("change", (event) => { importBookFile(event.target.files[0]); event.target.value = ""; });
@@ -845,7 +1029,10 @@ $("#dock-track-select").addEventListener("change", (event) => { if (event.target
 $("#audio-player").addEventListener("play", () => { updatePlayButton(); saveMusicPlayerState(); });
 $("#audio-player").addEventListener("pause", () => { updatePlayButton(); saveMusicPlayerState(); });
 $("#audio-player").addEventListener("ended", () => stepTrack(1));
-window.addEventListener("pagehide", saveMusicPlayerState);
+window.addEventListener("pagehide", () => {
+  if (bookEditorReady) commitBookEditor(false);
+  saveMusicPlayerState();
+});
 
 document.addEventListener("keydown", (event) => {
   if (event.key !== "Escape") return;
