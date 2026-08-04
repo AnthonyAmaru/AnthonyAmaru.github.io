@@ -903,7 +903,6 @@ async function openStudyApp(name, needsAdmin) {
   const apps = {
     aviation: { title: "Aviation practice", src: "aviation/index.html?v=20260804-embed1" },
     mandarin: { title: "Mandarin notebook", src: "mandarin/index.html?v=20260804-embed1" },
-    "mandarin-quiz": { title: "Mandarin practice", src: "mandarin/quiz.html?v=20260804-embed1" },
     mycology: { title: "Mycology", src: "mycology.html?v=20260804-globe2" },
     books: { title: "Books", src: "books.html?v=20260804-embed1" },
     ai: { title: "AI packages", src: "ai.html?v=20260804-packages1" },
@@ -1039,14 +1038,14 @@ $$('[data-close-modal]').forEach((button) => button.addEventListener("click", ()
   else { $("#" + id).hidden = true; setModalOpen(false); }
 }));
 
-$$('.launch-app').forEach((button) => button.addEventListener("click", () => openStudyApp(button.dataset.app, button.dataset.admin === "true")));
+$$('.interest-card[data-app]').forEach((tile) => tile.addEventListener("click", (event) => { event.preventDefault(); openStudyApp(tile.dataset.app, tile.dataset.admin === "true"); }));
 $$('[data-open-quick-ai]').forEach((button) => button.addEventListener("click", () => {
   const topic = $("#quick-ai-topic");
   if (topic) topic.value = "General";
   toggleQuickAi(true);
 }));
 
-$("#open-book-studio").addEventListener("click", openBookStudio);
+$("#open-book-studio").addEventListener("click", (event) => { event.preventDefault(); openBookStudio(); });
 $("#chapter-menu").addEventListener("click", () => $(".chapter-rail").classList.toggle("open"));
 $("#chapter-list").addEventListener("click", (event) => { const button = event.target.closest("[data-chapter-index]"); if (button) loadBookChapter(Number(button.dataset.chapterIndex), 0); });
 $("#book-chapter-title").addEventListener("input", queueBookSave);

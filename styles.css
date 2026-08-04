@@ -239,7 +239,9 @@ h1, h2 { font-family: var(--sans); font-weight: 750; letter-spacing: -.035em; }
 
 /* Interests */
 .interest-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
-.interest-card { position: relative; min-height: 480px; overflow: hidden; border: 1px solid var(--line); border-radius: 32px; background: var(--surface); box-shadow: var(--shadow-sm); padding: clamp(25px, 4vw, 42px); }
+.interest-card { position: relative; min-height: 480px; overflow: hidden; border: 1px solid var(--line); border-radius: 32px; background: var(--surface); box-shadow: var(--shadow-sm); padding: clamp(25px, 4vw, 42px); cursor: pointer; color: var(--ink); text-align: left; text-decoration: none; transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease; }
+.interest-card:hover { border-color: var(--line-strong); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.interest-card:focus-visible { border-color: var(--sage-strong); outline: 3px solid color-mix(in srgb, var(--sage-strong) 30%, transparent); outline-offset: 3px; }
 .interest-card.aviation-card { background: linear-gradient(145deg, var(--surface-solid), var(--sky)); }
 .interest-card.mandarin-card { background: linear-gradient(145deg, var(--surface-solid), var(--lavender)); }
 .interest-card.wide { grid-column: 1 / -1; min-height: 410px; }
@@ -252,7 +254,6 @@ h1, h2 { font-family: var(--sans); font-weight: 750; letter-spacing: -.035em; }
 .stat-strip div + div { border-left: 1px solid var(--line); padding-left: 20px; }
 .stat-strip strong { font-family: var(--serif); font-size: 1.7rem; }
 .stat-strip span { color: var(--muted); font-size: .7rem; }
-.button-pair { display: flex; flex-wrap: wrap; gap: 9px; }
 .book-card { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(280px, .8fr); align-items: center; gap: 50px; background: linear-gradient(120deg, var(--peach), var(--surface-solid)); }
 .book-visual { position: relative; display: flex; width: min(330px, 90%); aspect-ratio: 3 / 4; flex-direction: column; justify-content: space-between; justify-self: center; border-radius: 7px 22px 22px 7px; background: #293430; box-shadow: 20px 28px 45px rgba(28,39,35,.28); padding: 30px; color: #f7f2e9; transform: rotate(2deg); }
 .book-visual::before { position: absolute; inset: 0 auto 0 15px; width: 1px; background: rgba(255,255,255,.18); content: ""; }
@@ -434,11 +435,9 @@ body.has-back-button .app-modal,body.has-back-button .book-modal { left: var(--b
 .interest-card h2 { margin: 0 0 18px; font: 750 clamp(1.4rem, 2.4vw, 2rem)/1 var(--sans); letter-spacing: -.035em; }
 .stat-strip { width: 100%; margin: auto 0 17px; }
 .stat-strip strong { font-family: var(--sans); font-size: 1.25rem; }
-.interest-card > .button, .book-card-copy > .button, .button-pair { margin-top: auto; }
 .book-card-copy { display: flex; height: 100%; flex-direction: column; align-items: flex-start; }
 .book-card-copy .author-card-title { margin:0; color:var(--ink); font-size:1.05rem; font-weight:850; line-height:1.25; letter-spacing:-.02em; }
 .book-card-copy .author-card-status { display:block; margin-top:5px; color:var(--gold); font-size:.72rem; font-weight:800; }
-.book-card-copy .button { margin-top: auto; }
 .assistant-heading { display: flex; width: 100%; height: 100%; flex-direction: column; align-items: flex-start; }
 .assistant-heading > div { width: 100%; }
 .assistant-heading .connection-pill { margin-top: auto; }
@@ -563,7 +562,7 @@ body.has-back-button .app-modal,body.has-back-button .book-modal { left: var(--b
   .brand strong { font-size: .82rem; }
   .icon-button { width: 38px; height: 38px; }
   .admin-chip { min-width: 38px; padding: 0 11px; }
-  .hero-actions .button, .button-pair .button { width: 100%; }
+  .hero-actions .button { width: 100%; }
   .stat-strip { grid-template-columns: 1fr 1fr; }
   .library-heading { display: grid; align-items: start; }
   .library-actions { width: 100%; flex-wrap: wrap; justify-content: flex-start; }

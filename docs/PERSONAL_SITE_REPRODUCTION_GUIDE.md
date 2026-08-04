@@ -183,6 +183,7 @@ Do not replace these tabs when entering an interest. Interest-specific controls 
 - Hide the large vertical desktop back button on phones.
 - Use transparent outer backgrounds for favicons and logos when requested.
 - Do not number cards unless the owner explicitly asks for numbering.
+- Make each interest tile one large keyboard-accessible control; do not add redundant Open, Notebook, or Test buttons inside it.
 - Keep visible keyboard focus, semantic headings, labels, skip links, and live status regions.
 
 ### High-detail globe pattern
