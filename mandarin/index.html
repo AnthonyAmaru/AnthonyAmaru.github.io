@@ -30,14 +30,14 @@
       href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Noto+Serif+SC:wght@500;600;700;900&amp;display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=20260803-compact2" />
-    <script src="script.js?v=20260803-compact2" defer></script>
+    <link rel="stylesheet" href="styles.css?v=20260803-pages1" />
+    <script src="script.js?v=20260803-pages1" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to the notebook</a>
 
     <header class="site-header">
-      <a class="brand" href="#top" aria-label="Mandarin notebook home">
+      <a class="brand" href="index.html?v=20260803-pages1" aria-label="Mandarin notebook home">
         <span class="brand-mark" aria-hidden="true"><img src="../anthony-brand-icon.png" alt="" /></span>
         <strong>Mandarin</strong>
       </a>
@@ -45,29 +45,31 @@
         Menu
       </button>
       <nav id="site-nav" class="site-nav" aria-label="Primary navigation">
-        <a href="#lesson-seven">Lesson</a>
-        <a href="#study">Cards</a>
-        <a href="#sounds">Sounds</a>
-        <a href="#vocabulary">Words</a>
-        <a href="#patterns">Sentences</a>
-        <a href="#dialogue">Plans</a>
-        <a href="#reading">Reading</a>
-        <a href="#characters">Characters</a>
+        <a data-page-link="home" href="index.html?v=20260803-pages1">Home</a>
+        <a data-page-link="lesson" href="index.html?page=lesson&amp;v=20260803-pages1">Lesson</a>
+        <a data-page-link="cards" href="index.html?page=cards&amp;v=20260803-pages1">Cards</a>
+        <a data-page-link="sounds" href="index.html?page=sounds&amp;v=20260803-pages1">Sounds</a>
+        <a data-page-link="words" href="index.html?page=words&amp;v=20260803-pages1">Words</a>
+        <a data-page-link="sentences" href="index.html?page=sentences&amp;v=20260803-pages1">Sentences</a>
+        <a data-page-link="plans" href="index.html?page=plans&amp;v=20260803-pages1">Plans</a>
+        <a data-page-link="reading" href="index.html?page=reading&amp;v=20260803-pages1">Reading</a>
+        <a data-page-link="characters" href="index.html?page=characters&amp;v=20260803-pages1">Characters</a>
+        <a href="quiz.html?v=20260803-pages1">Quiz</a>
       </nav>
     </header>
 
     <main id="main">
-      <section id="top" class="hero section-shell">
+      <section id="top" class="mandarin-page hero section-shell" data-page="home">
         <div class="hero-copy">
           <p class="eyebrow">7 lessons</p>
           <h1 lang="zh-Hans">中文</h1>
           <div class="section-menu" aria-label="Mandarin study sections">
-            <a href="#study">Cards</a>
-            <a href="#sounds">Sounds</a>
-            <a href="#vocabulary"><span id="word-count">166</span> Words</a>
-            <a href="#patterns">Sentences</a>
-            <a href="#reading">Reading</a>
-            <a href="quiz.html">Quiz</a>
+            <a href="index.html?page=cards&amp;v=20260803-pages1">Cards</a>
+            <a href="index.html?page=sounds&amp;v=20260803-pages1">Sounds</a>
+            <a href="index.html?page=words&amp;v=20260803-pages1"><span id="word-count">166</span> Words</a>
+            <a href="index.html?page=sentences&amp;v=20260803-pages1">Sentences</a>
+            <a href="index.html?page=reading&amp;v=20260803-pages1">Reading</a>
+            <a href="quiz.html?v=20260803-pages1">Quiz</a>
           </div>
         </div>
 
@@ -83,7 +85,7 @@
         </div>
       </section>
 
-      <section id="lesson-seven" class="lesson-section section-shell">
+      <section id="lesson-seven" class="mandarin-page lesson-section section-shell" data-page="lesson">
         <div class="section-heading compact-heading">
           <p class="eyebrow">Lesson 7</p>
           <h2>Greetings</h2>
@@ -110,7 +112,7 @@
         </div>
       </section>
 
-      <section id="study" class="study-section section-shell">
+      <section id="study" class="mandarin-page study-section section-shell" data-page="cards">
         <div class="section-heading compact-heading">
           <h2>Flashcards</h2>
         </div>
@@ -145,7 +147,7 @@
         </div>
       </section>
 
-      <section id="sounds" class="pronunciation-section section-shell">
+      <section id="sounds" class="mandarin-page pronunciation-section section-shell" data-page="sounds">
         <div class="section-heading compact-heading">
           <h2>Sounds</h2>
         </div>
@@ -178,7 +180,7 @@
         </div>
       </section>
 
-      <section id="vocabulary" class="vocab-section section-shell">
+      <section id="vocabulary" class="mandarin-page vocab-section section-shell" data-page="words">
         <div class="section-heading compact-heading">
           <h2>Words</h2>
         </div>
@@ -200,7 +202,7 @@
         <p id="vocab-empty" class="empty-state" hidden>No words match that search yet.</p>
       </section>
 
-      <section id="patterns" class="pattern-section section-shell">
+      <section id="patterns" class="mandarin-page pattern-section section-shell" data-page="sentences">
         <div class="section-heading compact-heading">
           <h2>Sentences</h2>
         </div>
@@ -208,14 +210,14 @@
         <div id="pattern-list" class="pattern-list"></div>
       </section>
 
-      <section id="dialogue" class="dialogue-section section-shell">
+      <section id="dialogue" class="mandarin-page dialogue-section section-shell" data-page="plans">
         <div class="section-heading compact-heading">
           <h2>Plans</h2>
         </div>
         <div id="dialogue-list" class="dialogue-list" aria-label="Mandarin dialogue about making plans"></div>
       </section>
 
-      <section id="reading" class="reading-section">
+      <section id="reading" class="mandarin-page reading-section" data-page="reading">
         <div class="reading-inner section-shell">
           <div class="reading-intro">
             <h2>Reading</h2>
@@ -229,7 +231,7 @@
         </div>
       </section>
 
-      <section id="characters" class="character-section section-shell">
+      <section id="characters" class="mandarin-page character-section section-shell" data-page="characters">
         <div class="section-heading compact-heading">
           <h2>Characters</h2>
         </div>

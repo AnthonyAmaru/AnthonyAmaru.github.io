@@ -114,11 +114,13 @@ function routeTo(route) {
   const page = $("[data-page='" + route + "']");
   if (!page) return;
   $$(".page-panel").forEach((panel) => panel.classList.toggle("active", panel === page));
-  $$(".nav-link").forEach((link) => link.classList.toggle("active", link.dataset.route === route));
+  $$(".nav-link").forEach((link) => {
+    const active = link.dataset.pageLink === route;
+    link.classList.toggle("active", active);
+    if (active) link.setAttribute("aria-current", "page"); else link.removeAttribute("aria-current");
+  });
   $("#primary-nav").classList.remove("open");
   $("#mobile-menu-button").setAttribute("aria-expanded", "false");
-  history.replaceState(null, "", `#${route}`);
-  window.scrollTo({ top: 0, behavior: "smooth" });
   if (route === "music") renderMusic();
   if (route === "media") renderMedia();
   if (route === "resume") renderResume();
@@ -657,16 +659,12 @@ async function openStudyApp(name, needsAdmin) {
   if (needsAdmin && !(await ensureAdmin())) return;
   const apps = {
     aviation: { title: "Aviation practice", src: "aviation/index.html" },
-    mandarin: { title: "Mandarin notebook", src: "mandarin/index.html?v=20260803-compact2" },
-    "mandarin-quiz": { title: "Mandarin practice", src: "mandarin/quiz.html?v=20260803-compact2" },
+    mandarin: { title: "Mandarin notebook", src: "mandarin/index.html?v=20260803-pages1" },
+    "mandarin-quiz": { title: "Mandarin practice", src: "mandarin/quiz.html?v=20260803-pages1" },
   };
   const app = apps[name];
   if (!app) return;
-  $("#app-modal-title").textContent = app.title;
-  $("#app-frame").src = app.src;
-  $("#open-app-new-tab").href = app.src;
-  $("#app-modal").hidden = false;
-  setModalOpen(true);
+  location.href = app.src;
 }
 
 function closeStudyApp() {
@@ -725,8 +723,6 @@ $("#mobile-menu-button").addEventListener("click", () => {
   $("#mobile-menu-button").setAttribute("aria-expanded", String(open));
 });
 document.addEventListener("click", (event) => {
-  const route = event.target.closest("[data-route]");
-  if (route) { event.preventDefault(); routeTo(route.dataset.route); }
   const popover = $("#quick-ai-popover");
   if (!popover.hidden && !event.target.closest("#quick-ai-popover") && !event.target.closest("#quick-ai-toggle")) toggleQuickAi(false);
 });
@@ -877,7 +873,8 @@ renderResume();
 renderMusic();
 renderMedia();
 refreshDashboard();
-const initialRoute = location.hash.slice(1);
-if (["home", "resume", "interests", "music", "media"].includes(initialRoute)) routeTo(initialRoute);
+const requestedPage = new URLSearchParams(location.search).get("page");
+const initialRoute = ["resume", "interests", "music", "media"].includes(requestedPage) ? requestedPage : "home";
+routeTo(initialRoute);
 if (sessionStorage.getItem("anthony_visitor_unlocked") === "1") showPortal();
 if (musicCloud.isSignedIn()) syncStudyHistoryFromCloud();

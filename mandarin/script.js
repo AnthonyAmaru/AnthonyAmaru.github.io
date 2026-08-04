@@ -583,6 +583,16 @@ $("#site-nav").addEventListener("click", () => {
 });
 window.addEventListener("scroll", () => $(".site-header").classList.toggle("scrolled", window.scrollY > 10), { passive: true });
 
+const requestedPage = new URLSearchParams(location.search).get("page");
+const mandarinPages = ["lesson", "cards", "sounds", "words", "sentences", "plans", "reading", "characters"];
+const activePage = mandarinPages.includes(requestedPage) ? requestedPage : "home";
+$$('.mandarin-page').forEach((page) => { page.hidden = page.dataset.page !== activePage; });
+$$('[data-page-link]').forEach((link) => {
+  if (link.dataset.pageLink === activePage) link.setAttribute("aria-current", "page");
+  else link.removeAttribute("aria-current");
+});
+document.documentElement.classList.add("mandarin-ready");
+
 renderFilters();
 renderVocabulary();
 renderPronunciation();

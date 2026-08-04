@@ -22,9 +22,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&amp;family=Noto+Serif+SC:wght@500;700&amp;display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=20260803-palette1" />
+    <link rel="stylesheet" href="styles.css?v=20260803-pages1" />
     <script src="music-cloud.js?v=20260803-ai2" defer></script>
-    <script src="script.js?v=20260803-compact2" defer></script>
+    <script src="script.js?v=20260803-pages1" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -51,17 +51,17 @@
 
     <div id="portal" class="portal" hidden>
       <header class="site-header">
-        <a class="brand" href="#home" data-route="home" aria-label="Anthony Amaru home">
+        <a class="brand" href="index.html?v=20260803-pages1" aria-label="Anthony Amaru home">
           <img src="anthony-brand-icon.png" alt="" />
           <span><strong>Anthony Amaru</strong></span>
         </a>
         <button id="mobile-menu-button" class="mobile-menu-button" type="button" aria-expanded="false" aria-controls="primary-nav">Menu</button>
         <nav id="primary-nav" class="primary-nav" aria-label="Primary navigation">
-          <button class="nav-link active" type="button" data-route="home">Home</button>
-          <button class="nav-link" type="button" data-route="resume">Resume</button>
-          <button class="nav-link" type="button" data-route="interests">Interests</button>
-          <button class="nav-link" type="button" data-route="music">Music</button>
-          <button class="nav-link" type="button" data-route="media">Media</button>
+          <a class="nav-link" data-page-link="home" href="index.html?v=20260803-pages1">Home</a>
+          <a class="nav-link" data-page-link="resume" href="index.html?page=resume&amp;v=20260803-pages1">Resume</a>
+          <a class="nav-link" data-page-link="interests" href="index.html?page=interests&amp;v=20260803-pages1">Interests</a>
+          <a class="nav-link" data-page-link="music" href="index.html?page=music&amp;v=20260803-pages1">Music</a>
+          <a class="nav-link" data-page-link="media" href="index.html?page=media&amp;v=20260803-pages1">Media</a>
         </nav>
         <div class="header-actions">
           <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch color theme"><span aria-hidden="true">☾</span></button>
@@ -97,10 +97,10 @@
           <div class="home-command section-shell">
             <header class="command-heading"><img src="anthony-brand-icon.png" alt="" /><div><h1>Anthony Amaru</h1></div></header>
             <div class="command-grid">
-              <button type="button" data-route="resume"><span>01</span><strong>Resume</strong><b>→</b></button>
-              <button type="button" data-route="interests"><span>02</span><strong>Aviation · Mandarin · Book</strong><b>→</b></button>
-              <button type="button" data-route="music"><span>03</span><strong>Music</strong><b>→</b></button>
-              <button type="button" data-route="media"><span>04</span><strong>Photos & videos</strong><b>→</b></button>
+              <a href="index.html?page=resume&amp;v=20260803-pages1"><span>01</span><strong>Resume</strong><b>→</b></a>
+              <a href="index.html?page=interests&amp;v=20260803-pages1"><span>02</span><strong>Aviation · Mandarin · Book</strong><b>→</b></a>
+              <a href="index.html?page=music&amp;v=20260803-pages1"><span>03</span><strong>Music</strong><b>→</b></a>
+              <a href="index.html?page=media&amp;v=20260803-pages1"><span>04</span><strong>Photos & videos</strong><b>→</b></a>
             </div>
             <div class="command-status">
               <span><small>Aviation</small><strong id="home-aviation-score">—</strong></span>

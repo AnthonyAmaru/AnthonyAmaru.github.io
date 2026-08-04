@@ -6,6 +6,9 @@
   --peach: #efe3bd;
 }
 .intro-copy { color: var(--muted); line-height: 1.6; }
+.mandarin-page-nav { display: flex; width: min(1120px, calc(100% - 32px)); flex-wrap: wrap; gap: 7px; margin: 18px auto 0; }
+.mandarin-page-nav a { border: 1px solid var(--line); border-radius: 99px; padding: 7px 11px; color: var(--muted); font-size: .72rem; font-weight: 750; text-decoration: none; }
+.mandarin-page-nav a[aria-current="page"] { border-color: var(--mint-strong); background: var(--mint); color: var(--ink); }
 .quiz-fields label:first-child { grid-column: auto; }
 .question-chinese { margin: 10px 0 8px; font-family: "Noto Serif SC", "Songti SC", serif; font-size: clamp(2.7rem, 9vw, 5.5rem); font-weight: 700; line-height: 1.1; text-align: center; }
 .mandarin-card #question-text { margin: 0 0 22px; color: var(--muted); font-family: inherit; font-size: 1rem; font-weight: 600; text-align: center; }

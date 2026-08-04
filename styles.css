@@ -114,7 +114,7 @@ h1, h2 { font-family: var(--sans); font-weight: 750; letter-spacing: -.035em; }
 .brand strong { font-size: .94rem; }
 .brand small { color: var(--muted); font-size: .68rem; }
 .primary-nav { display: flex; justify-content: center; gap: 4px; }
-.nav-link { border: 0; border-radius: 999px; background: transparent; padding: 10px 14px; cursor: pointer; color: var(--muted); font-size: .84rem; font-weight: 700; }
+.nav-link { border: 0; border-radius: 999px; background: transparent; padding: 10px 14px; cursor: pointer; color: var(--muted); font-size: .84rem; font-weight: 700; text-decoration: none; }
 .nav-link.active { background: var(--surface-solid); color: var(--ink); box-shadow: var(--shadow-sm); }
 .header-actions { display: flex; align-items: center; gap: 9px; }
 .admin-chip { display: inline-flex; min-height: 42px; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); padding: 0 14px; cursor: pointer; color: var(--muted); font-size: .76rem; font-weight: 700; }
@@ -347,8 +347,8 @@ h1, h2 { font-family: var(--sans); font-weight: 750; letter-spacing: -.035em; }
 .command-heading h1 { margin: 0 0 3px; font: 800 clamp(1.8rem, 4vw, 3rem)/1 var(--sans); letter-spacing: -.04em; }
 .command-heading span { color: var(--muted); font-size: .78rem; font-weight: 650; }
 .command-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.command-grid button { display: grid; grid-template-columns: auto 1fr auto; min-height: 118px; align-items: center; gap: 18px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface-solid); padding: 24px; cursor: pointer; color: var(--ink); text-align: left; transition: border-color .18s, transform .18s, box-shadow .18s; }
-.command-grid button:hover { border-color: var(--line-strong); box-shadow: var(--shadow-sm); transform: translateY(-2px); }
+.command-grid a { display: grid; grid-template-columns: auto 1fr auto; min-height: 118px; align-items: center; gap: 18px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface-solid); padding: 24px; cursor: pointer; color: var(--ink); text-align: left; text-decoration: none; transition: border-color .18s, transform .18s, box-shadow .18s; }
+.command-grid a:hover { border-color: var(--line-strong); box-shadow: var(--shadow-sm); transform: translateY(-2px); }
 .command-grid span { color: var(--muted); font-size: .68rem; font-weight: 800; }
 .command-grid strong { font-size: clamp(1rem, 2vw, 1.25rem); }
 .command-grid b { font-size: 1.3rem; }
@@ -400,7 +400,7 @@ h1, h2 { font-family: var(--sans); font-weight: 750; letter-spacing: -.035em; }
 @media (max-width: 720px) {
   .home-command { min-height: calc(100svh - 138px); padding-block: 34px; }
   .command-grid { grid-template-columns: 1fr; }
-  .command-grid button { min-height: 86px; padding: 19px; }
+  .command-grid a { min-height: 86px; padding: 19px; }
   .command-status { grid-template-columns: 1fr; }
   .command-status > span { min-height: 54px; border-right: 0; border-bottom: 1px solid var(--line); }
   .command-status > span:last-child { border-bottom: 0; }
