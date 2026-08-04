@@ -1,0 +1,69 @@
+:root {
+  color-scheme: light;
+  --bg: #eef1ea;
+  --surface: #fbfcf8;
+  --ink: #18231b;
+  --muted: #667069;
+  --line: rgba(24, 35, 27, 0.14);
+  --green: #31553a;
+  --gold: #a67b2e;
+  font-family: "DM Sans", system-ui, sans-serif;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #101511;
+  --surface: #1b241d;
+  --ink: #f1f4ef;
+  --muted: #a9b3ab;
+  --line: rgba(241, 244, 239, 0.13);
+  --green: #90bc96;
+  --gold: #d6b163;
+}
+
+* { box-sizing: border-box; }
+html { background: var(--bg); scroll-behavior: smooth; }
+body { min-width: 320px; margin: 0; background: var(--bg); color: var(--ink); }
+.skip-link { position: fixed; top: 8px; left: 8px; z-index: 100; transform: translateY(-160%); border-radius: 8px; background: var(--ink); color: var(--bg); padding: 10px 14px; }
+.skip-link:focus { transform: translateY(0); }
+
+main { width: min(1120px, calc(100% - 32px)); margin: 0 auto; padding: clamp(32px, 6vw, 74px) 0 54px; }
+.page-heading { display: grid; gap: 8px; margin-bottom: 24px; }
+.page-heading a { width: max-content; color: var(--green); font-size: 0.82rem; font-weight: 800; text-decoration: none; }
+.page-heading h1 { margin: 4px 0 0; font: 500 clamp(3rem, 8vw, 6rem)/0.9 "Newsreader", serif; letter-spacing: -0.05em; }
+.page-heading p { margin: 4px 0 0; color: var(--muted); font-size: 0.84rem; }
+
+.mushroom-list { display: grid; gap: 18px; }
+.mushroom-card { display: grid; grid-template-columns: minmax(260px, 0.9fr) minmax(0, 1.2fr); overflow: hidden; border: 1px solid var(--line); border-radius: 20px; background: var(--surface); }
+.mushroom-card figure { position: relative; min-height: 360px; margin: 0; background: #ced5ca; }
+.mushroom-card img { width: 100%; height: 100%; min-height: 360px; display: block; object-fit: cover; }
+.mushroom-card figcaption { position: absolute; right: 12px; bottom: 12px; border-radius: 999px; background: rgba(10, 15, 11, 0.72); color: #fff; padding: 6px 10px; font-size: 0.7rem; font-weight: 700; }
+.mushroom-facts { display: grid; align-content: center; padding: clamp(24px, 4vw, 48px); }
+.mushroom-facts header { display: grid; justify-items: start; }
+.mushroom-facts h2 { margin: 14px 0 0; font-size: clamp(1.7rem, 3vw, 2.7rem); letter-spacing: -0.045em; }
+.mushroom-facts i { margin-top: 4px; color: var(--muted); font-family: "Newsreader", serif; font-size: 1.1rem; }
+.mushroom-facts ul { display: grid; gap: 10px; margin: 24px 0 0; padding-left: 20px; color: var(--muted); font-size: 0.92rem; line-height: 1.45; }
+.mushroom-facts strong { color: var(--ink); }
+.danger-tag, .edible-tag, .utility-tag, .research-tag { border-radius: 999px; padding: 6px 10px; font-size: 0.68rem; font-style: normal; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+.danger-tag { background: #f3d6d0; color: #722c24; }
+.edible-tag { background: #d9ead8; color: #285431; }
+.utility-tag { background: #eee0bd; color: #654a18; }
+.research-tag { background: #d7e2e8; color: #294d5d; }
+:root[data-theme="dark"] .danger-tag { background: #5b2d28; color: #ffd7d1; }
+:root[data-theme="dark"] .edible-tag { background: #274a2f; color: #d7f1d9; }
+:root[data-theme="dark"] .utility-tag { background: #56431f; color: #f5dfaa; }
+:root[data-theme="dark"] .research-tag { background: #27444f; color: #d6edf5; }
+
+.sources { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; border-top: 1px solid var(--line); margin-top: 28px; padding-top: 18px; color: var(--muted); font-size: 0.75rem; }
+.sources strong { color: var(--ink); }
+.sources a { color: var(--green); font-weight: 700; }
+
+@media (max-width: 760px) {
+  main { width: min(100% - 24px, 600px); padding-top: 30px; }
+  .mushroom-card { grid-template-columns: 1fr; border-radius: 16px; }
+  .mushroom-card figure, .mushroom-card img { min-height: 270px; height: 270px; }
+  .mushroom-facts { padding: 24px; }
+  .mushroom-facts ul { margin-top: 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
