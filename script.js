@@ -23,6 +23,7 @@ let visibleTracks = [];
 let currentTrackId = null;
 const selectedTrackIds = new Set();
 let mediaObjectUrls = [];
+let anthonyAiMessages = [];
 
 const resumeDefaults = {
   work: [
@@ -123,6 +124,7 @@ function routeTo(route) {
   if (route === "media") renderMedia();
   if (route === "resume") renderResume();
   if (route === "interests") refreshDashboard();
+  if (route === "ai") renderAnthonyAi();
 }
 
 function adminIsUnlocked() {
@@ -373,6 +375,41 @@ function updateConnectorStatus() {
   if (send) {
     send.disabled = false;
     send.textContent = "Send chapter to Big Pickle";
+  }
+}
+
+function renderAnthonyAi() {
+  const thread = $("#anthony-ai-thread");
+  if (!thread) return;
+  thread.innerHTML = anthonyAiMessages.length ? anthonyAiMessages.map((message) => `<article class="ai-message ${message.role}"><span>${message.role === "user" ? "You" : "AI"}</span><p>${escapeHtml(message.content)}</p></article>`).join("") : '<div class="ai-empty"><strong>Ask anything</strong></div>';
+  thread.scrollTop = thread.scrollHeight;
+}
+
+async function askAnthonyAi(event) {
+  event.preventDefault();
+  const input = $("#anthony-ai-input");
+  const question = input.value.trim();
+  if (!question || !(await ensureCloudMusicAdmin())) return;
+  const topic = $("#anthony-ai-topic").value;
+  const scope = { Aviation: "aviation", Mandarin: "mandarin", Book: "book-chat" }[topic] || "anthony";
+  const history = anthonyAiMessages.slice(-10);
+  anthonyAiMessages.push({ role: "user", content: question });
+  input.value = "";
+  renderAnthonyAi();
+  const send = $("#anthony-ai-send");
+  send.disabled = true;
+  send.textContent = "Thinking…";
+  try {
+    const result = await musicCloud.invokeFunction("big-pickle", { scope, topic, message: question, history });
+    if (typeof result.content !== "string") throw new Error("The AI response was empty.");
+    anthonyAiMessages.push({ role: "assistant", content: result.content.trim() });
+  } catch (error) {
+    anthonyAiMessages.push({ role: "assistant", content: `I couldn't answer that: ${error.message}` });
+  } finally {
+    send.disabled = false;
+    send.textContent = "Ask";
+    renderAnthonyAi();
+    input.focus();
   }
 }
 
@@ -732,6 +769,9 @@ $("#book-file-input").addEventListener("change", (event) => { importBookFile(eve
 $("#export-book-json").addEventListener("click", exportBookJson);
 $("#export-book-markdown").addEventListener("click", exportBookMarkdown);
 $("#send-to-assistant").addEventListener("click", sendChapterToAssistant);
+$("#anthony-ai-form").addEventListener("submit", askAnthonyAi);
+$("#anthony-ai-clear").addEventListener("click", () => { anthonyAiMessages = []; renderAnthonyAi(); });
+$("#anthony-ai-input").addEventListener("keydown", (event) => { if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) event.currentTarget.form.requestSubmit(); });
 
 $("#new-playlist").addEventListener("click", createPlaylist);
 $("#delete-selected-tracks").addEventListener("click", deleteSelectedTracks);
@@ -793,8 +833,9 @@ applyTheme(localStorage.getItem(KEYS.theme) || (matchMedia("(prefers-color-schem
 renderResume();
 renderMusic();
 renderMedia();
+renderAnthonyAi();
 refreshDashboard();
 const initialRoute = location.hash.slice(1);
-if (["home", "resume", "interests", "music", "media"].includes(initialRoute)) routeTo(initialRoute);
+if (["home", "resume", "interests", "ai", "music", "media"].includes(initialRoute)) routeTo(initialRoute);
 if (sessionStorage.getItem("anthony_visitor_unlocked") === "1") showPortal();
 if (musicCloud.isSignedIn()) syncStudyHistoryFromCloud();

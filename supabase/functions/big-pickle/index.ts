@@ -6,8 +6,13 @@ const OPENCODE_ENDPOINT = "https://opencode.ai/zen/v1/chat/completions";
 const allowedOrigins = new Set([
   "https://anthonyamaru.com",
   "https://www.anthonyamaru.com",
+  "https://raunyramirez.com",
+  "https://www.raunyramirez.com",
+  "https://anthonyamaru.github.io",
   "http://127.0.0.1:8765",
   "http://localhost:8765",
+  "http://127.0.0.1:4173",
+  "http://localhost:4173",
 ]);
 
 function corsHeaders(request: Request) {
@@ -23,11 +28,11 @@ function corsHeaders(request: Request) {
 function json(request: Request, body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...corsHeaders(request), "Content-Type": "application/json" },
+    headers: { ...corsHeaders(request), "Content-Type": "application/json", "Cache-Control": "no-store" },
   });
 }
 
-function systemPrompt(scope: string) {
+function systemPrompt(scope: string, topic = "General") {
   if (scope === "book") {
     return [
       "You are the careful editorial assistant for Anthony Amaru's manuscript, A Hypothesis of Man.",
@@ -43,10 +48,48 @@ function systemPrompt(scope: string) {
       "Explain the answer clearly, identify uncertainty, and never substitute for current FAA publications, an instructor, or operational judgment.",
     ].join(" ");
   }
+  if (scope === "mandarin") {
+    return [
+      "You are a Mandarin study assistant for an early learner.",
+      "Use simplified Chinese, accurate pinyin with tone marks, concise English explanations, and examples limited to the learner's supplied vocabulary when possible.",
+    ].join(" ");
+  }
+  if (scope === "book-chat") {
+    return [
+      "You are a careful writing and editorial assistant for Anthony Amaru.",
+      "Help with structure, reasoning, grammar, clarity, and revision while preserving the author's voice.",
+      "Never claim to have read manuscript text that was not included in the conversation, and never invent quotations or citations.",
+    ].join(" ");
+  }
+  if (scope === "rauny") {
+    return [
+      "You are Rauny Ramirez's private general assistant inside her personal website.",
+      `The selected topic is ${topic}.`,
+      "Be concise, practical, and honest about uncertainty.",
+      "You can help with art, dentistry study, travel, books, shopping, music, and goals, but you do not automatically have access to private site data unless it is included in the request.",
+      "For dental, medical, legal, or financial questions, give educational information and recommend qualified professional advice when decisions or safety are involved.",
+    ].join(" ");
+  }
   return [
-    "You are a Mandarin study assistant for an early learner.",
-    "Use simplified Chinese, accurate pinyin with tone marks, concise English explanations, and examples limited to the learner's supplied vocabulary when possible.",
+    "You are Anthony Amaru's private general assistant inside his personal website.",
+    `The selected topic is ${topic}.`,
+    "Be concise, practical, and honest about uncertainty.",
+    "You can help with aviation study, Mandarin, writing, technology, music, and general questions, but you do not automatically have access to private site data unless it is included in the request.",
   ].join(" ");
+}
+
+function chatHistory(value: unknown) {
+  if (!Array.isArray(value)) return [];
+  let total = 0;
+  return value.slice(-10).flatMap((entry) => {
+    if (!entry || typeof entry !== "object") return [];
+    const item = entry as Record<string, unknown>;
+    const role = item.role === "assistant" ? "assistant" : item.role === "user" ? "user" : "";
+    const content = String(item.content ?? "").trim().slice(0, 4_000);
+    if (!role || !content || total + content.length > 20_000) return [];
+    total += content.length;
+    return [{ role, content }];
+  });
 }
 
 async function authenticatedAdmin(request: Request) {
@@ -73,9 +116,11 @@ async fetch(request: Request) {
   let body: Record<string, unknown>;
   try { body = await request.json(); } catch { return json(request, { error: "A JSON request body is required." }, 400); }
   const scope = String(body.scope ?? "");
-  if (!["book", "aviation", "mandarin"].includes(scope)) return json(request, { error: "Unsupported assistant scope." }, 400);
+  if (!["anthony", "rauny", "book", "book-chat", "aviation", "mandarin"].includes(scope)) return json(request, { error: "Unsupported assistant scope." }, 400);
+  const topic = String(body.topic ?? "General").trim().slice(0, 80) || "General";
 
   let userPrompt = "";
+  let history: Array<{ role: string; content: string }> = [];
   if (scope === "book") {
     const chapter = (body.chapter ?? {}) as Record<string, unknown>;
     const title = String(chapter.title ?? "Untitled chapter").slice(0, 300);
@@ -88,24 +133,33 @@ async fetch(request: Request) {
     const context = String(body.context ?? "").trim();
     if (!message) return json(request, { error: "A question or instruction is required." }, 400);
     if (message.length + context.length > 80_000) return json(request, { error: "This request is too long." }, 413);
+    history = chatHistory(body.history);
     userPrompt = context ? "Reference context:\n" + context + "\n\nQuestion:\n" + message : message;
   }
 
-  const providerResponse = await fetch(OPENCODE_ENDPOINT, {
-    method: "POST",
-    headers: { Authorization: "Bearer " + OPENCODE_API_KEY, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "big-pickle",
-      messages: [
-        { role: "system", content: systemPrompt(scope) },
-        { role: "user", content: userPrompt },
-      ],
-    }),
-  });
+  let providerResponse: Response;
+  try {
+    providerResponse = await fetch(OPENCODE_ENDPOINT, {
+      method: "POST",
+      headers: { Authorization: "Bearer " + OPENCODE_API_KEY, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "big-pickle",
+        messages: [
+          { role: "system", content: systemPrompt(scope, topic) },
+          ...history,
+          { role: "user", content: userPrompt },
+        ],
+      }),
+      signal: AbortSignal.timeout(50_000),
+    });
+  } catch (error) {
+    console.error("Big Pickle request error", error instanceof Error ? error.message : "Unknown provider error");
+    return json(request, { error: "The AI service could not be reached." }, 502);
+  }
 
   if (!providerResponse.ok) {
-    const detail = (await providerResponse.text()).slice(0, 500);
-    return json(request, { error: "Big Pickle request failed.", detail }, 502);
+    console.error("Big Pickle provider status", providerResponse.status, (await providerResponse.text()).slice(0, 300));
+    return json(request, { error: "The AI service returned an error." }, 502);
   }
   const result = await providerResponse.json();
   const content = result?.choices?.[0]?.message?.content;

@@ -1,13 +1,16 @@
 # Anthony Amaru
 
-A password-gated, mobile-first personal website for Anthony's resume, interests, music, and media. It includes:
+A password-gated, mobile-first personal website for Anthony's resume, interests, AI, music, and media. It includes:
 
 - public-domain FAA aviation practice with score and missed-question history
 - the original interactive Mandarin notebook plus multiple-choice quizzes
-- a private, local-first manuscript studio with import and export
-- browser-local music playlists, photos, and videos
+- a private manuscript studio with import, export, and cloud content sync
+- Supabase-backed music, quiz history, and private editable content across devices
+- standalone authenticated Big Pickle chat for general, aviation, Mandarin, and writing questions
 - a Supabase Edge Function gateway for authenticated OpenCode Big Pickle requests
 
-Passwords are client-side privacy gates, not server-side authentication. Personal edits and uploaded files stay in the current browser unless a private backend is connected.
+The entrance password is a client-side privacy gate, not server-side authentication. Protected writes and AI calls use Supabase Auth and Row Level Security.
+
+See [the reproduction guide](docs/PERSONAL_SITE_REPRODUCTION_GUIDE.md) for the reusable GitHub, GoDaddy, Supabase, code-layout, and API setup.
 
 Live at [anthonyamaru.com](https://anthonyamaru.com).

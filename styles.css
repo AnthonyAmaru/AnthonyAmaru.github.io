@@ -375,6 +375,29 @@ h1, h2 { font-family: var(--sans); font-weight: 750; letter-spacing: -.035em; }
 .mycology-card .coming-soon { margin-top: auto; }
 .panel-card, .music-drop-zone, .empty-gallery { border-radius: 14px; box-shadow: none; }
 
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; clip-path: inset(50%); }
+.assistant-heading .button { margin-top: auto; }
+.assistant-heading .connection-pill { margin-top: 10px; }
+.ai-page-heading { display: flex; align-items: end; justify-content: space-between; gap: 18px; }
+.ai-chat { display: grid; min-height: 620px; grid-template-rows: auto 1fr auto; overflow: hidden; border: 1px solid var(--line); border-radius: 14px; background: var(--surface-solid); }
+.ai-chat-heading { display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--line); padding: 16px 18px; }
+.ai-chat-heading h2 { margin: 0 0 2px; font: 800 1rem/1 var(--sans); }
+.ai-chat-heading small { color: var(--muted); }
+.ai-avatar { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 11px; background: var(--ink); color: var(--canvas); font-size: .7rem; font-weight: 850; }
+.ai-thread { display: flex; max-height: 58vh; min-height: 390px; flex-direction: column; gap: 12px; overflow-y: auto; padding: 22px; }
+.ai-empty { display: grid; min-height: 100%; place-items: center; color: var(--muted); }
+.ai-message { display: grid; max-width: min(760px,88%); gap: 5px; }
+.ai-message.user { align-self: end; }
+.ai-message.assistant { align-self: start; }
+.ai-message > span { color: var(--muted); font-size: .62rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.ai-message.user > span { text-align: right; }
+.ai-message p { margin: 0; border-radius: 14px; background: var(--canvas-soft); padding: 13px 15px; font-size: .88rem; line-height: 1.55; white-space: pre-wrap; }
+.ai-message.user p { background: var(--ink); color: var(--canvas); }
+.ai-composer { display: grid; grid-template-columns: 150px minmax(0,1fr) auto; align-items: end; gap: 9px; border-top: 1px solid var(--line); padding: 13px; }
+.ai-composer select,.ai-composer textarea { min-height: 48px; border-radius: 10px; background: var(--surface); }
+.ai-composer textarea { min-height: 48px; max-height: 160px; resize: vertical; }
+.ai-composer .button { min-height: 48px; }
+
 @media (max-width: 980px) {
   .interest-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
@@ -392,6 +415,11 @@ h1, h2 { font-family: var(--sans); font-weight: 750; letter-spacing: -.035em; }
   .company-mark { width: 44px; height: 44px; }
   .interest-grid { grid-template-columns: 1fr; }
   .interest-card, .interest-card.wide { min-height: 240px !important; border-radius: 14px; }
+  .ai-chat { min-height: calc(100svh - 250px); }
+  .ai-thread { min-height: 310px; padding: 15px; }
+  .ai-composer { grid-template-columns: 1fr auto; }
+  .ai-composer > label:first-child { grid-column: 1 / -1; }
+  .ai-message { max-width: 94%; }
 }
 
 @media (max-width: 980px) {
