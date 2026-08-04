@@ -941,84 +941,6 @@ async function syncStudyHistoryFromCloud() {
   } catch (error) { console.warn("Study history sync failed", error); }
 }
 
-function safeKnowledgeUrl(value) {
-  try {
-    const url = new URL(String(value || ""));
-    return url.protocol === "https:" ? url.href : "";
-  } catch { return ""; }
-}
-
-function renderKnowledgeSearch(payload) {
-  const results = Array.isArray(payload?.results) ? payload.results : [];
-  const sources = Array.isArray(payload?.sources) ? payload.sources : [];
-  const sourceStatus = $("#knowledge-search-sources");
-  const resultList = $("#knowledge-search-results");
-
-  sourceStatus.innerHTML = sources.map((source) => {
-    const label = `${escapeHtml(source.label || source.id || "Source")}${Number.isFinite(Number(source.count)) ? ` · ${Number(source.count)}` : ""}`;
-    const title = escapeHtml(source.message || "");
-    const stateClass = ["setup", "error"].includes(source.state) ? source.state : "";
-    const className = `knowledge-source-status ${stateClass}`.trim();
-    const actionUrl = safeKnowledgeUrl(source.actionUrl);
-    return actionUrl
-      ? `<a class="${className}" href="${escapeHtml(actionUrl)}" target="_blank" rel="noopener noreferrer" title="${title}">${label}</a>`
-      : `<span class="${className}" title="${title}">${label}</span>`;
-  }).join("");
-  sourceStatus.hidden = !sources.length;
-
-  resultList.innerHTML = results.map((result) => {
-    const href = safeKnowledgeUrl(result.url);
-    if (!href) return "";
-    const imageUrl = safeKnowledgeUrl(result.image);
-    const source = escapeHtml(result.sourceLabel || result.source || "Source");
-    const title = escapeHtml(result.title || "Untitled");
-    const description = escapeHtml(result.description || "");
-    const meta = escapeHtml(result.meta || "");
-    const mark = escapeHtml(String(result.sourceLabel || result.source || "?").replace(/[^A-Za-z0-9]/g, "").slice(0, 3).toUpperCase() || "?");
-    return `<a class="knowledge-result" href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">
-      ${imageUrl ? `<img class="knowledge-result-image" src="${escapeHtml(imageUrl)}" alt="" loading="lazy" referrerpolicy="no-referrer" />` : `<span class="knowledge-result-mark" aria-hidden="true">${mark}</span>`}
-      <span class="knowledge-result-copy"><span class="knowledge-result-source">${source}</span><strong>${title}</strong>${description ? `<p>${description}</p>` : ""}${meta ? `<small>${meta}</small>` : ""}</span>
-    </a>`;
-  }).join("");
-  resultList.hidden = !results.length;
-  $("#knowledge-search-status").textContent = results.length ? `${results.length} result${results.length === 1 ? "" : "s"}` : "No results found.";
-}
-
-async function searchKnowledgeSources(event) {
-  event.preventDefault();
-  const query = $("#knowledge-search-input").value.trim();
-  if (query.length < 2) return;
-  const button = $("#knowledge-search-submit");
-  const status = $("#knowledge-search-status");
-  const resultList = $("#knowledge-search-results");
-  const sourceStatus = $("#knowledge-search-sources");
-  button.disabled = true;
-  button.textContent = "Searching…";
-  status.classList.remove("error");
-  status.textContent = "Searching…";
-  resultList.hidden = true;
-  sourceStatus.hidden = true;
-  try {
-    if (!(await ensureCloudMusicAdmin())) {
-      status.classList.add("error");
-      status.textContent = "Cloud unlock is required for search.";
-      return;
-    }
-    updateAdminStatus();
-    const payload = await musicCloud.invokeFunction("knowledge-search", {
-      query,
-      source: $("#knowledge-search-source").value,
-    });
-    renderKnowledgeSearch(payload);
-  } catch (error) {
-    status.classList.add("error");
-    status.textContent = error?.message || "Search is temporarily unavailable.";
-  } finally {
-    button.disabled = false;
-    button.textContent = "Search";
-  }
-}
-
 /* Event wiring */
 $("#entry-form").addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -1144,12 +1066,6 @@ $("#add-chapter").addEventListener("click", () => {
 $("#quick-ai-toggle").addEventListener("click", () => toggleQuickAi());
 $("#quick-ai-close").addEventListener("click", () => toggleQuickAi(false));
 $("#quick-ai-form").addEventListener("submit", askQuickAi);
-$("#knowledge-search-form").addEventListener("submit", searchKnowledgeSources);
-$("#knowledge-search-input").addEventListener("keydown", (event) => {
-  if (event.key !== "Enter" || event.shiftKey || event.isComposing) return;
-  event.preventDefault();
-  event.currentTarget.form.requestSubmit();
-});
 $("#quick-ai-input").addEventListener("keydown", (event) => {
   if (event.key !== "Enter" || event.shiftKey || event.isComposing) return;
   event.preventDefault();

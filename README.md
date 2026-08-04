@@ -9,7 +9,6 @@ A password-gated, mobile-first personal website for Anthony's resume, interests,
 - a single-question Big Pickle bubble beside the music player for general, aviation, Mandarin, and writing questions
 - an AI Packages page with downloadable Markdown blueprints for reproducing the current architecture
 - a Supabase Edge Function gateway for authenticated OpenCode Big Pickle requests
-- a compact authenticated homepage search across Wikimedia, YouTube, NASA, TMDB, Open Library, REST Countries, and MusicBrainz
 
 The entrance password is a client-side privacy gate, not server-side authentication. Protected writes and AI calls use Supabase Auth and Row Level Security.
 
