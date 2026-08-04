@@ -23,10 +23,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&amp;family=Noto+Serif+SC:wght@500;700&amp;display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=20260804-mobileglobe1" />
+    <link rel="stylesheet" href="styles.css?v=20260804-search1" />
     <script src="music-cloud.js?v=20260804-titleclean1" defer></script>
     <script src="book-data.js?v=20260804-book2" defer></script>
-    <script src="script.js?v=20260804-globe2" defer></script>
+    <script src="script.js?v=20260804-search2" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -95,6 +95,27 @@
         <section id="page-home" class="page-panel active" data-page="home">
           <div class="home-command section-shell">
             <header class="command-heading"><img src="anthony-brand-icon.png" alt="" /><div><h1>Anthony Amaru</h1></div></header>
+            <section class="knowledge-search" aria-label="Search public knowledge sources">
+              <form id="knowledge-search-form" class="knowledge-search-form">
+                <label class="visually-hidden" for="knowledge-search-input">Search public knowledge sources</label>
+                <input id="knowledge-search-input" type="search" maxlength="120" autocomplete="off" placeholder="Search books, music, films, space, countries…" required />
+                <label class="visually-hidden" for="knowledge-search-source">Source</label>
+                <select id="knowledge-search-source" aria-label="Search source">
+                  <option value="all">All sources</option>
+                  <option value="wikimedia">Wikimedia</option>
+                  <option value="youtube">YouTube</option>
+                  <option value="nasa">NASA</option>
+                  <option value="tmdb">TMDB</option>
+                  <option value="open-library">Open Library</option>
+                  <option value="rest-countries">REST Countries</option>
+                  <option value="musicbrainz">MusicBrainz</option>
+                </select>
+                <button id="knowledge-search-submit" type="submit">Search</button>
+              </form>
+              <div id="knowledge-search-status" class="knowledge-search-status" role="status" aria-live="polite"></div>
+              <div id="knowledge-search-sources" class="knowledge-search-sources" aria-label="Search source status" hidden></div>
+              <div id="knowledge-search-results" class="knowledge-search-results" hidden></div>
+            </section>
             <div class="command-grid">
               <a href="index.html?page=resume&amp;v=20260804-clean1"><span class="command-emoji" aria-hidden="true">📄</span><strong>Resume</strong><b>→</b></a>
               <a href="index.html?page=interests&amp;v=20260804-clean1"><span class="command-emoji" aria-hidden="true">🧠</span><strong>Interests</strong><b>→</b></a>

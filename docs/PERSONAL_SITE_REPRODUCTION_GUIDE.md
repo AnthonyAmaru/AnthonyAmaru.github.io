@@ -143,7 +143,9 @@ person-site/
 │   └── PERSONAL_SITE_DATABASE_TEMPLATE.sql
 ├── supabase/
 │   ├── functions/
-│   │   └── ai-gateway/
+│   │   ├── ai-gateway/
+│   │   │   └── index.ts
+│   │   └── knowledge-search/          # normalized multi-API search gateway
 │   │       └── index.ts
 │   └── migrations/
 ├── CNAME
@@ -476,6 +478,26 @@ Use the current Supabase authenticated Edge Function guidance when creating a ne
 
 The owner's AI-provider secret is entered directly in Supabase's Edge Function secret-management screen. It is never pasted into this Markdown package.
 
+### Authenticated public-knowledge search
+
+Keep a multi-provider search visually compact: one input, one source selector, one submit button, and results that appear only after a query. Do not add a new primary-navigation tab for it. Normalize every provider response in a Supabase Edge Function to this browser-facing shape:
+
+```js
+{
+  source,
+  sourceLabel,
+  title,
+  description,
+  meta,
+  image,
+  url
+}
+```
+
+The reference gateway supports Wikimedia, YouTube Data, NASA Images, TMDB, Open Library, REST Countries, and MusicBrainz. Public providers still run through the gateway so CORS, timeouts, error isolation, output limits, and response normalization are consistent. YouTube and TMDB credentials belong only in Supabase Edge Function secrets (`YOUTUBE_API_KEY` plus `TMDB_API_KEY` or `TMDB_API_TOKEN`). A REST Countries key may be stored as `REST_COUNTRIES_API_KEY` when the current keyed API is used. Never place these credentials in `index.html`, frontend JavaScript, GitHub Actions output, or repository files.
+
+Search calls require the existing authenticated administrator session and `site_admins` membership. The gateway must allowlist sources, cap query length and result counts, use timeouts, escape/render returned text safely in the browser, accept only HTTPS result links, isolate individual provider failures with `Promise.allSettled`, and return `Cache-Control: no-store`. A missing optional provider key must not break the other sources; return a compact setup state and a direct provider search link instead.
+
 ## Phase 6 — validation
 
 ### Local checks
@@ -492,6 +514,7 @@ Then verify:
 - `git diff --check` passes.
 - every local link and referenced asset exists;
 - home, Resume, Interests, Music, AI Packages, Fatherhood, Books, Mycology, Aviation, Mandarin notebook, and Mandarin quiz open;
+- homepage search returns normalized results, Enter submits, a single-source search calls only that source, missing optional API credentials do not break other providers, and unsafe result URLs are rejected;
 - top navigation remains stable on every page;
 - light/dark mode works on every route;
 - phone, tablet, narrow side-panel, and desktop layouts do not overlap;
@@ -552,6 +575,7 @@ Append every future bug here. Update the relevant architecture section at the sa
 
 | Date | Symptom | Root cause | Corrected rule | Regression test |
 | --- | --- | --- | --- | --- |
+| 2026-08-04 | Clicking Search worked, but pressing Enter in the homepage search field did not reliably submit. | Submission depended only on browser-native implicit form behavior, which was inconsistent in the tested interaction path. | Keep the normal form `submit` handler and add an input `keydown` handler that ignores composition/Shift+Enter, prevents the default Enter action, and calls `form.requestSubmit()`. | Focus the homepage search input, type a query, press Enter, and confirm the unlock flow or results begin without clicking Search. |
 | 2026-08-04 | Header, player, back button, and Interests content duplicated after Books → Back to Interests. Repeating it created deeper copies. | The embedded Books link navigated its iframe to the root portal, so the whole site loaded inside itself. | Embedded pages send an allowlisted same-origin `postMessage` to the top portal. The top portal closes the frame and changes its own route. Root portal documents detected inside a frame immediately request escape. | Books → Back to Interests leaves one header, one player, zero nested portals, and a hidden app frame. Repeat for every embedded tool. |
 | 2026-08-04 | Shared site chrome appeared more than once on some detail views. | Repeated shell injection and nested documents were both possible. | Fix nested navigation first; also keep only one header, player, and back button defensively in `site-header.js`. | Count each shared shell element after every route transition. |
 | 2026-08-04 | Music uploaded on one device did not appear on another. | Browser-only storage cannot synchronize binary files across devices. | Store audio in Supabase Storage and metadata in Postgres; keep only non-sensitive preferences locally. | Upload on device A and play on device B. |
