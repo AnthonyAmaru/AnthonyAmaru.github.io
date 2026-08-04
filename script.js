@@ -958,7 +958,6 @@ $$('[data-close-modal]').forEach((button) => button.addEventListener("click", ()
 $$('.launch-app').forEach((button) => button.addEventListener("click", () => openStudyApp(button.dataset.app, button.dataset.admin === "true")));
 
 $("#open-book-studio").addEventListener("click", openBookStudio);
-$("#close-book").addEventListener("click", closeBookStudio);
 $("#chapter-menu").addEventListener("click", () => $(".chapter-rail").classList.toggle("open"));
 $("#chapter-list").addEventListener("click", (event) => { const button = event.target.closest("[data-chapter-index]"); if (button) loadBookChapter(Number(button.dataset.chapterIndex), 0); });
 $("#book-chapter-title").addEventListener("input", queueBookSave);
@@ -986,10 +985,6 @@ $("#add-chapter").addEventListener("click", () => {
   currentBookPage = 0;
   loadBookChapter(book.chapters.length - 1, 0, false);
 });
-$("#import-book").addEventListener("click", () => $("#book-file-input").click());
-$("#book-file-input").addEventListener("change", (event) => { importBookFile(event.target.files[0]); event.target.value = ""; });
-$("#export-book-json").addEventListener("click", exportBookJson);
-$("#export-book-markdown").addEventListener("click", exportBookMarkdown);
 $("#send-to-assistant").addEventListener("click", sendChapterToAssistant);
 $("#quick-ai-toggle").addEventListener("click", () => toggleQuickAi());
 $("#quick-ai-close").addEventListener("click", () => toggleQuickAi(false));
