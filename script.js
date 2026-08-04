@@ -207,6 +207,7 @@ function getResume() {
 function organizationLogo(entry) {
   const organization = String(entry.organization || "").toLowerCase();
   if (organization.includes("bitwave")) return { src: "logos/bitwave.webp", className: "bitwave" };
+  if (organization.includes("healthcare products florida")) return { symbol: "+", className: "medical" };
   if (organization.includes("florida international university")) return { src: "logos/fiu.png", className: "fiu" };
   if (organization.includes("miami dade college")) return { src: "logos/miami-dade-college.jpg", className: "mdc" };
   return null;
@@ -214,6 +215,7 @@ function organizationLogo(entry) {
 
 function organizationMark(entry) {
   const logo = organizationLogo(entry);
+  if (logo?.symbol) return `<div class="company-mark logo-${logo.className}" aria-hidden="true"><span>${escapeHtml(logo.symbol)}</span></div>`;
   if (logo) return `<div class="company-mark has-logo logo-${logo.className}" aria-hidden="true"><img src="${logo.src}" alt="" /></div>`;
   return `<div class="company-mark" aria-hidden="true">${escapeHtml(entry.mark || entry.organization?.slice(0, 1) || "•")}</div>`;
 }
