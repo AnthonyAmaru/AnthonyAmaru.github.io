@@ -1,3 +1,9 @@
+:root {
+  --detail-back-left: max(12px, env(safe-area-inset-left));
+  --detail-back-width: 88px;
+  --detail-back-gutter: calc(var(--detail-back-left) + var(--detail-back-width) + 16px);
+}
+
 .main-site-header,
 .main-site-menu,
 .main-site-nav {
@@ -40,9 +46,9 @@
   position: fixed;
   z-index: 60;
   top: 50%;
-  left: max(12px, env(safe-area-inset-left));
+  left: var(--detail-back-left);
   display: grid;
-  width: 88px;
+  width: var(--detail-back-width);
   height: 270px;
   place-items: center;
   transform: translateY(-50%);
@@ -63,6 +69,14 @@
   background: #ffe895;
   outline: 3px solid rgba(201, 170, 61, 0.36);
   outline-offset: 3px;
+}
+
+@media (min-width: 761px) and (max-width: 1399px) {
+  body.has-detail-back-button > main {
+    max-width: calc(100% - var(--detail-back-gutter) - 24px);
+    margin-right: 24px;
+    margin-left: var(--detail-back-gutter);
+  }
 }
 
 .main-site-brand {

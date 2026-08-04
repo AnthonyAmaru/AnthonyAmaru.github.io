@@ -37,170 +37,144 @@
     return;
   }
 
-  const context = globe.getContext("2d");
-  const radians = Math.PI / 180;
   const regions = [
-    { id: "north-america", label: "North America", lon: -102, lat: 40 },
-    { id: "europe", label: "Europe", lon: 16, lat: 49 },
-    { id: "norway", label: "Norway", lon: 10, lat: 63 },
-    { id: "asia", label: "Asia", lon: 92, lat: 38 },
-    { id: "australia", label: "Australia", lon: 134, lat: -25 },
+    { id: "north-america", label: "North America", lng: -102, lat: 40 },
+    { id: "europe", label: "Europe", lng: 16, lat: 49 },
+    { id: "norway", label: "Norway", lng: 10, lat: 63 },
+    { id: "asia", label: "Asia", lng: 92, lat: 38 },
+    { id: "australia", label: "Australia", lng: 134, lat: -25 },
   ];
-  const continents = [
-    [[-168, 68], [-145, 58], [-128, 50], [-124, 34], [-110, 24], [-96, 17], [-82, 25], [-66, 45], [-54, 52], [-64, 66], [-92, 73], [-130, 72], [-168, 68]],
-    [[-81, 12], [-70, 5], [-61, -12], [-56, -30], [-68, -54], [-76, -35], [-79, -10], [-81, 12]],
-    [[-11, 35], [3, 44], [23, 40], [40, 55], [31, 70], [7, 71], [-8, 56], [-11, 35]],
-    [[-17, 34], [12, 37], [34, 30], [48, 10], [38, -34], [18, -35], [3, -26], [-9, 3], [-17, 34]],
-    [[35, 36], [58, 56], [92, 73], [150, 61], [161, 45], [143, 28], [112, 8], [82, 8], [67, 25], [35, 36]],
-    [[112, -11], [135, -10], [154, -25], [147, -41], [116, -38], [112, -11]],
-    [[-52, 60], [-42, 82], [-20, 75], [-35, 59], [-52, 60]],
-  ];
-  let yaw = -28;
-  let size = 0;
-  let radius = 0;
-  let center = 0;
-  let markerHits = [];
-  let pointerStart = null;
+  const fallback = document.querySelector("#globe-fallback");
+  const zoomButtons = [...document.querySelectorAll("[data-globe-action]")];
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const initialView = { lat: 24, lng: -32, altitude: 2.15 };
+  const textureRoot = "https://cdn.jsdelivr.net/npm/three-globe@2.45.0/example/img/";
+  let globeView = null;
 
-  const project = (lon, lat) => {
-    const lambda = (lon - yaw) * radians;
-    const phi = lat * radians;
-    const cosine = Math.cos(phi);
-    return {
-      x: center + radius * cosine * Math.sin(lambda),
-      y: center - radius * Math.sin(phi),
-      z: cosine * Math.cos(lambda),
-    };
+  const showGlobeFallback = () => {
+    globe.classList.add("is-unavailable");
+    zoomButtons.forEach((button) => { button.disabled = true; });
+    if (fallback) fallback.hidden = false;
   };
 
-  const drawVisibleLine = (points, color, width) => {
-    context.beginPath();
-    let drawing = false;
-    points.forEach(([lon, lat]) => {
-      const point = project(lon, lat);
-      if (point.z <= 0) {
-        drawing = false;
-        return;
-      }
-      if (!drawing) context.moveTo(point.x, point.y);
-      else context.lineTo(point.x, point.y);
-      drawing = true;
-    });
-    context.strokeStyle = color;
-    context.lineWidth = width;
-    context.lineJoin = "round";
-    context.lineCap = "round";
-    context.stroke();
+  const regionCount = (id) => cards.filter((card) => includes(card.dataset.locations, id)).length;
+  const markerLabel = (region) => `
+    <div class="globe-region-tip">
+      <strong>${region.label}</strong>
+      <span>${regionCount(region.id)} profiles</span>
+    </div>`;
+
+  const refreshMarkers = () => {
+    if (!globeView) return;
+    globeView
+      .pointsData([...regions])
+      .ringsData([...regions]);
   };
 
-  const draw = () => {
-    if (!size) return;
-    const dark = document.documentElement.dataset.theme === "dark";
-    context.clearRect(0, 0, size, size);
-    context.save();
-    context.beginPath();
-    context.arc(center, center, radius, 0, Math.PI * 2);
-    context.clip();
-    const ocean = context.createRadialGradient(center - radius * 0.38, center - radius * 0.4, radius * 0.08, center, center, radius * 1.08);
-    ocean.addColorStop(0, dark ? "#527f70" : "#91bea6");
-    ocean.addColorStop(0.55, dark ? "#214538" : "#3c7354");
-    ocean.addColorStop(1, dark ? "#10271f" : "#183e2b");
-    context.fillStyle = ocean;
-    context.fillRect(0, 0, size, size);
-
-    for (let lat = -60; lat <= 60; lat += 30) {
-      const points = [];
-      for (let lon = -180; lon <= 180; lon += 3) points.push([lon, lat]);
-      drawVisibleLine(points, "rgba(255,255,255,.13)", 1);
-    }
-    for (let lon = -180; lon < 180; lon += 30) {
-      const points = [];
-      for (let lat = -88; lat <= 88; lat += 2) points.push([lon, lat]);
-      drawVisibleLine(points, "rgba(255,255,255,.13)", 1);
-    }
-    continents.forEach((points) => {
-      drawVisibleLine(points, dark ? "rgba(205,226,190,.40)" : "rgba(219,231,182,.62)", Math.max(7, radius * 0.04));
-      drawVisibleLine(points, dark ? "rgba(159,194,151,.82)" : "rgba(184,207,137,.95)", Math.max(2, radius * 0.014));
-    });
-    context.restore();
-
-    context.beginPath();
-    context.arc(center, center, radius, 0, Math.PI * 2);
-    context.strokeStyle = dark ? "rgba(230,240,232,.28)" : "rgba(24,62,43,.25)";
-    context.lineWidth = Math.max(2, radius * 0.012);
-    context.stroke();
-
-    markerHits = [];
-    regions.map((region) => ({ region, point: project(region.lon, region.lat) }))
-      .filter(({ point }) => point.z > 0)
-      .sort((a, b) => a.point.z - b.point.z)
-      .forEach(({ region, point }) => {
-        const active = location.value === region.id;
-        const markerRadius = active ? Math.max(8, radius * 0.045) : Math.max(6, radius * 0.035);
-        context.beginPath();
-        context.arc(point.x, point.y, markerRadius + 4, 0, Math.PI * 2);
-        context.fillStyle = active ? "rgba(248,219,107,.35)" : "rgba(255,255,255,.25)";
-        context.fill();
-        context.beginPath();
-        context.arc(point.x, point.y, markerRadius, 0, Math.PI * 2);
-        context.fillStyle = active ? "#f8db6b" : "#fffdf4";
-        context.fill();
-        context.strokeStyle = "rgba(24,35,27,.72)";
-        context.lineWidth = 1.5;
-        context.stroke();
-        markerHits.push({ ...point, radius: markerRadius + 12, region });
-      });
-  };
-
-  const resize = () => {
-    const rect = globe.getBoundingClientRect();
-    const ratio = Math.min(window.devicePixelRatio || 1, 2);
-    size = Math.max(1, Math.round(rect.width * ratio));
-    globe.width = size;
-    globe.height = size;
-    center = size / 2;
-    radius = size * 0.45;
-    draw();
+  const resetGlobe = (duration = 900) => {
+    if (!globeView) return;
+    globeView.pointOfView(initialView, duration);
   };
 
   const chooseRegion = (id, centerRegion = true) => {
     location.value = id;
-    if (centerRegion) {
-      const region = regions.find((item) => item.id === id);
-      if (region) yaw = region.lon;
-    }
     applyFilters();
-    draw();
+    refreshMarkers();
+
+    if (!globeView || !centerRegion) return;
+    const region = regions.find((item) => item.id === id);
+    if (region) globeView.pointOfView({ lat: region.lat, lng: region.lng, altitude: 1.55 }, 900);
+    else resetGlobe();
   };
 
-  globeButtons.forEach((button) => button.addEventListener("click", () => chooseRegion(button.dataset.globeLocation, true)));
-  globe.addEventListener("pointerdown", (event) => {
-    pointerStart = { x: event.clientX, yaw, moved: false };
-    globe.setPointerCapture(event.pointerId);
-  });
-  globe.addEventListener("pointermove", (event) => {
-    if (!pointerStart) return;
-    const delta = event.clientX - pointerStart.x;
-    pointerStart.moved ||= Math.abs(delta) > 5;
-    yaw = pointerStart.yaw + delta * 0.45;
-    draw();
-  });
-  globe.addEventListener("pointerup", (event) => {
-    if (!pointerStart) return;
-    const moved = pointerStart.moved;
-    pointerStart = null;
-    if (moved) return;
-    const rect = globe.getBoundingClientRect();
-    const scale = globe.width / rect.width;
-    const x = (event.clientX - rect.left) * scale;
-    const y = (event.clientY - rect.top) * scale;
-    const hit = [...markerHits].reverse().find((marker) => Math.hypot(marker.x - x, marker.y - y) <= marker.radius);
-    if (hit) chooseRegion(hit.region.id, true);
-  });
-  globe.addEventListener("pointercancel", () => { pointerStart = null; });
-  location.addEventListener("change", draw);
-  window.addEventListener("resize", resize);
-
   applyFilters();
-  resize();
+
+  if (typeof window.Globe !== "function") {
+    showGlobeFallback();
+    globeButtons.forEach((button) => button.addEventListener("click", () => chooseRegion(button.dataset.globeLocation, false)));
+    return;
+  }
+
+  try {
+    globeView = window.Globe({ rendererConfig: { antialias: true, alpha: true } })(globe)
+      .backgroundImageUrl(`${textureRoot}night-sky.png`)
+      .globeImageUrl(`${textureRoot}earth-blue-marble.jpg`)
+      .bumpImageUrl(`${textureRoot}earth-topology.png`)
+      .showAtmosphere(true)
+      .atmosphereColor(document.documentElement.dataset.theme === "dark" ? "#6fdcff" : "#8bdfff")
+      .atmosphereAltitude(0.18)
+      .pointLat("lat")
+      .pointLng("lng")
+      .pointAltitude(0.035)
+      .pointRadius((region) => location.value === region.id ? 0.9 : 0.58)
+      .pointResolution(24)
+      .pointColor((region) => location.value === region.id ? "#ffe47a" : "#7ce8ff")
+      .pointLabel(markerLabel)
+      .pointsTransitionDuration(350)
+      .onPointClick((region) => chooseRegion(region.id, true))
+      .ringLat("lat")
+      .ringLng("lng")
+      .ringColor((region) => (progress) => location.value === region.id
+        ? `rgba(255, 228, 122, ${Math.max(0, 1 - progress)})`
+        : `rgba(111, 220, 255, ${Math.max(0, 0.82 - progress)})`)
+      .ringMaxRadius((region) => location.value === region.id ? 5.2 : 3.2)
+      .ringPropagationSpeed((region) => location.value === region.id ? 1.15 : 0.72)
+      .ringRepeatPeriod((region) => location.value === region.id ? 1050 : 2400);
+
+    const material = globeView.globeMaterial();
+    material.bumpScale = 8;
+    material.shininess = 12;
+
+    const controls = globeView.controls();
+    controls.autoRotate = !reducedMotion;
+    controls.autoRotateSpeed = 0.34;
+    controls.enablePan = false;
+    controls.minDistance = 150;
+    controls.maxDistance = 520;
+
+    const renderer = globeView.renderer();
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.8));
+
+    const resize = () => {
+      const rect = globe.getBoundingClientRect();
+      const width = Math.max(1, Math.round(rect.width));
+      const height = Math.max(1, Math.round(rect.height));
+      globeView.width(width).height(height);
+    };
+
+    if (window.ResizeObserver) new ResizeObserver(resize).observe(globe);
+    else window.addEventListener("resize", resize);
+
+    if (window.IntersectionObserver) {
+      new IntersectionObserver(([entry]) => {
+        if (entry.isIntersecting) globeView.resumeAnimation();
+        else globeView.pauseAnimation();
+      }, { threshold: 0.05 }).observe(globe);
+    }
+
+    globeButtons.forEach((button) => button.addEventListener("click", () => chooseRegion(button.dataset.globeLocation, true)));
+    zoomButtons.forEach((button) => button.addEventListener("click", () => {
+      const action = button.dataset.globeAction;
+      if (action === "reset") {
+        resetGlobe();
+        return;
+      }
+      const current = globeView.pointOfView();
+      const change = action === "zoom-in" ? -0.32 : 0.32;
+      globeView.pointOfView({ ...current, altitude: Math.min(3.2, Math.max(1.25, current.altitude + change)) }, 420);
+    }));
+
+    location.addEventListener("change", () => chooseRegion(location.value, true));
+    new MutationObserver(() => {
+      globeView.atmosphereColor(document.documentElement.dataset.theme === "dark" ? "#6fdcff" : "#8bdfff");
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+    refreshMarkers();
+    resize();
+    resetGlobe(0);
+  } catch (error) {
+    console.warn("The 3D mushroom globe could not start.", error);
+    showGlobeFallback();
+    globeButtons.forEach((button) => button.addEventListener("click", () => chooseRegion(button.dataset.globeLocation, false)));
+  }
 })();

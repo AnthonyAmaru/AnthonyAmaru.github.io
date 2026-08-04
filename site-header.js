@@ -39,3 +39,8 @@ if (!document.querySelector(".go-back-button")) {
   });
   document.body.append(goBackButton);
 }
+
+document.body.classList.toggle(
+  "has-detail-back-button",
+  document.documentElement.dataset.embedded !== "true" && Boolean(document.querySelector(".go-back-button")),
+);

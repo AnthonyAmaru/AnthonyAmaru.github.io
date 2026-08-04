@@ -185,6 +185,19 @@ Do not replace these tabs when entering an interest. Interest-specific controls 
 - Do not number cards unless the owner explicitly asks for numbering.
 - Keep visible keyboard focus, semantic headings, labels, skip links, and live status regions.
 
+### High-detail globe pattern
+
+For a contained interactive Earth visualization such as the Mycology distribution view, use the pinned Globe.GL WebGL component instead of drawing continents manually on a 2D canvas.
+
+- Use a version-pinned Globe.GL script with a verified Subresource Integrity hash.
+- Use version-pinned equirectangular Blue Marble, terrain bump, and star-field textures.
+- Render real latitude/longitude markers with tooltips, pulse rings, drag rotation, zoom, and animated region focus.
+- Keep equivalent region buttons outside the canvas for keyboard and assistive-technology access.
+- Provide a usable region-button fallback if WebGL, the CDN, or the library is unavailable.
+- Resize from the actual container with `ResizeObserver` so direct and embedded views both fit.
+- Disable auto-rotation for reduced-motion users and pause rendering while the globe is offscreen.
+- Pin external asset versions and bump the local HTML/CSS/JS cache versions together.
+
 ## Correct embedded-page navigation
 
 This is a critical architecture rule. An interest page running inside `#app-frame` must never navigate that frame to the root portal. Doing so nests the complete website inside itself and duplicates the header, music player, back button, and content.
@@ -545,6 +558,8 @@ Append every future bug here. Update the relevant architecture section at the sa
 | 2026-08-04 | Song titles showed artist prefixes, download IDs, and parenthetical source labels. | Raw filenames and embedded metadata were displayed without normalization. | Normalize title/artist metadata on existing rows, new uploads, and manual edits while preserving original source metadata. | Confirm no visible title contains removable bracket or parenthesis labels and no song was deleted. |
 | 2026-08-04 | A deployed change appeared missing. | A browser reused an older shared asset URL. | Version every changed shared CSS/JS reference consistently. | Fetch the new versioned live asset and confirm its marker before UI testing. |
 | 2026-08-04 | Large vertical back button overlapped content on phones or narrow windows. | Fixed desktop positioning was applied below its safe breakpoint. | Hide the vertical button on phones and reserve responsive space only when it is visible. | Test phone, iPad, desktop, and a narrow browser with a side panel. |
+| 2026-08-04 | The Mycology globe looked flat, abstract, and visually crude. | It approximated continents with a few thick lines on a custom 2D canvas instead of using geographic imagery and a 3D renderer. | Use the pinned Globe.GL pattern with Blue Marble imagery, terrain relief, atmosphere, a star field, geographic markers, responsive sizing, reduced-motion support, and a non-WebGL fallback. | Rotate, zoom, reset, and select every region in direct and embedded Mycology views; confirm markers filter cards and the fallback region buttons remain usable. |
+| 2026-08-04 | The detail-page back button still overlapped a large page title at medium desktop widths. | Detail pages hid the button on phones but never reserved horizontal space while the fixed button remained visible. | `site-header.js` marks standalone detail pages and shared responsive CSS gives their direct child `main` a back-button gutter from 761–1399px; embedded pages and phones keep the button hidden. | At 760, 1024, 1280, and 1440px, confirm the button never covers the title, filters, or content; repeat in an embedded interest view. |
 
 ## Completion checklist for a new person
 
@@ -585,3 +600,6 @@ Append every future bug here. Update the relevant architecture section at the sa
 - Supabase function authentication: https://supabase.com/docs/guides/functions/auth
 - Supabase function secrets: https://supabase.com/docs/guides/functions/secrets
 - Supabase changelog: https://supabase.com/changelog
+- Globe.GL: https://globe.gl/
+- Globe.GL source and API: https://github.com/vasturiano/globe.gl
+- NASA Blue Marble: https://science.nasa.gov/earth/multimedia/
