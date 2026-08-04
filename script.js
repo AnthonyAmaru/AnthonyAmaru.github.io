@@ -439,6 +439,7 @@ async function askQuickAi(event) {
 }
 
 async function renderMusic() {
+  const previousBulkPlaylist = $("#bulk-playlist-select").value;
   let playlists = [];
   let cloudError = "";
   try {
@@ -458,6 +459,8 @@ async function renderMusic() {
   [...selectedTrackIds].forEach((id) => { if (!availableIds.has(id)) selectedTrackIds.delete(id); });
   $("#library-title").textContent = currentPlaylist === "all" ? "All music" : selectedPlaylist?.name || "Playlist";
   const playlistOptions = playlists.map((playlist) => `<option value="${playlist.id}">${escapeHtml(playlist.name)}</option>`).join("");
+  $("#bulk-playlist-select").innerHTML = `<option value="">Playlist</option>${playlistOptions}`;
+  if (playlists.some((playlist) => String(playlist.id) === previousBulkPlaylist)) $("#bulk-playlist-select").value = previousBulkPlaylist;
   $("#track-list").innerHTML = cloudError ? `<div class="library-empty"><p>Cloud library unavailable.</p><small>${escapeHtml(cloudError)}</small></div>` : visibleTracks.length ? visibleTracks.map((track) => {
     return `<article class="track-row"><input class="track-select" type="checkbox" data-select-track="${track.id}" aria-label="Select ${escapeHtml(track.title)}" ${selectedTrackIds.has(String(track.id)) ? "checked" : ""} /><button class="track-play" type="button" data-play-track="${track.id}" aria-label="Play ${escapeHtml(track.title)}">▶</button><div class="track-copy"><strong>${escapeHtml(track.title)}</strong><small>${formatBytes(track.size_bytes)}</small></div><select data-assign-track="${track.id}" aria-label="Move ${escapeHtml(track.title)} to playlist"><option value="">No playlist</option>${playlistOptions}</select><button class="track-delete" type="button" data-delete-track="${track.id}" aria-label="Delete ${escapeHtml(track.title)}">×</button></article>`;
   }).join("") : '<div class="library-empty"><p>No songs here yet.</p><small>Add audio files from your device to begin.</small></div>';
@@ -470,6 +473,8 @@ async function renderMusic() {
 function updateTrackSelectionControls() {
   const selectAll = $("#select-all-tracks");
   const deleteButton = $("#delete-selected-tracks");
+  const bulkSelect = $("#bulk-playlist-select");
+  const assignButton = $("#assign-selected-tracks");
   const visibleIds = visibleTracks.map((track) => String(track.id));
   const selectedVisible = visibleIds.filter((id) => selectedTrackIds.has(id)).length;
   selectAll.disabled = visibleIds.length === 0;
@@ -477,6 +482,9 @@ function updateTrackSelectionControls() {
   selectAll.indeterminate = selectedVisible > 0 && selectedVisible < visibleIds.length;
   deleteButton.disabled = selectedTrackIds.size === 0;
   deleteButton.textContent = selectedTrackIds.size ? `Delete ${selectedTrackIds.size}` : "Delete";
+  bulkSelect.disabled = bulkSelect.options.length <= 1;
+  assignButton.disabled = selectedTrackIds.size === 0 || !bulkSelect.value;
+  assignButton.textContent = selectedTrackIds.size ? `Add ${selectedTrackIds.size}` : "Add selected";
 }
 
 function renderDock() {
@@ -565,6 +573,26 @@ async function assignTrack(trackId, playlistId) {
     toast(playlistId ? "Song moved to the selected playlist." : "Song removed from playlists.");
     renderMusic();
   } catch (error) { toast(error.message); renderMusic(); }
+}
+
+async function assignSelectedTracks() {
+  const selected = tracks.filter((track) => selectedTrackIds.has(String(track.id)));
+  const playlistId = $("#bulk-playlist-select").value;
+  if (!selected.length) return;
+  if (!playlistId) return toast("Choose a playlist.");
+  if (!(await ensureCloudMusicAdmin())) return;
+  const button = $("#assign-selected-tracks");
+  button.disabled = true;
+  button.textContent = "Adding…";
+  try {
+    await musicCloud.assignTracks(selected.map((track) => track.id), playlistId);
+  } catch (error) {
+    toast(error.message);
+    return updateTrackSelectionControls();
+  }
+  selectedTrackIds.clear();
+  await renderMusic();
+  toast(`${selected.length} song${selected.length === 1 ? "" : "s"} added to the playlist.`);
 }
 
 async function deleteTrack(id) {
@@ -764,6 +792,8 @@ $("#quick-ai-input").addEventListener("keydown", (event) => {
 });
 
 $("#new-playlist").addEventListener("click", createPlaylist);
+$("#assign-selected-tracks").addEventListener("click", assignSelectedTracks);
+$("#bulk-playlist-select").addEventListener("change", updateTrackSelectionControls);
 $("#delete-selected-tracks").addEventListener("click", deleteSelectedTracks);
 $("#select-all-tracks").addEventListener("change", (event) => {
   visibleTracks.forEach((track) => event.target.checked ? selectedTrackIds.add(String(track.id)) : selectedTrackIds.delete(String(track.id)));

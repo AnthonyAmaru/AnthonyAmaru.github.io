@@ -203,14 +203,22 @@
       return (await readResponse(await fetch(legacy, { headers: this.headers({}, true) })))?.[0] || null;
     }
 
-    async assignTrack(trackId, playlistId) {
+    async assignTracks(trackIds, playlistId) {
       this.requireAdmin();
-      const response = await fetch(`${PROJECT_URL}/rest/v1/music_tracks?id=eq.${encodeURIComponent(trackId)}`, {
-        method: "PATCH",
-        headers: this.headers({ "Content-Type": "application/json", Prefer: "return=minimal" }, true),
-        body: JSON.stringify({ playlist_id: playlistId || null }),
-      });
-      await readResponse(response);
+      const uniqueIds = [...new Set(trackIds.map((id) => String(id)).filter(Boolean))];
+      for (let start = 0; start < uniqueIds.length; start += 100) {
+        const ids = uniqueIds.slice(start, start + 100).map(encodeURIComponent).join(",");
+        const response = await fetch(`${PROJECT_URL}/rest/v1/music_tracks?id=in.(${ids})&user_id=eq.${encodeURIComponent(this.user.id)}`, {
+          method: "PATCH",
+          headers: this.headers({ "Content-Type": "application/json", Prefer: "return=minimal" }, true),
+          body: JSON.stringify({ playlist_id: playlistId || null }),
+        });
+        await readResponse(response);
+      }
+    }
+
+    async assignTrack(trackId, playlistId) {
+      return this.assignTracks([trackId], playlistId);
     }
 
     async deleteTrack(track) {
