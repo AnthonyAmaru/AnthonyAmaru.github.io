@@ -359,21 +359,24 @@ h1, h2 { font-family: var(--sans); font-weight: 750; letter-spacing: -.035em; }
 .command-status strong { font-size: .83rem; }
 
 .resume-layout { grid-template-columns: minmax(0, 1fr) minmax(280px, .42fr); gap: clamp(32px, 5vw, 70px); }
-.timeline-item { grid-template-columns: 58px minmax(0, 1fr) auto; gap: 17px; padding: 24px 0; }
+.timeline-item { grid-template-columns: 82px minmax(0, 1fr) auto; gap: 17px; padding: 24px 0; }
 .company-mark { display: grid; width: 50px; height: 50px; place-items: center; border: 1px solid var(--line); border-radius: 11px; background: var(--surface-solid); color: var(--sage-strong); font-size: .72rem; font-weight: 850; letter-spacing: -.02em; }
+.company-mark.has-logo { width: 78px; overflow: hidden; background: #fff; padding: 6px; }
+.company-mark.has-logo img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.company-mark.logo-bitwave { border-color: #202638; background: #111626; padding: 11px 8px; }
 .timeline-copy .organization, .education-item .organization { margin-bottom: 5px; color: var(--muted); }
 .timeline-copy .timeline-meta { margin: 0; }
 .resume-details { margin-top: 14px; }
 .resume-details summary { width: max-content; cursor: pointer; color: var(--sage-strong); font-size: .76rem; font-weight: 800; }
 .resume-details ul { display: grid; gap: 8px; margin: 14px 0 0; padding-left: 18px; color: var(--muted); font-size: .84rem; line-height: 1.5; }
-.education-item { display: grid; grid-template-columns: 50px 1fr; column-gap: 13px; border-radius: 13px; padding: 17px; }
+.education-item { display: grid; grid-template-columns: 78px 1fr; column-gap: 13px; border-radius: 13px; padding: 17px; }
 .education-item .company-mark { grid-row: 1 / 4; }
 .education-item h3, .education-item .organization, .education-item .meta { grid-column: 2; }
 .education-item h3 { padding-right: 96px; }
 
 .interest-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .interest-card, .interest-card.aviation-card, .interest-card.mandarin-card, .book-card, .assistant-card, .mycology-card { display: flex; min-height: 280px !important; grid-column: auto; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 0; border-radius: 14px; background: var(--surface-solid); box-shadow: none; padding: 24px; }
-.interest-icon { width: 46px; height: 46px; margin-bottom: 34px; border: 1px solid var(--line); border-radius: 10px; background: var(--canvas-soft); box-shadow: none; font-family: var(--sans); font-weight: 800; }
+.interest-icon { width: 46px; height: 46px; margin-bottom: 34px; border: 1px solid var(--line); border-radius: 10px; background: var(--canvas-soft); box-shadow: none; font-family: var(--sans); font-size: 1.35rem; font-weight: 800; }
 .interest-card h2 { margin: 0 0 18px; font: 750 clamp(1.4rem, 2.4vw, 2rem)/1 var(--sans); letter-spacing: -.035em; }
 .stat-strip { width: 100%; margin: auto 0 17px; }
 .stat-strip strong { font-family: var(--sans); font-size: 1.25rem; }
@@ -527,8 +530,9 @@ h1, h2 { font-family: var(--sans); font-weight: 750; letter-spacing: -.035em; }
 
 @media (max-width: 720px) {
   .page-heading h1 { margin-bottom: 0; font-size: 3.2rem; }
-  .timeline-item { grid-template-columns: 48px 1fr auto; }
+  .timeline-item { grid-template-columns: 68px 1fr auto; }
   .timeline-copy { grid-column: 2 / -1; grid-row: auto; }
+  .company-mark.has-logo { width: 64px; }
   .entry-actions { grid-column: 3; grid-row: 1; }
   .interest-card, .interest-card.wide { min-height: 240px !important; border-radius: 14px; }
 }

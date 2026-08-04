@@ -177,18 +177,32 @@ function getResume() {
   return data;
 }
 
+function organizationLogo(entry) {
+  const organization = String(entry.organization || "").toLowerCase();
+  if (organization.includes("bitwave")) return { src: "logos/bitwave.webp", className: "bitwave" };
+  if (organization.includes("florida international university")) return { src: "logos/fiu.png", className: "fiu" };
+  if (organization.includes("miami dade college")) return { src: "logos/miami-dade-college.jpg", className: "mdc" };
+  return null;
+}
+
+function organizationMark(entry) {
+  const logo = organizationLogo(entry);
+  if (logo) return `<div class="company-mark has-logo logo-${logo.className}" aria-hidden="true"><img src="${logo.src}" alt="" /></div>`;
+  return `<div class="company-mark" aria-hidden="true">${escapeHtml(entry.mark || entry.organization?.slice(0, 1) || "•")}</div>`;
+}
+
 function renderResume() {
   const resume = getResume();
   $("#work-list").innerHTML = resume.work.length ? resume.work.map((entry, index) => `
     <article class="timeline-item">
-      <div class="company-mark" aria-hidden="true">${escapeHtml(entry.mark || entry.organization?.slice(0, 1) || "•")}</div>
+      ${organizationMark(entry)}
       <div class="timeline-copy"><h3>${escapeHtml(entry.title)}</h3><p class="organization">${escapeHtml(entry.organization)}</p><p class="timeline-meta">${escapeHtml(entry.dates)}${entry.location ? ` · ${escapeHtml(entry.location)}` : ""}</p>${entry.description ? `<details class="resume-details"><summary>Responsibilities</summary><ul>${String(entry.description).split("\n").filter(Boolean).map((line) => `<li>${escapeHtml(line)}</li>`).join("")}</ul></details>` : ""}</div>
       <div class="entry-actions"><button type="button" data-edit-entry="work:${index}">Edit</button><button type="button" data-delete-entry="work:${index}">Delete</button></div>
     </article>`).join("") : '<p class="empty-state">No work experience added yet.</p>';
   $("#education-list").innerHTML = resume.education.length ? resume.education.map((entry, index) => `
     <article class="education-item">
       <div class="entry-actions"><button type="button" data-edit-entry="education:${index}">Edit</button><button type="button" data-delete-entry="education:${index}">Delete</button></div>
-      <div class="company-mark" aria-hidden="true">${escapeHtml(entry.mark || entry.organization?.slice(0, 1) || "•")}</div><h3>${escapeHtml(entry.organization)}</h3><p class="organization">${escapeHtml(entry.title)}</p>${entry.dates || entry.location ? `<p class="meta">${escapeHtml(entry.dates)}${entry.location ? ` · ${escapeHtml(entry.location)}` : ""}</p>` : ""}
+      ${organizationMark(entry)}<h3>${escapeHtml(entry.organization)}</h3><p class="organization">${escapeHtml(entry.title)}</p>${entry.dates || entry.location ? `<p class="meta">${escapeHtml(entry.dates)}${entry.location ? ` · ${escapeHtml(entry.location)}` : ""}</p>` : ""}
     </article>`).join("") : '<p class="empty-state">No education added yet.</p>';
 }
 
