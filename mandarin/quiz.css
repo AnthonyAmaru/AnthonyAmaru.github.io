@@ -1,9 +1,9 @@
 :root {
-  --bg: #faf7fb;
-  --mint: #e7d9ef;
-  --mint-strong: #765286;
-  --sky: #e5eef7;
-  --peach: #f5dfd3;
+  --bg: #f2f4f0;
+  --mint: #dce9df;
+  --mint-strong: #315f42;
+  --sky: #e2e5e2;
+  --peach: #efe3bd;
 }
 .intro-copy { color: var(--muted); line-height: 1.6; }
 .quiz-fields label:first-child { grid-column: auto; }
