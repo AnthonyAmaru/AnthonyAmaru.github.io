@@ -30,8 +30,8 @@
       href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Noto+Serif+SC:wght@500;600;700;900&amp;display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=20260803-lesson7" />
-    <script src="script.js?v=20260803-lesson7" defer></script>
+    <link rel="stylesheet" href="styles.css?v=20260803-compact1" />
+    <script src="script.js?v=20260803-compact1" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to the notebook</a>
@@ -39,21 +39,18 @@
     <header class="site-header">
       <a class="brand" href="#top" aria-label="Mandarin notebook home">
         <span class="brand-mark" aria-hidden="true"><img src="../anthony-brand-icon.png" alt="" /></span>
-        <span>
-          <strong>Mandarin notebook</strong>
-          <small>Anthony Amaru</small>
-        </span>
+        <strong>Mandarin</strong>
       </a>
       <button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">
         Menu
       </button>
       <nav id="site-nav" class="site-nav" aria-label="Primary navigation">
-        <a href="#lesson-seven">Lesson 7</a>
-        <a href="#study">Study</a>
+        <a href="#lesson-seven">Lesson</a>
+        <a href="#study">Cards</a>
         <a href="#sounds">Sounds</a>
-        <a href="#vocabulary">Vocabulary</a>
-        <a href="#patterns">Patterns</a>
-        <a href="#dialogue">Dialogue</a>
+        <a href="#vocabulary">Words</a>
+        <a href="#patterns">Sentences</a>
+        <a href="#dialogue">Plans</a>
         <a href="#reading">Reading</a>
         <a href="#characters">Characters</a>
       </nav>
@@ -62,41 +59,24 @@
     <main id="main">
       <section id="top" class="hero section-shell">
         <div class="hero-copy">
-          <p class="eyebrow">Lessons 1–7 · Beginner Mandarin</p>
-          <h1>Learn the Mandarin<br /><em>you already know.</em></h1>
-          <p class="hero-lede">
-            A living study notebook for vocabulary, pronunciation, conversation,
-            and the small wins that become fluency.
-          </p>
-          <div class="hero-actions">
-            <a class="button button-primary" href="#study">Start a review</a>
-            <a class="button button-quiet" href="#vocabulary">Open the word bank</a>
+          <p class="eyebrow">7 lessons</p>
+          <h1 lang="zh-Hans">中文</h1>
+          <div class="section-menu" aria-label="Mandarin study sections">
+            <a href="#study">Cards</a>
+            <a href="#sounds">Sounds</a>
+            <a href="#vocabulary"><span id="word-count">166</span> Words</a>
+            <a href="#patterns">Sentences</a>
+            <a href="#reading">Reading</a>
+            <a href="quiz.html">Quiz</a>
           </div>
-          <dl class="hero-stats" aria-label="Notebook statistics">
-            <div><dt>7</dt><dd>lessons</dd></div>
-            <div><dt id="word-count">100+</dt><dd>words</dd></div>
-            <div><dt>40</dt><dd>characters</dd></div>
-            <div><dt>1</dt><dd>full reading</dd></div>
-          </dl>
         </div>
 
-        <div class="hero-study-card" aria-label="Featured Mandarin phrase">
-          <span class="seal" aria-hidden="true">明天见</span>
-          <p class="card-kicker">Phrase for today</p>
+        <div class="hero-phrase" aria-label="Featured Mandarin phrase">
           <p class="featured-hanzi" lang="zh-Hans">我们去吃披萨吧！</p>
           <p class="featured-pinyin">Wǒmen qù chī pīsà ba!</p>
           <p class="featured-meaning">Let's go eat pizza!</p>
-          <div class="tone-line" aria-hidden="true">
-            <span class="tone tone-3">wǒ</span>
-            <span class="tone">men</span>
-            <span class="tone tone-4">qù</span>
-            <span class="tone tone-1">chī</span>
-            <span class="tone tone-1">pī</span>
-            <span class="tone tone-4">sà</span>
-            <span class="tone">ba</span>
-          </div>
           <div class="progress-row">
-            <span>Notebook progress</span>
+            <span>Progress</span>
             <strong id="hero-progress">0%</strong>
           </div>
           <div class="progress-track" aria-hidden="true"><span id="hero-progress-bar"></span></div>
@@ -104,12 +84,9 @@
       </section>
 
       <section id="lesson-seven" class="lesson-section section-shell">
-        <div class="section-heading split-heading">
-          <div>
-            <p class="eyebrow">Lesson 7</p>
-            <h2>Greetings & introductions.</h2>
-          </div>
-          <p>Choose the greeting by time of day, then introduce someone and say where they are.</p>
+        <div class="section-heading compact-heading">
+          <p class="eyebrow">Lesson 7</p>
+          <h2>Greetings</h2>
         </div>
 
         <div class="greeting-grid" aria-label="Mandarin greetings by time of day">
@@ -122,25 +99,20 @@
 
         <div class="lesson-feature-grid">
           <article class="lesson-feature">
-            <span>Introduce Xiao Li</span>
+            <span>小李</span>
             <strong lang="zh-Hans">这是小李。他是中国人，他是我们的朋友。他喜欢鸡肉。</strong>
             <p>Zhè shì Xiǎo Lǐ. Tā shì Zhōngguó rén, tā shì wǒmen de péngyou. Tā xǐhuan jīròu.</p>
           </article>
           <article class="lesson-feature listening-card">
-            <span>Listening practice</span>
+            <span>Listening</span>
             <strong>Peppa Pig · Paw Patrol</strong>
-            <p>Watch a Chinese-dubbed episode and listen for short sentences you recognize.</p>
           </article>
         </div>
       </section>
 
       <section id="study" class="study-section section-shell">
-        <div class="section-heading split-heading">
-          <div>
-            <p class="eyebrow">Quick review</p>
-            <h2>One card at a time.</h2>
-          </div>
-          <p>Say the word aloud, reveal the answer, then decide if it feels familiar.</p>
+        <div class="section-heading compact-heading">
+          <h2>Flashcards</h2>
         </div>
 
         <div class="study-layout">
@@ -152,87 +124,76 @@
               </div>
               <div class="flashcard-center">
                 <p id="flash-hanzi" class="flash-hanzi" lang="zh-Hans">你好</p>
-                <p id="flash-prompt" class="flash-prompt">Tap to reveal</p>
+                <p id="flash-prompt" class="flash-prompt">Reveal</p>
                 <div id="flash-answer" class="flash-answer" aria-hidden="true">
                   <p id="flash-pinyin">nǐ hǎo</p>
                   <strong id="flash-meaning">hello</strong>
                 </div>
               </div>
-              <span class="flash-hint">Space to flip</span>
             </div>
             <div class="flash-actions">
-              <button id="review-again" class="button button-quiet" type="button">Review again</button>
-              <button id="know-word" class="button button-primary" type="button">I know this</button>
+              <button id="review-again" class="button button-quiet" type="button">Again</button>
+              <button id="know-word" class="button button-primary" type="button">Know</button>
             </div>
           </div>
 
           <aside class="session-panel" aria-labelledby="session-title">
-            <p class="eyebrow">Five-card session</p>
-            <h3 id="session-title">Build recognition, not pressure.</h3>
+            <h3 id="session-title">Session</h3>
             <ol id="session-list" class="session-list"></ol>
-            <button id="new-session" class="text-button" type="button">Shuffle a new set ↻</button>
-            <p class="local-note">Your progress stays in this browser only.</p>
+            <button id="new-session" class="text-button" type="button">Shuffle ↻</button>
           </aside>
         </div>
       </section>
 
       <section id="sounds" class="pronunciation-section section-shell">
-        <div class="section-heading split-heading">
-          <div>
-            <p class="eyebrow">Pronunciation</p>
-            <h2>zh · ch · sh · r</h2>
-          </div>
-          <p>Say each syllable aloud and keep the tongue curled slightly back for the retroflex initials.</p>
+        <div class="section-heading compact-heading">
+          <h2>Sounds</h2>
         </div>
         <div id="sound-grid" class="sound-grid" aria-label="Twelve Mandarin pronunciation drills"></div>
         <div class="sound-notes">
           <aside class="spelling-rule">
             <strong>ui = uei</strong>
-            <p>After an initial, <em>uei</em> is written <em>ui</em>. In <b>shuì</b>, the tone mark sits on <em>i</em>.</p>
+            <p>shuì · tone on i</p>
           </aside>
           <aside class="spelling-rule">
             <strong>Neutral tone</strong>
-            <p>No tone mark; say it lightly. Compare <b>māma</b> and <b>bàba</b>.</p>
+            <p>māma · bàba</p>
           </aside>
           <aside class="spelling-rule">
             <strong>-ng ≠ -n</strong>
-            <p>Keep the final <em>ng</em> in <b>生日 · shēngrì</b>.</p>
+            <p>生日 · shēngrì</p>
           </aside>
           <aside class="spelling-rule">
             <strong>ch ≠ sh</strong>
-            <p><em>ch</em> starts with a stronger burst of air; <em>sh</em> keeps steady friction.</p>
+            <p>air burst · steady friction</p>
           </aside>
           <aside class="spelling-rule">
             <strong>现在 ≠ 先</strong>
-            <p><b>xiànzài</b> means “now”; <b>xiān</b> means “first.”</p>
+            <p>xiànzài = now · xiān = first</p>
           </aside>
           <aside class="spelling-rule">
             <strong>谁 · 几岁</strong>
-            <p><b>shéi / shuí</b> asks “who”; <b>jǐ suì</b> asks “how old.”</p>
+            <p>who · how old</p>
           </aside>
         </div>
       </section>
 
       <section id="vocabulary" class="vocab-section section-shell">
-        <div class="section-heading split-heading">
-          <div>
-            <p class="eyebrow">Vocabulary bank</p>
-            <h2>Words with a real-life home.</h2>
-          </div>
-          <p>Search by Chinese, pinyin, or English. Filter by the situation where you would use it.</p>
+        <div class="section-heading compact-heading">
+          <h2>Words</h2>
         </div>
 
         <div class="vocab-controls">
           <label class="search-box">
             <span class="visually-hidden">Search vocabulary</span>
             <span aria-hidden="true">⌕</span>
-            <input id="vocab-search" type="search" placeholder="Search words, pinyin, or meaning…" autocomplete="off" />
+            <input id="vocab-search" type="search" placeholder="Search" autocomplete="off" />
           </label>
           <div id="category-filters" class="filter-row" aria-label="Vocabulary categories"></div>
         </div>
 
         <div class="vocab-meta">
-          <p><strong id="visible-count">0</strong> words shown</p>
+          <p><strong id="visible-count">0</strong></p>
           <button id="toggle-pinyin" class="text-button" type="button" aria-pressed="false">Hide pinyin</button>
         </div>
         <div id="vocab-grid" class="vocab-grid" aria-live="polite"></div>
@@ -240,22 +201,16 @@
       </section>
 
       <section id="patterns" class="pattern-section section-shell">
-        <div class="section-heading">
-          <p class="eyebrow">Sentence patterns</p>
-          <h2>Small structures. Big range.</h2>
-          <p>Swap in words you already know and make the sentence your own.</p>
+        <div class="section-heading compact-heading">
+          <h2>Sentences</h2>
         </div>
         <div id="pattern-tabs" class="pattern-tabs" role="tablist" aria-label="Sentence pattern topics"></div>
         <div id="pattern-list" class="pattern-list"></div>
       </section>
 
       <section id="dialogue" class="dialogue-section section-shell">
-        <div class="section-heading split-heading">
-          <div>
-            <p class="eyebrow">Making plans</p>
-            <h2>Pizza tomorrow.</h2>
-          </div>
-          <p>Read each turn aloud, then cover the English and answer as the other speaker.</p>
+        <div class="section-heading compact-heading">
+          <h2>Plans</h2>
         </div>
         <div id="dialogue-list" class="dialogue-list" aria-label="Mandarin dialogue about making plans"></div>
       </section>
@@ -263,11 +218,7 @@
       <section id="reading" class="reading-section">
         <div class="reading-inner section-shell">
           <div class="reading-intro">
-            <p class="eyebrow">Restaurant reading</p>
-            <h2>A birthday lunch<br />at Little Cat Restaurant.</h2>
-            <p>
-              Read the Chinese first. Use pinyin only when you need it, then check the English meaning.
-            </p>
+            <h2>Reading</h2>
             <div id="reading-controls" class="reading-controls" role="group" aria-label="Reading display">
               <button class="reading-toggle active" type="button" data-layer="chinese" aria-pressed="true">Chinese</button>
               <button class="reading-toggle" type="button" data-layer="pinyin" aria-pressed="false">Pinyin</button>
@@ -279,39 +230,27 @@
       </section>
 
       <section id="characters" class="character-section section-shell">
-        <div class="section-heading split-heading">
-          <div>
-            <p class="eyebrow">Character practice</p>
-            <h2>Recognize before you write.</h2>
-          </div>
-          <p>Select a character to see its sound and meaning. Then say it without looking.</p>
+        <div class="section-heading compact-heading">
+          <h2>Characters</h2>
         </div>
         <div class="character-layout">
           <div id="character-grid" class="character-grid"></div>
           <aside class="character-focus" aria-live="polite">
-            <span class="focus-label">Selected character</span>
+            <span class="focus-label">Selected</span>
             <p id="focus-character" lang="zh-Hans">我</p>
             <p id="focus-pinyin">wǒ</p>
             <strong id="focus-meaning">I; me</strong>
-            <p class="stroke-note">Write from top to bottom and left to right.</p>
           </aside>
         </div>
-      </section>
-
-      <section class="closing-section section-shell">
-        <p class="closing-chinese" lang="zh-Hans">每天进步一点点。</p>
-        <h2>A little progress, every day.</h2>
-        <p>This notebook will grow with every new lesson.</p>
-        <a class="button button-primary" href="#study">Review five words</a>
       </section>
     </main>
 
     <footer class="site-footer section-shell">
       <div>
         <span class="brand-mark small" aria-hidden="true"><img src="../anthony-brand-icon.png" alt="" /></span>
-        <p><strong>My Mandarin Learning Notebook</strong><br />Built from lessons learned so far.</p>
+        <p><strong>Mandarin</strong></p>
       </div>
-      <p>anthonyamaru.com · Updated August 2026</p>
+      <p>anthonyamaru.com</p>
     </footer>
   </body>
 </html>
