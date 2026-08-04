@@ -22,9 +22,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&amp;family=Noto+Serif+SC:wght@500;700&amp;display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=20260803-ai1" />
-    <script src="music-cloud.js?v=20260803-ai1" defer></script>
-    <script src="script.js?v=20260803-ai1" defer></script>
+    <link rel="stylesheet" href="styles.css?v=20260803-ai2" />
+    <script src="music-cloud.js?v=20260803-ai2" defer></script>
+    <script src="script.js?v=20260803-ai2" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -60,7 +60,6 @@
           <button class="nav-link active" type="button" data-route="home">Home</button>
           <button class="nav-link" type="button" data-route="resume">Resume</button>
           <button class="nav-link" type="button" data-route="interests">Interests</button>
-          <button class="nav-link" type="button" data-route="ai">AI</button>
           <button class="nav-link" type="button" data-route="music">Music</button>
           <button class="nav-link" type="button" data-route="media">Media</button>
         </nav>
@@ -76,10 +75,20 @@
         <button id="dock-previous" class="dock-control" type="button" aria-label="Previous song">‹</button>
         <button id="dock-play" class="dock-play" type="button" aria-label="Play or pause">▶</button>
         <button id="dock-next" class="dock-control" type="button" aria-label="Next song">›</button>
+        <button id="quick-ai-toggle" class="quick-ai-toggle" type="button" aria-label="Ask AI" aria-expanded="false" aria-controls="quick-ai-popover">AI</button>
         <div id="dock-expanded" class="dock-expanded" hidden>
           <label for="dock-track-select">Choose a song</label>
           <select id="dock-track-select"><option value="">No music added yet</option></select>
           <audio id="audio-player" preload="metadata"></audio>
+        </div>
+        <div id="quick-ai-popover" class="quick-ai-popover" hidden>
+          <form id="quick-ai-form">
+            <div class="quick-ai-heading"><strong>Ask AI</strong><button id="quick-ai-close" type="button" aria-label="Close AI">×</button></div>
+            <select id="quick-ai-topic" aria-label="AI topic"><option value="General">General</option><option value="Aviation">Aviation</option><option value="Mandarin">Mandarin</option><option value="Book">Book</option></select>
+            <textarea id="quick-ai-input" rows="2" maxlength="8000" placeholder="Ask one question" aria-label="Question for AI" required></textarea>
+            <button id="quick-ai-send" class="button primary" type="submit">Ask</button>
+          </form>
+          <div id="quick-ai-answer" class="quick-ai-answer" role="status" aria-live="polite" hidden></div>
         </div>
       </section>
 
@@ -90,9 +99,8 @@
             <div class="command-grid">
               <button type="button" data-route="resume"><span>01</span><strong>Resume</strong><b>→</b></button>
               <button type="button" data-route="interests"><span>02</span><strong>Aviation · Mandarin · Book</strong><b>→</b></button>
-              <button type="button" data-route="ai"><span>03</span><strong>AI</strong><b>→</b></button>
-              <button type="button" data-route="music"><span>04</span><strong>Music</strong><b>→</b></button>
-              <button type="button" data-route="media"><span>05</span><strong>Photos & videos</strong><b>→</b></button>
+              <button type="button" data-route="music"><span>03</span><strong>Music</strong><b>→</b></button>
+              <button type="button" data-route="media"><span>04</span><strong>Photos & videos</strong><b>→</b></button>
             </div>
             <div class="command-status">
               <span><small>Aviation</small><strong id="home-aviation-score">—</strong></span>
@@ -144,31 +152,10 @@
               </div>
             </article>
 
-            <article class="interest-card assistant-card">
-              <div class="assistant-heading">
-                <div><div class="interest-icon">AI</div><h2>Big Pickle</h2></div>
-                <button class="button primary" type="button" data-route="ai">Open</button>
-                <span id="connector-status" class="connection-pill connected">Ready</span>
-              </div>
-            </article>
-
             <article class="interest-card mycology-card">
               <div class="interest-icon">◌</div><h2>Mycology</h2><span class="coming-soon">Coming later</span>
             </article>
           </div>
-        </section>
-
-        <section id="page-ai" class="page-panel section-shell" data-page="ai">
-          <header class="page-heading ai-page-heading"><div><h1>AI</h1></div><button id="anthony-ai-clear" class="small-button" type="button">Clear</button></header>
-          <section class="ai-chat" aria-labelledby="anthony-ai-title">
-            <header class="ai-chat-heading"><span class="ai-avatar" aria-hidden="true">AI</span><div><h2 id="anthony-ai-title">Big Pickle</h2><small>Private session</small></div></header>
-            <div id="anthony-ai-thread" class="ai-thread" role="log" aria-live="polite"><div class="ai-empty"><strong>Ask anything</strong></div></div>
-            <form id="anthony-ai-form" class="ai-composer">
-              <label><span class="sr-only">Topic</span><select id="anthony-ai-topic"><option value="General">General</option><option value="Aviation">Aviation</option><option value="Mandarin">Mandarin</option><option value="Book">Book</option></select></label>
-              <label class="ai-question"><span class="sr-only">Question</span><textarea id="anthony-ai-input" rows="2" maxlength="8000" placeholder="Ask a question" required></textarea></label>
-              <button id="anthony-ai-send" class="button primary" type="submit">Ask</button>
-            </form>
-          </section>
         </section>
 
         <section id="page-music" class="page-panel section-shell" data-page="music">

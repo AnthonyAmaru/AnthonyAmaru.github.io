@@ -53,7 +53,9 @@
       const body = await response.json();
       message = body.message || body.error_description || body.error || body.msg || message;
     } catch { /* Keep the status-based message. */ }
-    throw new Error(message);
+    const error = new Error(message);
+    error.status = response.status;
+    throw error;
   }
 
   class MusicCloud {
@@ -62,6 +64,7 @@
       try { session = JSON.parse(sessionStorage.getItem(SESSION_KEY)); } catch { /* Start signed out. */ }
       this.accessToken = session?.accessToken || null;
       this.user = session?.user || null;
+      this.expiresAt = Number(session?.expiresAt || 0);
     }
 
     headers(extra = {}, authenticated = false) {
@@ -73,7 +76,7 @@
     }
 
     isSignedIn() {
-      return Boolean(this.accessToken && this.user?.id);
+      return Boolean(this.accessToken && this.user?.id && this.expiresAt > Date.now() + 30_000);
     }
 
     async signIn(email, password) {
@@ -85,6 +88,7 @@
       const session = await readResponse(response);
       this.accessToken = session.access_token;
       this.user = session.user;
+      this.expiresAt = Number(session.expires_at || 0) * 1000 || Date.now() + Number(session.expires_in || 3600) * 1000;
 
       const membership = await readResponse(await fetch(
         `${PROJECT_URL}/rest/v1/site_admins?select=user_id&user_id=eq.${encodeURIComponent(this.user.id)}`,
@@ -94,7 +98,7 @@
         await this.signOut();
         throw new Error("This account is not approved as a site administrator.");
       }
-      sessionStorage.setItem(SESSION_KEY, JSON.stringify({ accessToken: this.accessToken, user: this.user }));
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify({ accessToken: this.accessToken, user: this.user, expiresAt: this.expiresAt }));
       return this.user;
     }
 
@@ -104,6 +108,7 @@
       }
       this.accessToken = null;
       this.user = null;
+      this.expiresAt = 0;
       sessionStorage.removeItem(SESSION_KEY);
     }
 

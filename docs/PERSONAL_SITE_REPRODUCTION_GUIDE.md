@@ -16,14 +16,14 @@ The two existing sites use the same backend pattern but different page layouts.
 - Shared design in `styles.css`
 - Supabase communication in `music-cloud.js`
 - Separate static sub-apps in `aviation/` and `mandarin/`
-- Book editor and general AI chat use `supabase/functions/big-pickle/`
-- Main areas: Resume, Interests, AI, Music, Media
+- Book editor and the single-question AI bubble use `supabase/functions/big-pickle/`
+- Main areas: Resume, Interests, Music, Media
 
 ### Rauny pattern: separate pages
 
 - Repository: `AnthonyAmaru/raunyramirez.com`
 - Domain: `raunyramirez.com`
-- Home page links to `resume.html`, `interests.html`, `ai.html`, `music.html`, and `goals.html`
+- Home page links to `resume.html`, `interests.html`, `music.html`, and `goals.html`
 - Interest detail pages include Art, Travel, Books, and Shopping
 - The header, navigation, music player, theme, cloud status, and admin session are shared by `script.js`, `styles.css`, and `music-cloud.js`
 - The shopping UI reads approved product-feed records from Supabase
@@ -37,7 +37,6 @@ person-site/
 ├── index.html
 ├── resume.html                 # omit for a single-page version
 ├── interests.html
-├── ai.html
 ├── music.html
 ├── goals.html
 ├── art.html                    # optional interest detail pages
@@ -66,7 +65,7 @@ person-site/
     └── migrations/
 ```
 
-Use relative asset links so the site works locally and on GitHub Pages. Add a version query when shared assets change, for example `styles.css?v=20260803-ai1`, to prevent an old browser cache from hiding a deployment.
+Use relative asset links so the site works locally and on GitHub Pages. Add a version query when shared assets change, for example `styles.css?v=20260803-ai2`, to prevent an old browser cache from hiding a deployment.
 
 ## 3. Frontend layout and behavior
 
@@ -75,6 +74,7 @@ The shared interface should stay compact and button-led:
 - A fixed header with logo, stable primary navigation, cloud status, and light/dark toggle
 - A mobile menu at narrow widths
 - A small persistent music player showing the current track
+- A compact AI button beside the music player that opens a single-question popover
 - A home page made of large page buttons, without decorative marketing copy
 - Pastel, airy colors with an equally usable dark theme
 - Touch targets at least 44 pixels high and layouts that collapse to one column on phones
@@ -219,7 +219,7 @@ Deploy `supabase/functions/big-pickle/index.ts` as an Edge Function named `big-p
 8. Return only the assistant content and a generic provider error; log limited server-side diagnostics without logging keys.
 9. Set a request timeout and `Cache-Control: no-store`.
 
-The browser calls the Edge Function with the current Supabase access token. The standalone AI page keeps only the current page's recent conversation in memory; it does not publish chat history or place the provider key in the browser.
+The browser calls the Edge Function with the current Supabase access token. The AI bubble sends one independent question at a time and replaces its previous answer. It does not send conversation history, publish chats, or place the provider key in the browser. Enter submits the question; Shift+Enter inserts a new line.
 
 When adding another domain to the same backend, add both its apex and `www` HTTPS origins to the Edge Function allowlist and redeploy.
 
@@ -283,7 +283,7 @@ Before deployment:
 - Select all music and verify bulk deletion asks for confirmation.
 - Complete one quiz and confirm its score/history on a second device.
 - Save one content edit and one artwork item, then confirm them on a second device.
-- Ask the AI page a simple question in every relevant scope.
+- Ask the AI bubble a simple question in every relevant scope.
 - Confirm an unsigned AI request returns `401`.
 - Confirm the provider key is absent from the browser network response and repository.
 - Run Supabase security and performance advisors.
