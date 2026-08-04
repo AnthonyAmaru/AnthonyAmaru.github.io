@@ -131,9 +131,9 @@ function adminIsUnlocked() {
 
 function updateAdminStatus() {
   const chip = $("#admin-status");
-  const unlocked = adminIsUnlocked();
-  chip.classList.toggle("unlocked", unlocked);
-  $("span:last-child", chip).textContent = unlocked ? "Admin unlocked" : "Admin locked";
+  const connected = Boolean(window.musicCloud?.isSignedIn());
+  chip.classList.toggle("unlocked", connected);
+  $("span:last-child", chip).textContent = connected ? "Cloud synced" : "Cloud locked";
 }
 
 function ensureAdmin() {
@@ -661,8 +661,8 @@ document.addEventListener("click", (event) => {
 });
 
 $("#admin-status").addEventListener("click", async () => {
-  if (adminIsUnlocked()) toast("Admin tools are unlocked for this session.");
-  else if (await ensureAdmin()) toast("Admin tools unlocked.");
+  if (adminIsUnlocked() && musicCloud.isSignedIn()) toast("Cloud synced for this session.");
+  else if (await ensureAdmin()) toast("Cloud synced.");
 });
 $("#admin-form").addEventListener("submit", async (event) => {
   event.preventDefault();
