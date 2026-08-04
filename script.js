@@ -13,6 +13,26 @@ const KEYS = {
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
+function keepFirst(selector, root = document) {
+  $$(selector, root).slice(1).forEach((element) => element.remove());
+}
+
+function normalizePortalShell() {
+  keepFirst("#entry-gate");
+  keepFirst("#portal");
+  keepFirst(".skip-link");
+  const portal = $("#portal");
+  if (!portal) return;
+  keepFirst(".site-header", portal);
+  keepFirst("#music-dock", portal);
+  keepFirst("#go-back-button", portal);
+  keepFirst("#main-content", portal);
+  keepFirst(".site-footer", portal);
+}
+
+normalizePortalShell();
+window.addEventListener("pageshow", normalizePortalShell);
+
 let pendingAdminResolve = null;
 let adminPasswordForSession = null;
 let toastTimer = null;

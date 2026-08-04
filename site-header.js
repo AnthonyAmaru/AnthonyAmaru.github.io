@@ -1,3 +1,11 @@
+function keepSingleSiteElement(selector) {
+  [...document.querySelectorAll(selector)].slice(1).forEach((element) => element.remove());
+}
+
+keepSingleSiteElement(".main-site-header");
+keepSingleSiteElement(".site-music-bar");
+keepSingleSiteElement(".go-back-button");
+
 const mainSiteMenu = document.querySelector("[data-main-site-menu]");
 const mainSiteNav = document.querySelector("[data-main-site-nav]");
 
