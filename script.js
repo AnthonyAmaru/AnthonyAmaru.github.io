@@ -966,6 +966,13 @@ document.addEventListener("click", (event) => {
   navigatePortal(portalRouteFromUrl(url));
 });
 
+window.addEventListener("message", (event) => {
+  if (event.origin !== location.origin || event.data?.type !== "anthony:portal-navigation") return;
+  const route = ["home", "resume", "interests", "music"].includes(event.data.route) ? event.data.route : "interests";
+  if (!$("#app-modal").hidden) closeStudyApp();
+  navigatePortal(route, true);
+});
+
 window.addEventListener("popstate", () => routeTo(portalRouteFromUrl()));
 
 $("#go-back-button").addEventListener("click", () => {
