@@ -23,10 +23,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&amp;family=Noto+Serif+SC:wght@500;700&amp;display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=20260804-searchremoved1" />
+    <link rel="stylesheet" href="styles.css?v=20260804-multiartist1" />
     <script src="music-cloud.js?v=20260804-titleclean1" defer></script>
     <script src="book-data.js?v=20260804-book2" defer></script>
-    <script src="script.js?v=20260804-searchremoved1" defer></script>
+    <script src="script.js?v=20260804-multiartist1" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -212,7 +212,7 @@
                 <div class="track-table-head" aria-label="Music filters">
                   <span aria-hidden="true"></span><span aria-hidden="true"></span>
                   <div class="track-column-filter"><button class="track-sort active" type="button" data-sort-column="song" aria-pressed="true">Song <span data-sort-indicator>A→Z</span></button><input id="song-filter" type="search" placeholder="Filter songs" autocomplete="off" aria-label="Filter songs" /></div>
-                  <div class="track-column-filter"><button class="track-sort" type="button" data-sort-column="artist" aria-pressed="false">Artist <span data-sort-indicator>↕</span></button><select id="artist-filter" aria-label="Filter by artist"><option value="all">All artists</option></select></div>
+                  <div class="track-column-filter"><button class="track-sort" type="button" data-sort-column="artist" aria-pressed="false">Artist <span data-sort-indicator>↕</span></button><details id="artist-filter" class="artist-filter"><summary><span id="artist-filter-label">All artists</span><span aria-hidden="true">⌄</span></summary><div id="artist-filter-options" class="artist-filter-options" role="group" aria-label="Filter by artists"></div></details></div>
                   <div class="track-column-filter"><button class="track-sort" type="button" data-sort-column="playlist" aria-pressed="false">Playlist <span data-sort-indicator>↕</span></button><select id="playlist-filter" aria-label="Filter by playlist"><option value="all">All playlists</option></select></div>
                   <span aria-hidden="true"></span>
                 </div>

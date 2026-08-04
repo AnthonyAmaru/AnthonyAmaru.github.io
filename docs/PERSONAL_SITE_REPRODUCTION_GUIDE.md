@@ -311,7 +311,7 @@ The music page should support:
 - deleting selected songs with confirmation;
 - filtering and sorting Song, Artist, and Playlist columns A–Z or Z–A;
 - editing and saving song and artist names;
-- artist filters;
+- a compact multi-select artist filter that can show any combination of artists and reset to all artists;
 - previous, play/pause, and next controls on phones.
 
 ## Quiz and editable-content rules

@@ -42,7 +42,7 @@ let currentBookChapter = 0;
 let currentBookPage = 0;
 let bookEditorReady = false;
 let currentPlaylist = "all";
-let currentArtist = "all";
+const currentArtists = new Set();
 let currentSongQuery = "";
 let musicSortColumn = "song";
 let musicSortDirection = "asc";
@@ -612,9 +612,9 @@ async function renderMusic() {
   $("#all-track-count").textContent = tracks.length;
   $("#playlist-list").innerHTML = musicPlaylists.map((playlist) => `<button class="playlist-row" type="button" data-playlist="${playlist.id}"><span>♬</span><strong>${escapeHtml(playlist.name)}</strong><small>${tracks.filter((track) => String(track.playlist_id) === String(playlist.id)).length}</small></button>`).join("");
   const artists = [...new Set(tracks.map(trackArtist))].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
-  if (currentArtist !== "all" && !artists.includes(currentArtist)) currentArtist = "all";
-  $("#artist-filter").innerHTML = `<option value="all">All artists</option>${artists.map((artist) => `<option value="${escapeHtml(artist)}">${escapeHtml(artist)}</option>`).join("")}`;
-  $("#artist-filter").value = currentArtist;
+  [...currentArtists].forEach((artist) => { if (!artists.includes(artist)) currentArtists.delete(artist); });
+  $("#artist-filter-options").innerHTML = `<button id="clear-artist-filter" class="artist-filter-all" type="button">All artists</button>${artists.map((artist) => `<label class="artist-filter-option"><input type="checkbox" data-artist-filter value="${escapeHtml(artist)}" ${currentArtists.has(artist) ? "checked" : ""} /><span>${escapeHtml(artist)}</span></label>`).join("")}`;
+  syncArtistFilterUi();
   const playlistOptions = musicPlaylists.map((playlist) => `<option value="${playlist.id}">${escapeHtml(playlist.name)}</option>`).join("");
   if (currentPlaylist !== "all" && currentPlaylist !== "none" && !musicPlaylists.some((playlist) => String(playlist.id) === currentPlaylist)) currentPlaylist = "all";
   $("#playlist-filter").innerHTML = `<option value="all">All playlists</option><option value="none">No playlist</option>${playlistOptions}`;
@@ -631,7 +631,7 @@ function applyMusicFilters() {
   const normalizedQuery = currentSongQuery.trim().toLocaleLowerCase();
   visibleTracks = tracks.filter((track) => {
     const matchesSong = !normalizedQuery || String(track.title || "").toLocaleLowerCase().includes(normalizedQuery);
-    const matchesArtist = currentArtist === "all" || trackArtist(track) === currentArtist;
+    const matchesArtist = !currentArtists.size || currentArtists.has(trackArtist(track));
     const matchesPlaylist = currentPlaylist === "all" || (currentPlaylist === "none" ? !track.playlist_id : String(track.playlist_id) === currentPlaylist);
     return matchesSong && matchesArtist && matchesPlaylist;
   });
@@ -644,7 +644,7 @@ function applyMusicFilters() {
   const availableIds = new Set(tracks.map((track) => String(track.id)));
   [...selectedTrackIds].forEach((id) => { if (!availableIds.has(id)) selectedTrackIds.delete(id); });
   $$(".playlist-row[data-playlist]").forEach((button) => button.classList.toggle("active", button.dataset.playlist === currentPlaylist));
-  $("#artist-filter").value = currentArtist;
+  syncArtistFilterUi();
   $("#playlist-filter").value = currentPlaylist;
   $("#library-title").textContent = currentPlaylist === "all" ? "All music" : currentPlaylist === "none" ? "No playlist" : selectedPlaylist?.name || "Playlist";
   const playlistOptions = musicPlaylists.map((playlist) => `<option value="${playlist.id}">${escapeHtml(playlist.name)}</option>`).join("");
@@ -664,6 +664,17 @@ function applyMusicFilters() {
   $$('[data-assign-track]').forEach((select) => { const track = tracks.find((item) => String(item.id) === select.dataset.assignTrack); select.value = track?.playlist_id || ""; });
   updateMusicSortControls();
   updateTrackSelectionControls();
+}
+
+function syncArtistFilterUi() {
+  const artists = [...currentArtists];
+  const label = $("#artist-filter-label");
+  if (label) {
+    label.textContent = artists.length === 0 ? "All artists" : artists.length === 1 ? artists[0] : `${artists.length} artists`;
+    label.closest("summary")?.setAttribute("title", artists.length ? artists.join(", ") : "All artists");
+  }
+  $$('[data-artist-filter]').forEach((checkbox) => { checkbox.checked = currentArtists.has(checkbox.value); });
+  $("#clear-artist-filter")?.classList.toggle("active", artists.length === 0);
 }
 
 function updateTrackSelectionControls() {
@@ -1076,7 +1087,20 @@ $("#new-playlist").addEventListener("click", createPlaylist);
 $("#assign-selected-tracks").addEventListener("click", assignSelectedTracks);
 $("#bulk-playlist-select").addEventListener("change", updateTrackSelectionControls);
 $("#song-filter").addEventListener("input", (event) => { selectedTrackIds.clear(); currentSongQuery = event.target.value; applyMusicFilters(); });
-$("#artist-filter").addEventListener("change", (event) => { selectedTrackIds.clear(); currentArtist = event.target.value; applyMusicFilters(); });
+$("#artist-filter-options").addEventListener("change", (event) => {
+  const checkbox = event.target.closest("[data-artist-filter]");
+  if (!checkbox) return;
+  selectedTrackIds.clear();
+  if (checkbox.checked) currentArtists.add(checkbox.value);
+  else currentArtists.delete(checkbox.value);
+  applyMusicFilters();
+});
+$("#artist-filter-options").addEventListener("click", (event) => {
+  if (!event.target.closest("#clear-artist-filter")) return;
+  selectedTrackIds.clear();
+  currentArtists.clear();
+  applyMusicFilters();
+});
 $("#playlist-filter").addEventListener("change", (event) => { selectedTrackIds.clear(); currentPlaylist = event.target.value; applyMusicFilters(); });
 $("#delete-selected-tracks").addEventListener("click", deleteSelectedTracks);
 $("#select-all-tracks").addEventListener("change", (event) => {

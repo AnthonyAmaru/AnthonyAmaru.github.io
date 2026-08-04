@@ -310,6 +310,16 @@ body.has-back-button .app-modal,body.has-back-button .book-modal { left: var(--b
 .track-sort span { color: var(--muted); font-size: .58rem; letter-spacing: 0; }
 .track-sort.active { color: var(--ink); }
 .track-column-filter input,.track-column-filter select { width: 100%; min-width: 0; min-height: 38px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-solid); color: var(--ink); padding: 0 10px; font: inherit; font-size: .72rem; }
+.artist-filter { position: relative; min-width: 0; }
+.artist-filter summary { display: flex; min-height: 38px; align-items: center; justify-content: space-between; gap: 8px; overflow: hidden; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-solid); padding: 0 10px; cursor: pointer; color: var(--ink); font-size: .72rem; list-style: none; }
+.artist-filter summary::-webkit-details-marker { display: none; }
+.artist-filter summary span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.artist-filter[open] summary { border-color: var(--line-strong); }
+.artist-filter-options { position: absolute; z-index: 35; top: calc(100% + 6px); left: 0; display: grid; width: max(100%, 220px); max-height: 260px; overflow: auto; border: 1px solid var(--line-strong); border-radius: 12px; background: var(--surface-solid); box-shadow: var(--shadow-lg); padding: 6px; }
+.artist-filter-all,.artist-filter-option { display: flex; min-height: 36px; align-items: center; gap: 9px; border: 0; border-radius: 8px; background: transparent; padding: 7px 9px; cursor: pointer; color: var(--ink); font: inherit; font-size: .72rem; text-align: left; }
+.artist-filter-all:hover,.artist-filter-all.active,.artist-filter-option:hover { background: var(--sage); }
+.artist-filter-option input { width: 16px; min-height: 16px; margin: 0; padding: 0; accent-color: var(--ink); }
+.artist-filter-option span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .track-list { display: grid; min-width: 850px; }
 .track-row { border-bottom: 1px solid var(--line); padding: 14px 3px; }
 .track-row.editing { background: color-mix(in srgb, var(--butter) 28%, transparent); }
