@@ -108,7 +108,7 @@ a { color: inherit; }
 .progress-track { height: 6px; overflow: hidden; background: rgba(255,255,255,.12); border-radius: 99px; }
 .progress-track span { display: block; width: 0; height: 100%; background: var(--red); transition: width .4s ease; }
 
-.study-section, .vocab-section, .pattern-section, .dialogue-section, .character-section { padding-block: 120px; }
+.study-section, .pronunciation-section, .vocab-section, .pattern-section, .dialogue-section, .character-section { padding-block: 120px; }
 .section-heading { margin-bottom: 48px; }
 .section-heading h2, .reading-intro h2, .closing-section h2 { font-size: clamp(2.5rem, 5vw, 4.8rem); }
 .section-heading > p:last-child { max-width: 660px; color: var(--ink-soft); }
@@ -146,6 +146,16 @@ a { color: inherit; }
 .text-button { padding: 0; border: 0; background: transparent; color: var(--blue); font-weight: 700; cursor: pointer; }
 .text-button:hover, .text-button:focus-visible { color: var(--red); }
 .local-note { margin: 20px 0 0; color: var(--ink-soft); font-size: .74rem; }
+
+.pronunciation-section { border-top: 1px solid var(--line); }
+.sound-grid { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+.sound-card { position: relative; display: grid; min-height: 150px; place-content: center; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); text-align: center; }
+.sound-card strong { font-size: 2.25rem; font-weight: 500; }
+.sound-card small { margin-top: 5px; color: var(--ink-soft); font-size: .7rem; }
+.sound-number { position: absolute; top: 12px; left: 12px; display: grid; width: 25px; height: 25px; place-items: center; border-radius: 7px; background: var(--gold); color: var(--ink); font-size: .68rem; font-weight: 800; }
+.spelling-rule { display: grid; grid-template-columns: 150px 1fr; align-items: center; gap: 24px; margin-top: 18px; border-radius: 14px; background: var(--ink); color: white; padding: 22px 25px; }
+.spelling-rule strong { color: #e8cf8b; font-size: 1.5rem; }
+.spelling-rule p { margin: 0; color: rgba(255,255,255,.72); line-height: 1.6; }
 
 .vocab-section { background: var(--paper-light); width: 100%; max-width: none; padding-inline: max(20px, calc((100vw - 1180px) / 2)); }
 .vocab-controls { display: grid; gap: 20px; }
@@ -247,7 +257,7 @@ a { color: inherit; }
   .hero-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
   .hero-study-card { padding: 36px 26px; }
   .seal { width: 66px; height: 66px; right: 20px; }
-  .study-section, .vocab-section, .pattern-section, .dialogue-section, .character-section, .reading-section { padding-block: 82px; }
+  .study-section, .pronunciation-section, .vocab-section, .pattern-section, .dialogue-section, .character-section, .reading-section { padding-block: 82px; }
   .split-heading { grid-template-columns: 1fr; gap: 18px; }
   .section-heading { margin-bottom: 34px; }
   .section-heading h2, .reading-intro h2, .closing-section h2 { font-size: clamp(2.5rem, 13vw, 4rem); }
@@ -255,6 +265,9 @@ a { color: inherit; }
   .flash-actions { display: grid; grid-template-columns: 1fr 1fr; }
   .flash-actions .button { min-width: 0; padding-inline: 12px; }
   .session-panel { display: block; }
+  .sound-grid { grid-template-columns: repeat(2, 1fr); }
+  .sound-card { min-height: 125px; }
+  .spelling-rule { grid-template-columns: 1fr; gap: 8px; }
   .vocab-section { padding-inline: 14px; }
   .vocab-grid { grid-template-columns: repeat(2, 1fr); }
   .word-card { min-height: 170px; padding: 18px; }

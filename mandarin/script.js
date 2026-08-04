@@ -33,12 +33,17 @@ const vocabulary = [
   ["问", "wèn", "to ask", "People"],
   ["自己", "zìjǐ", "oneself", "People"],
 
+  // Daily life
+  ["知道", "zhīdào", "to know", "Daily life"],
+  ["睡觉", "shuìjiào", "to sleep; go to bed", "Daily life"],
+
   // Food and drink
   ["面包", "miànbāo", "bread", "Food & drink"],
   ["饺子", "jiǎozi", "dumplings", "Food & drink"],
   ["面条", "miàntiáo", "noodles", "Food & drink"],
   ["米饭", "mǐfàn", "cooked rice", "Food & drink"],
   ["鸡肉", "jīròu", "chicken", "Food & drink"],
+  ["牛肉", "niúròu", "beef", "Food & drink"],
   ["西兰花", "xīlánhuā", "broccoli", "Food & drink"],
   ["馄饨", "húntun", "wontons", "Food & drink"],
   ["鱼", "yú", "fish", "Food & drink"],
@@ -202,6 +207,11 @@ const patternGroups = {
     ["5点，在小猫饭店。", "Wǔ diǎn, zài Xiǎomāo Fàndiàn.", "At five, at Little Cat Restaurant."],
     ["明天见。", "Míngtiān jiàn.", "See you tomorrow."],
   ],
+  "Daily life": [
+    ["我知道。", "Wǒ zhīdào.", "I know."],
+    ["我晚上睡觉。", "Wǒ wǎnshang shuìjiào.", "I sleep at night."],
+    ["我喜欢吃牛肉。", "Wǒ xǐhuan chī niúròu.", "I like eating beef."],
+  ],
   "Possession": [
     ["这是我的面包。", "Zhè shì wǒ de miànbāo.", "This is my bread."],
     ["这杯咖啡是你的。", "Zhè bēi kāfēi shì nǐ de.", "This cup of coffee is yours."],
@@ -219,6 +229,13 @@ const planDialogue = [
   ["B", "好的，几点？在哪里？", "Hǎo de, jǐ diǎn? Zài nǎlǐ?", "Okay. What time? Where?"],
   ["A", "5点，在小猫饭店。", "Wǔ diǎn, zài Xiǎomāo Fàndiàn.", "At five, at Little Cat Restaurant."],
   ["B", "明天见。", "Míngtiān jiàn.", "See you tomorrow."],
+];
+
+const pronunciationDrills = [
+  [1, "zhī", "zh", "1st tone"], [2, "chū", "ch", "1st tone"], [3, "shū", "sh", "1st tone"],
+  [4, "rù", "r", "4th tone"], [5, "jǐ", "j", "3rd tone"], [6, "qù", "q", "4th tone"],
+  [7, "xǐ", "x", "3rd tone"], [8, "lǜ", "l", "4th tone"], [9, "zhuī", "zh", "1st tone"],
+  [10, "chuò", "ch", "4th tone"], [11, "shuǐ", "sh", "3rd tone"], [12, "ròu", "r", "4th tone"],
 ];
 
 const readings = {
@@ -447,6 +464,16 @@ function renderDialogue() {
   });
 }
 
+function renderPronunciation() {
+  const grid = $("#sound-grid");
+  pronunciationDrills.forEach(([number, syllable, initial, tone]) => {
+    const card = document.createElement("article");
+    card.className = "sound-card";
+    card.innerHTML = `<span class="sound-number">${number}</span><strong>${syllable}</strong><small>${initial} · ${tone}</small>`;
+    grid.append(card);
+  });
+}
+
 function renderCharacters() {
   const grid = $("#character-grid");
   characters.forEach(([character, pinyin, meaning], index) => {
@@ -511,6 +538,7 @@ window.addEventListener("scroll", () => $(".site-header").classList.toggle("scro
 
 renderFilters();
 renderVocabulary();
+renderPronunciation();
 renderPatternTabs();
 renderPatterns();
 renderDialogue();

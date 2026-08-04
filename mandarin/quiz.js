@@ -17,6 +17,7 @@ const wordBank = [
   ["非常", "fēicháng", "extremely"], ["太…了", "tài…le", "too or extremely"], ["两", "liǎng", "two before measure words"],
   ["上午", "shàngwǔ", "morning"], ["下午", "xiàwǔ", "afternoon"], ["几点", "jǐ diǎn", "what time"],
   ["披萨", "pīsà", "pizza"], ["好的", "hǎo de", "okay or all right"], ["小猫饭店", "Xiǎomāo Fàndiàn", "Little Cat Restaurant"],
+  ["知道", "zhīdào", "to know"], ["睡觉", "shuìjiào", "to sleep or go to bed"], ["牛肉", "niúròu", "beef"],
 ];
 
 const sentenceBank = [
@@ -42,6 +43,9 @@ const sentenceBank = [
   ["我们去吃披萨吧。", "Wǒmen qù chī pīsà ba.", "Let's go eat pizza."],
   ["好的，几点？在哪里？", "Hǎo de, jǐ diǎn? Zài nǎlǐ?", "Okay. What time? Where?"],
   ["5点，在小猫饭店。", "Wǔ diǎn, zài Xiǎomāo Fàndiàn.", "At five, at Little Cat Restaurant."],
+  ["我知道。", "Wǒ zhīdào.", "I know."],
+  ["我晚上睡觉。", "Wǒ wǎnshang shuìjiào.", "I sleep at night."],
+  ["我喜欢吃牛肉。", "Wǒ xǐhuan chī niúròu.", "I like eating beef."],
 ];
 
 const $ = (selector) => document.querySelector(selector);
