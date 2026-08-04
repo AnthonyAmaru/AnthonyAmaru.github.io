@@ -208,7 +208,7 @@ function getResume() {
 function organizationLogo(entry) {
   const organization = String(entry.organization || "").toLowerCase();
   if (organization.includes("bitwave")) return { src: "logos/bitwave.webp", className: "bitwave" };
-  if (organization.includes("healthcare products florida")) return { symbol: "+", className: "medical" };
+  if (organization.includes("healthcare products florida")) return { className: "medical" };
   if (organization.includes("florida international university")) return { src: "logos/fiu.png", className: "fiu" };
   if (organization.includes("miami dade college")) return { src: "logos/miami-dade-college.jpg", className: "mdc" };
   return null;
@@ -216,6 +216,7 @@ function organizationLogo(entry) {
 
 function organizationMark(entry) {
   const logo = organizationLogo(entry);
+  if (logo?.className === "medical") return `<div class="company-mark logo-medical" role="img" aria-label="Medical supplies delivered by air"><span class="medical-plane" aria-hidden="true">&#9992;&#xfe0e;</span><span class="medical-tether" aria-hidden="true"></span><span class="medical-cargo" aria-hidden="true">+</span></div>`;
   if (logo?.symbol) return `<div class="company-mark logo-${logo.className}" aria-hidden="true"><span>${escapeHtml(logo.symbol)}</span></div>`;
   if (logo) return `<div class="company-mark has-logo logo-${logo.className}" aria-hidden="true"><img src="${logo.src}" alt="" /></div>`;
   return `<div class="company-mark" aria-hidden="true">${escapeHtml(entry.mark || entry.organization?.slice(0, 1) || "•")}</div>`;
