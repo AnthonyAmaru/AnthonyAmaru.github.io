@@ -1,6 +1,7 @@
 const VISITOR_HASH = "685e365003f3413bb077e7b6d5cf3b498c51df12fc883ca818d0344231fc4cd4";
 const ADMIN_HASH = "1e67aef3b01e797309c5588def71607f40a4facc6b8993af9a62306f727a2e5a";
 const CLOUD_ADMIN_EMAIL = "anthonyamaru93@gmail.com";
+const MUSIC_PLAYER_STATE_KEY = "anthony_music_player_state_v1";
 const KEYS = {
   theme: "anthony_portal_theme",
   resume: "anthony_resume_v1",
@@ -21,8 +22,8 @@ let currentPlaylist = "all";
 let tracks = [];
 let visibleTracks = [];
 let currentTrackId = null;
+let playerStateRestored = false;
 const selectedTrackIds = new Set();
-let mediaObjectUrls = [];
 
 const resumeDefaults = {
   work: [
@@ -122,7 +123,6 @@ function routeTo(route) {
   $("#primary-nav").classList.remove("open");
   $("#mobile-menu-button").setAttribute("aria-expanded", "false");
   if (route === "music") renderMusic();
-  if (route === "media") renderMedia();
   if (route === "resume") renderResume();
   if (route === "interests") refreshDashboard();
 }
@@ -447,46 +447,6 @@ async function askQuickAi(event) {
   }
 }
 
-function openDatabase() {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open("anthony_personal_portal", 1);
-    request.onupgradeneeded = () => {
-      const db = request.result;
-      if (!db.objectStoreNames.contains("tracks")) db.createObjectStore("tracks", { keyPath: "id", autoIncrement: true });
-      if (!db.objectStoreNames.contains("media")) db.createObjectStore("media", { keyPath: "id", autoIncrement: true });
-    };
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-}
-
-async function dbGetAll(storeName) {
-  const db = await openDatabase();
-  return new Promise((resolve, reject) => {
-    const request = db.transaction(storeName, "readonly").objectStore(storeName).getAll();
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-}
-
-async function dbAdd(storeName, value) {
-  const db = await openDatabase();
-  return new Promise((resolve, reject) => {
-    const request = db.transaction(storeName, "readwrite").objectStore(storeName).add(value);
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-}
-
-async function dbDelete(storeName, id) {
-  const db = await openDatabase();
-  return new Promise((resolve, reject) => {
-    const request = db.transaction(storeName, "readwrite").objectStore(storeName).delete(id);
-    request.onsuccess = () => resolve();
-    request.onerror = () => reject(request.error);
-  });
-}
-
 async function renderMusic() {
   let playlists = [];
   let cloudError = "";
@@ -513,6 +473,7 @@ async function renderMusic() {
   $$('[data-assign-track]').forEach((select) => { const track = tracks.find((item) => item.id === select.dataset.assignTrack); select.value = track?.playlist_id || ""; });
   updateTrackSelectionControls();
   renderDock();
+  restoreMusicPlayerState();
 }
 
 function updateTrackSelectionControls() {
@@ -533,6 +494,36 @@ function renderDock() {
   if (currentTrackId) select.value = String(currentTrackId);
 }
 
+function readMusicPlayerState() {
+  try { return JSON.parse(sessionStorage.getItem(MUSIC_PLAYER_STATE_KEY)) || null; } catch { return null; }
+}
+
+function saveMusicPlayerState() {
+  const track = tracks.find((item) => String(item.id) === String(currentTrackId));
+  if (!track) return;
+  const audio = $("#audio-player");
+  sessionStorage.setItem(MUSIC_PLAYER_STATE_KEY, JSON.stringify({ trackId: String(track.id), title: track.title, currentTime: Number(audio.currentTime || 0), playing: !audio.paused }));
+}
+
+function restoreMusicPlayerState() {
+  if (playerStateRestored) return;
+  playerStateRestored = true;
+  const saved = readMusicPlayerState();
+  const track = tracks.find((item) => String(item.id) === String(saved?.trackId));
+  if (!track) return;
+  currentTrackId = String(track.id);
+  const audio = $("#audio-player");
+  audio.src = track.url;
+  $("#dock-title").textContent = track.title;
+  $("#dock-track-select").value = String(track.id);
+  if (Number(saved.currentTime) > 0) {
+    const seek = () => { audio.currentTime = Math.min(Number(saved.currentTime), Number.isFinite(audio.duration) ? audio.duration : Number(saved.currentTime)); };
+    if (audio.readyState >= 1) seek(); else audio.addEventListener("loadedmetadata", seek, { once: true });
+  }
+  if (saved.playing) audio.play().catch(() => {});
+  updatePlayButton();
+}
+
 async function playTrack(id) {
   const track = tracks.find((item) => item.id === String(id));
   if (!track) return;
@@ -543,6 +534,7 @@ async function playTrack(id) {
   $("#dock-track-select").value = String(track.id);
   try { await audio.play(); } catch { toast("Tap play to start this song."); }
   updatePlayButton();
+  saveMusicPlayerState();
 }
 
 function updatePlayButton() {
@@ -590,7 +582,7 @@ async function deleteTrack(id) {
   if (!track) return;
   try { await musicCloud.deleteTrack(track); } catch (error) { return toast(error.message); }
   selectedTrackIds.delete(String(id));
-  if (currentTrackId === id) { $("#audio-player").pause(); currentTrackId = null; $("#dock-title").textContent = "Nothing selected"; }
+  if (currentTrackId === id) { $("#audio-player").pause(); currentTrackId = null; sessionStorage.removeItem(MUSIC_PLAYER_STATE_KEY); $("#dock-title").textContent = "Nothing selected"; }
   renderMusic();
 }
 
@@ -604,6 +596,7 @@ async function deleteSelectedTracks() {
   if (selected.some((track) => String(track.id) === String(currentTrackId))) {
     $("#audio-player").pause();
     currentTrackId = null;
+    sessionStorage.removeItem(MUSIC_PLAYER_STATE_KEY);
     $("#dock-title").textContent = "Nothing selected";
   }
   selectedTrackIds.clear();
@@ -618,36 +611,6 @@ async function createPlaylist() {
   try { await musicCloud.createPlaylist("anthony", name.trim()); renderMusic(); } catch (error) { toast(error.message); }
 }
 
-async function renderMedia() {
-  mediaObjectUrls.forEach(URL.revokeObjectURL);
-  mediaObjectUrls = [];
-  let items = [];
-  try { items = (await dbGetAll("media")).sort((a, b) => b.createdAt - a.createdAt); } catch { /* empty */ }
-  $("#media-empty").hidden = items.length > 0;
-  $("#media-gallery").innerHTML = items.map((item) => {
-    const url = URL.createObjectURL(item.blob);
-    mediaObjectUrls.push(url);
-    const visual = item.type.startsWith("video/") ? `<video src="${url}" controls preload="metadata"></video>` : `<img src="${url}" alt="${escapeHtml(item.name)}" loading="lazy" />`;
-    return `<figure class="media-item">${visual}<figcaption class="media-caption"><span>${escapeHtml(item.name)}</span><button class="media-delete" type="button" data-delete-media="${item.id}" aria-label="Delete ${escapeHtml(item.name)}">×</button></figcaption></figure>`;
-  }).join("");
-}
-
-async function addMediaFiles(files) {
-  if (!(await ensureAdmin()) || !files.length) return;
-  let added = 0;
-  for (const file of files) {
-    try { await dbAdd("media", { name: file.name, type: file.type, size: file.size, createdAt: Date.now() + added, blob: file }); added += 1; } catch (error) { toast(`Could not store ${file.name}: ${error.message}`); }
-  }
-  toast(`${added} media file${added === 1 ? "" : "s"} added.`);
-  renderMedia();
-}
-
-async function deleteMedia(id) {
-  if (!(await ensureAdmin()) || !confirm("Delete this media file from this browser?")) return;
-  await dbDelete("media", id);
-  renderMedia();
-}
-
 function formatBytes(bytes) {
   if (!bytes) return "0 B";
   const units = ["B", "KB", "MB", "GB"];
@@ -658,9 +621,9 @@ function formatBytes(bytes) {
 async function openStudyApp(name, needsAdmin) {
   if (needsAdmin && !(await ensureAdmin())) return;
   const apps = {
-    aviation: { title: "Aviation practice", src: "aviation/index.html" },
-    mandarin: { title: "Mandarin notebook", src: "mandarin/index.html?v=20260803-pages3" },
-    "mandarin-quiz": { title: "Mandarin practice", src: "mandarin/quiz.html?v=20260803-pages3" },
+    aviation: { title: "Aviation practice", src: "aviation/index.html?v=20260804-clean1" },
+    mandarin: { title: "Mandarin notebook", src: "mandarin/index.html?v=20260804-clean1" },
+    "mandarin-quiz": { title: "Mandarin practice", src: "mandarin/quiz.html?v=20260804-clean1" },
   };
   const app = apps[name];
   if (!app) return;
@@ -850,13 +813,10 @@ $("#dock-play").addEventListener("click", () => { const audio = $("#audio-player
 $("#dock-previous").addEventListener("click", () => stepTrack(-1));
 $("#dock-next").addEventListener("click", () => stepTrack(1));
 $("#dock-track-select").addEventListener("change", (event) => { if (event.target.value) playTrack(event.target.value); });
-$("#audio-player").addEventListener("play", updatePlayButton);
-$("#audio-player").addEventListener("pause", updatePlayButton);
+$("#audio-player").addEventListener("play", () => { updatePlayButton(); saveMusicPlayerState(); });
+$("#audio-player").addEventListener("pause", () => { updatePlayButton(); saveMusicPlayerState(); });
 $("#audio-player").addEventListener("ended", () => stepTrack(1));
-
-$("#add-media").addEventListener("click", async () => { if (await ensureAdmin()) $("#media-file-input").click(); });
-$("#media-file-input").addEventListener("change", (event) => { addMediaFiles([...event.target.files]); event.target.value = ""; });
-$("#media-gallery").addEventListener("click", (event) => { const remove = event.target.closest("[data-delete-media]"); if (remove) deleteMedia(Number(remove.dataset.deleteMedia)); });
+window.addEventListener("pagehide", saveMusicPlayerState);
 
 document.addEventListener("keydown", (event) => {
   if (event.key !== "Escape") return;
@@ -871,10 +831,9 @@ document.addEventListener("keydown", (event) => {
 applyTheme(localStorage.getItem(KEYS.theme) || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
 renderResume();
 renderMusic();
-renderMedia();
 refreshDashboard();
 const requestedPage = new URLSearchParams(location.search).get("page");
-const initialRoute = ["resume", "interests", "music", "media"].includes(requestedPage) ? requestedPage : "home";
+const initialRoute = ["resume", "interests", "music"].includes(requestedPage) ? requestedPage : "home";
 routeTo(initialRoute);
 if (sessionStorage.getItem("anthony_visitor_unlocked") === "1") showPortal();
 if (musicCloud.isSignedIn()) syncStudyHistoryFromCloud();

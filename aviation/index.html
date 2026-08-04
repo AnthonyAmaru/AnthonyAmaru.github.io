@@ -8,11 +8,13 @@
     <link rel="icon" href="../anthony-favicon.ico?v=snake-1" sizes="any" />
     <script src="../site-theme.js?v=20260803-theme1"></script>
     <link rel="stylesheet" href="../site-header.css?v=20260803-theme1" />
+    <link rel="stylesheet" href="../site-music.css?v=20260804-player1" />
     <link rel="stylesheet" href="styles.css?v=20260803-theme1" />
     <script src="afh_questions.js"></script>
     <script src="phak_questions.js"></script>
     <script src="../music-cloud.js"></script>
     <script src="../site-header.js?v=20260803-nav1" defer></script>
+    <script src="../site-music.js?v=20260804-player1" defer></script>
     <script src="script.js" defer></script>
   </head>
   <body>
@@ -35,13 +37,20 @@
       <a class="main-site-brand" href="../index.html?v=20260803-nav1" aria-label="Anthony Amaru home"><img src="../anthony-brand-icon.png" alt="" /><strong>Anthony Amaru</strong></a>
       <button class="main-site-menu" type="button" data-main-site-menu aria-expanded="false" aria-controls="main-site-nav">Menu</button>
       <nav id="main-site-nav" class="main-site-nav" data-main-site-nav aria-label="Primary navigation">
-        <a href="../index.html?v=20260803-nav1">Home</a>
-        <a href="../index.html?page=resume&amp;v=20260803-nav1">Resume</a>
-        <a href="../index.html?page=interests&amp;v=20260803-nav1" aria-current="page">Interests</a>
-        <a href="../index.html?page=music&amp;v=20260803-nav1">Music</a>
-        <a href="../index.html?page=media&amp;v=20260803-nav1">Media</a>
+        <a href="../index.html?page=resume&amp;v=20260804-clean1">Resume</a>
+        <a href="../index.html?page=interests&amp;v=20260804-clean1" aria-current="page">Interests</a>
+        <a href="../index.html?page=music&amp;v=20260804-clean1">Music</a>
       </nav>
     </header>
+
+    <aside class="site-music-bar" data-site-music-bar aria-label="Music player">
+      <div class="site-music-copy"><small>Now playing</small><strong data-site-music-title>Nothing selected</strong></div>
+      <select data-site-music-select aria-label="Choose a song"><option value="">Loading music</option></select>
+      <audio preload="metadata"></audio>
+      <button type="button" data-site-music-previous aria-label="Previous song">‹</button>
+      <button type="button" data-site-music-play aria-label="Play or pause">▶</button>
+      <button type="button" data-site-music-next aria-label="Next song">›</button>
+    </aside>
 
     <header class="app-header">
       <div>
