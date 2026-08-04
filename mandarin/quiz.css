@@ -10,6 +10,7 @@
 .mandarin-section-menu a { display: flex; min-height: 52px; align-items: center; justify-content: center; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); color: var(--ink); padding: 8px; font-size: .78rem; font-weight: 800; text-align: center; text-decoration: none; }
 .mandarin-section-menu a:hover, .mandarin-section-menu a:focus-visible { border-color: var(--ink); }
 .mandarin-section-menu a[aria-current="page"] { border-color: var(--ink); background: var(--ink); color: white; }
+:root[data-theme="dark"] .mandarin-section-menu a[aria-current="page"] { border-color: var(--mint-strong); background: var(--mint-strong); color: #121713; }
 .quiz-fields label:first-child { grid-column: auto; }
 .question-chinese { margin: 10px 0 8px; font-family: "Noto Serif SC", "Songti SC", serif; font-size: clamp(2.7rem, 9vw, 5.5rem); font-weight: 700; line-height: 1.1; text-align: center; }
 .mandarin-card #question-text { margin: 0 0 22px; color: var(--muted); font-family: inherit; font-size: 1rem; font-weight: 600; text-align: center; }
