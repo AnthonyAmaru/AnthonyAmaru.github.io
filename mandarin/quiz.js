@@ -18,6 +18,13 @@ const wordBank = [
   ["上午", "shàngwǔ", "morning"], ["下午", "xiàwǔ", "afternoon"], ["几点", "jǐ diǎn", "what time"],
   ["披萨", "pīsà", "pizza"], ["好的", "hǎo de", "okay or all right"], ["小猫饭店", "Xiǎomāo Fàndiàn", "Little Cat Restaurant"],
   ["知道", "zhīdào", "to know"], ["睡觉", "shuìjiào", "to sleep or go to bed"], ["牛肉", "niúròu", "beef"],
+  ["早上好", "zǎoshang hǎo", "good morning; early morning"], ["上午好", "shàngwǔ hǎo", "good morning; before noon"],
+  ["下午好", "xiàwǔ hǎo", "good afternoon"], ["晚上好", "wǎnshang hǎo", "good evening"], ["晚安", "wǎn'ān", "good night"],
+  ["早", "zǎo", "early"], ["晚", "wǎn", "late"], ["先", "xiān", "first or beforehand"],
+  ["妈妈", "māma", "mom"], ["爸爸", "bàba", "dad"], ["几岁", "jǐ suì", "how old"],
+  ["买", "mǎi", "to buy"], ["喜欢", "xǐhuan", "to like"], ["见", "jiàn", "to see or meet"],
+  ["肉", "ròu", "meat"], ["菜", "cài", "dish, cuisine, or vegetables"], ["谁", "shéi / shuí", "who"],
+  ["中国菜", "zhōngguó cài", "Chinese food"], ["美国菜", "měiguó cài", "American food"], ["墨西哥菜", "mòxīgē cài", "Mexican food"],
 ];
 
 const sentenceBank = [
@@ -38,7 +45,7 @@ const sentenceBank = [
   ["明天见！", "Míngtiān jiàn!", "See you tomorrow!"],
   ["你明天上午有时间吗？", "Nǐ míngtiān shàngwǔ yǒu shíjiān ma?", "Do you have time tomorrow morning?"],
   ["明天上午没有。", "Míngtiān shàngwǔ méiyǒu.", "I do not have time tomorrow morning."],
-  ["下午呢？", "Xiàwǔ ne?", "What about the afternoon?"],
+  ["那下午呢？", "Nà xiàwǔ ne?", "Then how about the afternoon?"],
   ["下午有时间。", "Xiàwǔ yǒu shíjiān.", "I have time in the afternoon."],
   ["我们去吃披萨吧。", "Wǒmen qù chī pīsà ba.", "Let's go eat pizza."],
   ["好的，几点？在哪里？", "Hǎo de, jǐ diǎn? Zài nǎlǐ?", "Okay. What time? Where?"],
@@ -46,6 +53,20 @@ const sentenceBank = [
   ["我知道。", "Wǒ zhīdào.", "I know."],
   ["我晚上睡觉。", "Wǒ wǎnshang shuìjiào.", "I sleep at night."],
   ["我喜欢吃牛肉。", "Wǒ xǐhuan chī niúròu.", "I like eating beef."],
+  ["太早了。", "Tài zǎo le.", "It is too early."],
+  ["太晚了，我们睡觉吧。", "Tài wǎn le, wǒmen shuìjiào ba.", "It is too late; let's go to sleep."],
+  ["我们一共买了四碗馄饨。", "Wǒmen yígòng mǎi le sì wǎn húntun.", "We bought four bowls of wontons in total."],
+  ["这是小李。", "Zhè shì Xiǎo Lǐ.", "This is Xiao Li."],
+  ["他是中国人，他是我们的朋友，他喜欢鸡肉。", "Tā shì Zhōngguó rén, tā shì wǒmen de péngyou, tā xǐhuan jīròu.", "He is Chinese, he is our friend, and he likes chicken."],
+  ["他现在在美国。", "Tā xiànzài zài Měiguó.", "He is in America now."],
+  ["今天是他的生日。", "Jīntiān shì tā de shēngrì.", "Today is his birthday."],
+  ["我喜欢睡觉。", "Wǒ xǐhuan shuìjiào.", "I like sleeping."],
+  ["我喜欢钱。", "Wǒ xǐhuan qián.", "I like money."],
+  ["你几岁？", "Nǐ jǐ suì?", "How old are you?"],
+  ["我现在在美国。", "Wǒ xiànzài zài Měiguó.", "I am in America now."],
+  ["我喜欢中国菜。", "Wǒ xǐhuan Zhōngguó cài.", "I like Chinese food."],
+  ["我喜欢美国菜。", "Wǒ xǐhuan Měiguó cài.", "I like American food."],
+  ["我喜欢墨西哥菜。", "Wǒ xǐhuan Mòxīgē cài.", "I like Mexican food."],
 ];
 
 const $ = (selector) => document.querySelector(selector);

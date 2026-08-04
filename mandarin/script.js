@@ -1,6 +1,11 @@
 const vocabulary = [
   // Greetings and courtesy
   ["你好", "nǐ hǎo", "hello", "Greetings"],
+  ["早上好", "zǎoshang hǎo", "good morning; early morning", "Greetings"],
+  ["上午好", "shàngwǔ hǎo", "good morning; before noon", "Greetings"],
+  ["下午好", "xiàwǔ hǎo", "good afternoon", "Greetings"],
+  ["晚上好", "wǎnshang hǎo", "good evening", "Greetings"],
+  ["晚安", "wǎn'ān", "good night", "Greetings"],
   ["很好", "hěn hǎo", "very good; doing well", "Greetings"],
   ["不好", "bù hǎo", "not good", "Greetings"],
   ["不错", "bù cuò", "not bad", "Greetings"],
@@ -10,6 +15,7 @@ const vocabulary = [
   ["没关系", "méi guānxi", "it is okay; no problem", "Greetings"],
   ["谢谢", "xièxie", "thank you", "Greetings"],
   ["明天见", "míngtiān jiàn", "see you tomorrow", "Greetings"],
+  ["见", "jiàn", "to see; to meet", "Greetings"],
   ["拜拜", "bāibāi", "bye-bye", "Greetings"],
   ["加油", "jiāyóu", "keep going; you can do it", "Greetings"],
 
@@ -32,10 +38,18 @@ const vocabulary = [
   ["说", "shuō", "to say; to speak", "People"],
   ["问", "wèn", "to ask", "People"],
   ["自己", "zìjǐ", "oneself", "People"],
+  ["妈妈", "māma", "mom", "People"],
+  ["爸爸", "bàba", "dad", "People"],
+  ["中国人", "zhōngguó rén", "Chinese person", "People"],
+  ["美国人", "měiguó rén", "American person", "People"],
+  ["岁", "suì", "years old", "People"],
+  ["几岁", "jǐ suì", "how old", "People"],
 
   // Daily life
   ["知道", "zhīdào", "to know", "Daily life"],
   ["睡觉", "shuìjiào", "to sleep; go to bed", "Daily life"],
+  ["喜欢", "xǐhuan", "to like", "Daily life"],
+  ["先", "xiān", "first; before doing something else", "Daily life"],
 
   // Food and drink
   ["面包", "miànbāo", "bread", "Food & drink"],
@@ -61,6 +75,10 @@ const vocabulary = [
   ["好吃", "hǎochī", "tasty; delicious", "Food & drink"],
   ["辣", "là", "spicy", "Food & drink"],
   ["披萨", "pīsà", "pizza", "Food & drink"],
+  ["菜", "cài", "dish; cuisine; vegetables", "Food & drink"],
+  ["中国菜", "zhōngguó cài", "Chinese food", "Food & drink"],
+  ["美国菜", "měiguó cài", "American food", "Food & drink"],
+  ["墨西哥菜", "mòxīgē cài", "Mexican food", "Food & drink"],
 
   // Restaurant
   ["饭店", "fàndiàn", "restaurant", "Restaurant"],
@@ -79,6 +97,7 @@ const vocabulary = [
   ["钱", "qián", "money", "Restaurant"],
   ["好的", "hǎo de", "okay; all right", "Restaurant"],
   ["多少钱？", "duōshao qián?", "How much money?", "Restaurant"],
+  ["买", "mǎi", "to buy", "Restaurant"],
 
   // Descriptions
   ["大", "dà", "big; large", "Descriptions"],
@@ -131,6 +150,9 @@ const vocabulary = [
   ["下午", "xiàwǔ", "afternoon", "Time"],
   ["晚上", "wǎnshang", "evening; night", "Time"],
   ["几点", "jǐ diǎn", "what time", "Time"],
+  ["早上", "zǎoshang", "early morning", "Time"],
+  ["早", "zǎo", "early", "Time"],
+  ["晚", "wǎn", "late", "Time"],
 
   // Places and movement
   ["去", "qù", "to go", "Places"],
@@ -154,22 +176,41 @@ const vocabulary = [
   ["了", "le", "new situation or completed action", "Grammar"],
   ["的", "de", "links possession or description", "Grammar"],
   ["吧", "ba", "softens a suggestion", "Grammar"],
+  ["这", "zhè", "this", "Grammar"],
+  ["那", "nà", "that; then", "Grammar"],
   ["什么", "shénme", "what", "Grammar"],
   ["怎么", "zěnme", "how; by what method", "Grammar"],
   ["怎么样", "zěnmeyàng", "how is it?; how are things?", "Grammar"],
   ["几", "jǐ", "how many; usually a small number", "Grammar"],
   ["多少", "duōshao", "how many; how much", "Grammar"],
-  ["谁", "shéi", "who", "Grammar"],
+  ["谁", "shéi / shuí", "who", "Grammar"],
 ];
 
 const patternGroups = {
+  "Greetings & time": [
+    ["早上好。", "Zǎoshang hǎo.", "Good morning (early)."],
+    ["上午好。", "Shàngwǔ hǎo.", "Good morning (before noon)."],
+    ["下午好。", "Xiàwǔ hǎo.", "Good afternoon."],
+    ["晚上好。", "Wǎnshang hǎo.", "Good evening."],
+    ["晚安。", "Wǎn'ān.", "Good night."],
+    ["太早了。", "Tài zǎo le.", "It is too early."],
+    ["太晚了，我们睡觉吧。", "Tài wǎn le, wǒmen shuìjiào ba.", "It is too late; let's go to sleep."],
+  ],
   "Introductions": [
     ["我叫…", "Wǒ jiào…", "My name is…"],
+    ["我叫安东尼。", "Wǒ jiào Āndōngní.", "My name is Anthony."],
+    ["我…岁。", "Wǒ…suì.", "I am … years old."],
+    ["我现在在美国。", "Wǒ xiànzài zài Měiguó.", "I am in America now."],
     ["我是美国人。", "Wǒ shì měiguó rén.", "I am American."],
     ["我不是中国人。", "Wǒ bú shì zhōngguó rén.", "I am not Chinese."],
     ["你是哪国人？", "Nǐ shì nǎ guó rén?", "What country are you from?"],
     ["你叫什么名字？", "Nǐ jiào shénme míngzi?", "What is your name?"],
     ["你呢？", "Nǐ ne?", "What about you?"],
+    ["这是小李。", "Zhè shì Xiǎo Lǐ.", "This is Xiao Li."],
+    ["他是中国人。", "Tā shì Zhōngguó rén.", "He is Chinese."],
+    ["他现在在美国。", "Tā xiànzài zài Měiguó.", "He is in America now."],
+    ["今天是他的生日。", "Jīntiān shì tā de shēngrì.", "Today is his birthday."],
+    ["你几岁？", "Nǐ jǐ suì?", "How old are you?"],
   ],
   "Likes & food": [
     ["我喜欢饺子。", "Wǒ xǐhuan jiǎozi.", "I like dumplings."],
@@ -178,6 +219,11 @@ const patternGroups = {
     ["你喜欢喝什么？", "Nǐ xǐhuan hē shénme?", "What do you like to drink?"],
     ["他不喜欢吃鸡肉。", "Tā bù xǐhuan chī jīròu.", "He does not like eating chicken."],
     ["我饿了。", "Wǒ è le.", "I am hungry now."],
+    ["我喜欢睡觉。", "Wǒ xǐhuan shuìjiào.", "I like sleeping."],
+    ["我喜欢钱。", "Wǒ xǐhuan qián.", "I like money."],
+    ["我喜欢中国菜。", "Wǒ xǐhuan Zhōngguó cài.", "I like Chinese food."],
+    ["我喜欢美国菜。", "Wǒ xǐhuan Měiguó cài.", "I like American food."],
+    ["我喜欢墨西哥菜。", "Wǒ xǐhuan Mòxīgē cài.", "I like Mexican food."],
   ],
   "Restaurant": [
     ["我们去吃饭吧。", "Wǒmen qù chīfàn ba.", "Let's go eat."],
@@ -187,6 +233,7 @@ const patternGroups = {
     ["一共多少钱？", "Yígòng duōshao qián?", "How much is it altogether?"],
     ["我请客。", "Wǒ qǐngkè.", "It's my treat."],
     ["我要打包。", "Wǒ yào dǎbāo.", "I want it packed to go."],
+    ["我们一共买了四碗馄饨。", "Wǒmen yígòng mǎi le sì wǎn húntun.", "We bought four bowls of wontons in total."],
   ],
   "Time & place": [
     ["今天星期几？", "Jīntiān xīngqī jǐ?", "What day of the week is today?"],
@@ -200,7 +247,7 @@ const patternGroups = {
   "Making plans": [
     ["你明天上午有时间吗？", "Nǐ míngtiān shàngwǔ yǒu shíjiān ma?", "Do you have time tomorrow morning?"],
     ["明天上午没有。", "Míngtiān shàngwǔ méiyǒu.", "I do not have time tomorrow morning."],
-    ["下午呢？", "Xiàwǔ ne?", "What about the afternoon?"],
+    ["那下午呢？", "Nà xiàwǔ ne?", "Then how about the afternoon?"],
     ["下午有时间。", "Xiàwǔ yǒu shíjiān.", "I have time in the afternoon."],
     ["我们去吃披萨吧。", "Wǒmen qù chī pīsà ba.", "Let's go eat pizza."],
     ["好的，几点？在哪里？", "Hǎo de, jǐ diǎn? Zài nǎlǐ?", "Okay. What time? Where?"],
@@ -223,7 +270,7 @@ const patternGroups = {
 const planDialogue = [
   ["A", "你明天上午有时间吗？", "Nǐ míngtiān shàngwǔ yǒu shíjiān ma?", "Do you have time tomorrow morning?"],
   ["B", "明天上午没有。", "Míngtiān shàngwǔ méiyǒu.", "I do not have time tomorrow morning."],
-  ["A", "下午呢？", "Xiàwǔ ne?", "What about the afternoon?"],
+  ["A", "那下午呢？", "Nà xiàwǔ ne?", "Then how about the afternoon?"],
   ["B", "下午有时间。", "Xiàwǔ yǒu shíjiān.", "I have time in the afternoon."],
   ["A", "我们去吃披萨吧。", "Wǒmen qù chī pīsà ba.", "Let's go eat pizza."],
   ["B", "好的，几点？在哪里？", "Hǎo de, jǐ diǎn? Zài nǎlǐ?", "Okay. What time? Where?"],
