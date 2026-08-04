@@ -286,6 +286,9 @@ h1, h2 { font-family: var(--sans); font-weight: 750; letter-spacing: -.035em; }
 .button.danger { border-color: color-mix(in srgb, #b94040 45%, var(--line)); background: transparent; color: #a62f2f; }
 .button.danger:not(:disabled):hover { background: color-mix(in srgb, #b94040 10%, transparent); }
 .button:disabled { cursor: not-allowed; opacity: .42; }
+.go-back-button { position: fixed; z-index: 60; top: 50%; left: max(10px, env(safe-area-inset-left)); display: grid; width: 66px; height: 190px; place-items: center; transform: translateY(-50%); border: 1px solid #c9aa3d; border-radius: 10px; background: #f7df79; color: #302811; box-shadow: 0 12px 30px rgba(79, 64, 18, .2); cursor: pointer; font: 850 .78rem/1 var(--sans); letter-spacing: .14em; text-orientation: mixed; writing-mode: vertical-rl; }
+.go-back-button[hidden] { display: none; }
+.go-back-button:hover,.go-back-button:focus-visible { background: #ffe895; outline: 3px solid color-mix(in srgb, #c9aa3d 36%, transparent); outline-offset: 3px; }
 .music-drop-zone { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 16px; margin: 20px 0 6px; border: 1.5px dashed color-mix(in srgb, var(--ink) 28%, transparent); border-radius: 22px; background: color-mix(in srgb, var(--sky) 44%, var(--surface-solid)); padding: 22px; cursor: pointer; outline: none; transition: border-color .2s ease, background .2s ease, transform .2s ease; }
 .music-drop-zone:hover, .music-drop-zone:focus-visible, .music-drop-zone.is-dragging { border-color: var(--ink); background: color-mix(in srgb, var(--sky) 70%, var(--surface-solid)); transform: translateY(-1px); }
 .music-drop-zone.is-dragging { box-shadow: 0 0 0 4px color-mix(in srgb, var(--sky) 60%, transparent); }
@@ -539,6 +542,7 @@ h1, h2 { font-family: var(--sans); font-weight: 750; letter-spacing: -.035em; }
   .library-actions { width: 100%; flex-wrap: wrap; justify-content: flex-start; }
   .bulk-playlist-select { max-width: none; flex: 1 1 150px; }
   .library-heading .button { min-height: 40px; padding-inline: 13px; }
+  .go-back-button { left: max(5px, env(safe-area-inset-left)); width: 48px; height: 138px; font-size: .64rem; }
 }
 
 @media (max-width: 720px) {

@@ -114,6 +114,7 @@ function applyTheme(theme) {
 function routeTo(route) {
   const page = $("[data-page='" + route + "']");
   if (!page) return;
+  $("#go-back-button").hidden = route === "home";
   $$(".page-panel").forEach((panel) => panel.classList.toggle("active", panel === page));
   $$(".nav-link").forEach((link) => {
     const active = link.dataset.pageLink === route;
@@ -717,6 +718,15 @@ document.addEventListener("click", (event) => {
 });
 
 window.addEventListener("popstate", () => routeTo(portalRouteFromUrl()));
+
+$("#go-back-button").addEventListener("click", () => {
+  if (!$("#app-modal").hidden) return closeStudyApp();
+  if (!$("#book-modal").hidden) return closeBookStudio();
+  let sameSiteReferrer = false;
+  try { sameSiteReferrer = new URL(document.referrer).origin === location.origin; } catch { /* Use the homepage fallback. */ }
+  if (history.state?.portalRoute || (sameSiteReferrer && history.length > 1)) history.back();
+  else navigatePortal("home", true);
+});
 
 $("#theme-toggle").addEventListener("click", () => applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
 $("#mobile-menu-button").addEventListener("click", () => {
