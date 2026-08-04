@@ -390,9 +390,8 @@ h1, h2 { font-family: var(--sans); font-weight: 750; letter-spacing: -.035em; }
 .company-mark.has-logo img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .company-mark.logo-bitwave { border-color: #202638; background: #111626; padding: 11px 8px; }
 .company-mark.logo-medical { position: relative; display: block; width: 78px; overflow: hidden; border-color: #8fb4e7; background: linear-gradient(145deg, #f7faff, #d9e8fb); box-shadow: inset 0 0 0 4px rgba(255,255,255,.82); color: #1f5ca8; }
-.company-mark.logo-medical .medical-plane { position: absolute; z-index: 2; top: 4px; left: 8px; color: #1766b1; font: 900 2rem/1 Arial, sans-serif; transform: rotate(-7deg); }
-.company-mark.logo-medical .medical-tether { position: absolute; top: 27px; left: 33px; width: 22px; height: 9px; border-left: 2px solid #1766b1; border-bottom: 2px solid #1766b1; transform: rotate(8deg); }
-.company-mark.logo-medical .medical-cargo { position: absolute; z-index: 2; right: 7px; bottom: 5px; display: grid; width: 24px; height: 24px; place-items: center; border: 2px solid #fff; border-radius: 6px; background: #d7283f; color: #fff; box-shadow: 0 3px 7px rgba(23,102,177,.22); font-size: 1.25rem; font-weight: 800; line-height: 1; }
+.company-mark.logo-medical .medical-plane { position: absolute; z-index: 1; top: 3px; left: 9px; color: #1766b1; font: 900 2.55rem/1 Arial, sans-serif; transform: rotate(-4deg); }
+.company-mark.logo-medical .medical-insignia { position: absolute; z-index: 2; top: 17px; left: 32px; display: grid; width: 16px; height: 16px; place-items: center; border: 1.5px solid #fff; border-radius: 50%; background: #d7283f; color: #fff; box-shadow: 0 2px 5px rgba(15,62,109,.25); font-size: .82rem; font-weight: 900; line-height: 1; }
 .timeline-copy .organization, .education-item .organization { margin-bottom: 5px; color: var(--muted); }
 .timeline-copy .timeline-meta { margin: 0; }
 .resume-details { margin-top: 14px; }
