@@ -44,6 +44,9 @@ let bookEditorReady = false;
 let currentPlaylist = "all";
 let currentArtist = "all";
 let currentSongQuery = "";
+let musicSortColumn = "song";
+let musicSortDirection = "asc";
+let editingTrackId = null;
 let musicPlaylists = [];
 let musicCloudError = "";
 let tracks = [];
@@ -632,6 +635,12 @@ function applyMusicFilters() {
     const matchesPlaylist = currentPlaylist === "all" || (currentPlaylist === "none" ? !track.playlist_id : String(track.playlist_id) === currentPlaylist);
     return matchesSong && matchesArtist && matchesPlaylist;
   });
+  const collator = new Intl.Collator(undefined, { sensitivity: "base", numeric: true });
+  const sortValue = (track) => musicSortColumn === "artist" ? trackArtist(track) : musicSortColumn === "playlist" ? trackPlaylistName(track) : String(track.title || "");
+  visibleTracks.sort((left, right) => {
+    const compared = collator.compare(sortValue(left), sortValue(right));
+    return (compared || collator.compare(String(left.title || ""), String(right.title || ""))) * (musicSortDirection === "asc" ? 1 : -1);
+  });
   const availableIds = new Set(tracks.map((track) => String(track.id)));
   [...selectedTrackIds].forEach((id) => { if (!availableIds.has(id)) selectedTrackIds.delete(id); });
   $$(".playlist-row[data-playlist]").forEach((button) => button.classList.toggle("active", button.dataset.playlist === currentPlaylist));
@@ -640,9 +649,20 @@ function applyMusicFilters() {
   $("#library-title").textContent = currentPlaylist === "all" ? "All music" : currentPlaylist === "none" ? "No playlist" : selectedPlaylist?.name || "Playlist";
   const playlistOptions = musicPlaylists.map((playlist) => `<option value="${playlist.id}">${escapeHtml(playlist.name)}</option>`).join("");
   $("#track-list").innerHTML = musicCloudError ? `<div class="library-empty"><p>Cloud library unavailable.</p><small>${escapeHtml(musicCloudError)}</small></div>` : visibleTracks.length ? visibleTracks.map((track) => {
-    return `<article class="track-row"><input class="track-select" type="checkbox" data-select-track="${track.id}" aria-label="Select ${escapeHtml(track.title)}" ${selectedTrackIds.has(String(track.id)) ? "checked" : ""} /><button class="track-play" type="button" data-play-track="${track.id}" aria-label="Play ${escapeHtml(track.title)}">▶</button><div class="track-song"><strong>${escapeHtml(track.title)}</strong><small>${formatBytes(track.size_bytes)}</small></div><div class="track-artist" title="${escapeHtml(trackArtist(track))}">${escapeHtml(trackArtist(track))}</div><select class="track-playlist-select" data-assign-track="${track.id}" aria-label="Playlist for ${escapeHtml(track.title)}"><option value="">No playlist</option>${playlistOptions}</select><button class="track-delete" type="button" data-delete-track="${track.id}" aria-label="Delete ${escapeHtml(track.title)}">×</button></article>`;
+    const editing = editingTrackId === String(track.id);
+    const songCell = editing
+      ? `<input class="track-edit-input" data-edit-title type="text" maxlength="200" value="${escapeHtml(track.title)}" aria-label="Song title" />`
+      : `<div class="track-song"><strong>${escapeHtml(track.title)}</strong><small>${formatBytes(track.size_bytes)}</small></div>`;
+    const artistCell = editing
+      ? `<input class="track-edit-input" data-edit-artist type="text" maxlength="200" value="${escapeHtml(trackArtist(track))}" aria-label="Artist name" />`
+      : `<div class="track-artist" title="${escapeHtml(trackArtist(track))}">${escapeHtml(trackArtist(track))}</div>`;
+    const actions = editing
+      ? `<div class="track-row-actions"><button class="track-save" type="button" data-save-track="${track.id}">Save</button><button class="track-cancel" type="button" data-cancel-track="${track.id}" aria-label="Cancel editing">×</button></div>`
+      : `<div class="track-row-actions"><button class="track-edit" type="button" data-edit-track="${track.id}" aria-label="Edit ${escapeHtml(track.title)}">✎</button><button class="track-delete" type="button" data-delete-track="${track.id}" aria-label="Delete ${escapeHtml(track.title)}">×</button></div>`;
+    return `<article class="track-row${editing ? " editing" : ""}" data-track-row="${track.id}"><input class="track-select" type="checkbox" data-select-track="${track.id}" aria-label="Select ${escapeHtml(track.title)}" ${selectedTrackIds.has(String(track.id)) ? "checked" : ""} /><button class="track-play" type="button" data-play-track="${track.id}" aria-label="Play ${escapeHtml(track.title)}">▶</button>${songCell}${artistCell}<select class="track-playlist-select" data-assign-track="${track.id}" aria-label="Playlist for ${escapeHtml(track.title)}"><option value="">No playlist</option>${playlistOptions}</select>${actions}</article>`;
   }).join("") : `<div class="library-empty"><p>${tracks.length ? "No songs match these filters." : "No songs here yet."}</p></div>`;
   $$('[data-assign-track]').forEach((select) => { const track = tracks.find((item) => String(item.id) === select.dataset.assignTrack); select.value = track?.playlist_id || ""; });
+  updateMusicSortControls();
   updateTrackSelectionControls();
 }
 
@@ -751,6 +771,29 @@ async function assignTrack(trackId, playlistId) {
   } catch (error) { toast(error.message); renderMusic(); }
 }
 
+async function saveTrackEdits(button) {
+  const row = button.closest("[data-track-row]");
+  const track = tracks.find((item) => String(item.id) === String(row?.dataset.trackRow));
+  if (!row || !track) return;
+  const title = $("[data-edit-title]", row)?.value.trim() || "";
+  const artist = $("[data-edit-artist]", row)?.value.trim() || "";
+  if (!title || !artist) return toast("Song and artist names cannot be empty.");
+  if (!(await ensureCloudMusicAdmin())) return;
+  button.disabled = true;
+  button.textContent = "Saving…";
+  try {
+    await musicCloud.updateTrackMetadata(track, title, artist);
+    editingTrackId = null;
+    await renderMusic();
+    if (String(currentTrackId) === String(track.id)) $("#dock-title").textContent = title;
+    toast("Song details saved to the cloud.");
+  } catch (error) {
+    button.disabled = false;
+    button.textContent = "Save";
+    toast(error.message);
+  }
+}
+
 async function assignSelectedTracks() {
   const selected = tracks.filter((track) => selectedTrackIds.has(String(track.id)));
   const playlistId = $("#bulk-playlist-select").value;
@@ -818,6 +861,30 @@ function trackArtist(track) {
   if (stored) return stored;
   const base = String(track?.file_name || track?.title || "").replace(/\.[^.]+$/, "").replace(/\s*\[[\w-]{6,}\]\s*$/, "").trim();
   return base.match(/^(.+?)\s[-–—]\s.+$/)?.[1]?.trim() || "Unknown artist";
+}
+
+function trackPlaylistName(track) {
+  return musicPlaylists.find((playlist) => String(playlist.id) === String(track.playlist_id))?.name || "No playlist";
+}
+
+function updateMusicSortControls() {
+  $$('[data-sort-column]').forEach((button) => {
+    const active = button.dataset.sortColumn === musicSortColumn;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
+    const indicator = $("[data-sort-indicator]", button);
+    if (indicator) indicator.textContent = active ? (musicSortDirection === "asc" ? "A→Z" : "Z→A") : "↕";
+  });
+}
+
+function setMusicSort(column) {
+  if (!['song', 'artist', 'playlist'].includes(column)) return;
+  if (musicSortColumn === column) musicSortDirection = musicSortDirection === "asc" ? "desc" : "asc";
+  else {
+    musicSortColumn = column;
+    musicSortDirection = "asc";
+  }
+  applyMusicFilters();
 }
 
 async function openStudyApp(name, needsAdmin) {
@@ -1014,12 +1081,30 @@ musicDropZone.addEventListener("keydown", async (event) => { if (!["Enter", " "]
 ["dragleave", "dragend"].forEach((eventName) => musicDropZone.addEventListener(eventName, (event) => { event.preventDefault(); if (eventName === "dragleave" && musicDropZone.contains(event.relatedTarget)) return; musicDropZone.classList.remove("is-dragging"); }));
 musicDropZone.addEventListener("drop", (event) => { event.preventDefault(); musicDropZone.classList.remove("is-dragging"); addMusicFiles([...event.dataTransfer.files]); });
 $("#page-music").addEventListener("click", (event) => {
+  const sort = event.target.closest("[data-sort-column]");
+  const edit = event.target.closest("[data-edit-track]");
+  const save = event.target.closest("[data-save-track]");
+  const cancel = event.target.closest("[data-cancel-track]");
   const playlist = event.target.closest("[data-playlist]");
   const play = event.target.closest("[data-play-track]");
   const remove = event.target.closest("[data-delete-track]");
+  if (sort) return setMusicSort(sort.dataset.sortColumn);
+  if (edit) {
+    editingTrackId = String(edit.dataset.editTrack);
+    applyMusicFilters();
+    return requestAnimationFrame(() => document.querySelector(`[data-track-row='${editingTrackId}'] [data-edit-title]`)?.focus());
+  }
+  if (save) return saveTrackEdits(save);
+  if (cancel) { editingTrackId = null; return applyMusicFilters(); }
   if (playlist) { selectedTrackIds.clear(); currentPlaylist = playlist.dataset.playlist; applyMusicFilters(); }
   if (play) playTrack(play.dataset.playTrack);
   if (remove) deleteTrack(remove.dataset.deleteTrack);
+});
+$("#page-music").addEventListener("keydown", (event) => {
+  if (!event.target.matches("[data-edit-title], [data-edit-artist]")) return;
+  const row = event.target.closest("[data-track-row]");
+  if (event.key === "Enter") { event.preventDefault(); $("[data-save-track]", row)?.click(); }
+  if (event.key === "Escape") { event.preventDefault(); editingTrackId = null; applyMusicFilters(); }
 });
 $("#page-music").addEventListener("change", (event) => {
   const select = event.target.closest("[data-assign-track]");

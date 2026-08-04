@@ -275,6 +275,25 @@
       return this.assignTracks([trackId], playlistId);
     }
 
+    async updateTrackMetadata(track, title, artist) {
+      this.requireAdmin();
+      const cleanTitle = String(title || "").trim();
+      const cleanArtist = String(artist || "").trim();
+      if (!cleanTitle || cleanTitle.length > 200) throw new Error("Song names must be between 1 and 200 characters.");
+      if (!cleanArtist || cleanArtist.length > 200) throw new Error("Artist names must be between 1 and 200 characters.");
+      const sourceMetadata = track?.source_metadata && typeof track.source_metadata === "object" && !Array.isArray(track.source_metadata)
+        ? { ...track.source_metadata, artist: cleanArtist }
+        : { artist: cleanArtist };
+      const response = await fetch(`${PROJECT_URL}/rest/v1/music_tracks?id=eq.${encodeURIComponent(track.id)}&user_id=eq.${encodeURIComponent(this.user.id)}`, {
+        method: "PATCH",
+        headers: this.headers({ "Content-Type": "application/json", Prefer: "return=representation" }, true),
+        body: JSON.stringify({ title: cleanTitle, source_metadata: sourceMetadata }),
+      });
+      const updated = (await readResponse(response))?.[0];
+      if (!updated) throw new Error("The song could not be updated.");
+      return updated;
+    }
+
     async deleteTrack(track) {
       return this.deleteTracks([track]);
     }
