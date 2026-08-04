@@ -213,7 +213,7 @@ function getResume() {
 function organizationLogo(entry) {
   const organization = String(entry.organization || "").toLowerCase();
   if (organization.includes("bitwave")) return { src: "logos/bitwave.webp", className: "bitwave" };
-  if (organization.includes("healthcare products florida")) return { className: "medical" };
+  if (organization.includes("healthcare products florida")) return { src: "assets/medical-plane-logo.png", className: "medical" };
   if (organization.includes("florida international university")) return { src: "logos/fiu.png", className: "fiu" };
   if (organization.includes("miami dade college")) return { src: "logos/miami-dade-college.jpg", className: "mdc" };
   return null;
@@ -221,7 +221,6 @@ function organizationLogo(entry) {
 
 function organizationMark(entry) {
   const logo = organizationLogo(entry);
-  if (logo?.className === "medical") return `<div class="company-mark logo-medical" role="img" aria-label="Medical airplane"><span class="medical-plane" aria-hidden="true">&#9992;&#xfe0e;</span><span class="medical-insignia" aria-hidden="true">+</span></div>`;
   if (logo?.symbol) return `<div class="company-mark logo-${logo.className}" aria-hidden="true"><span>${escapeHtml(logo.symbol)}</span></div>`;
   if (logo) return `<div class="company-mark has-logo logo-${logo.className}" aria-hidden="true"><img src="${logo.src}" alt="" /></div>`;
   return `<div class="company-mark" aria-hidden="true">${escapeHtml(entry.mark || entry.organization?.slice(0, 1) || "•")}</div>`;
@@ -230,7 +229,7 @@ function organizationMark(entry) {
 function renderResume() {
   const resume = getResume();
   $("#work-list").innerHTML = resume.work.length ? resume.work.map((entry) => `
-    <article class="timeline-item">
+    <article class="timeline-item${organizationLogo(entry)?.className === "medical" ? " has-medical-logo" : ""}">
       ${organizationMark(entry)}
       <div class="timeline-copy"><h3>${escapeHtml(entry.title)}</h3><p class="organization">${escapeHtml(entry.organization)}</p><p class="timeline-meta">${escapeHtml(entry.dates)}${entry.location ? ` · ${escapeHtml(entry.location)}` : ""}</p>${entry.description ? `<details class="resume-details"><summary>Responsibilities</summary><ul>${String(entry.description).split("\n").filter(Boolean).map((line) => `<li>${escapeHtml(line)}</li>`).join("")}</ul></details>` : ""}</div>
     </article>`).join("") : '<p class="empty-state">No work experience added yet.</p>';
