@@ -612,11 +612,11 @@ function formatBytes(bytes) {
 async function openStudyApp(name, needsAdmin) {
   if (needsAdmin && !(await ensureAdmin())) return;
   const apps = {
-    aviation: { title: "Aviation practice", src: "aviation/index.html?v=20260804-audio1" },
-    mandarin: { title: "Mandarin notebook", src: "mandarin/index.html?v=20260804-audio1" },
-    "mandarin-quiz": { title: "Mandarin practice", src: "mandarin/quiz.html?v=20260804-audio1" },
-    mycology: { title: "Mycology", src: "mycology.html?v=20260804-psy1" },
-    books: { title: "Books", src: "books.html?v=20260804-list2" },
+    aviation: { title: "Aviation practice", src: "aviation/index.html?v=20260804-embed1" },
+    mandarin: { title: "Mandarin notebook", src: "mandarin/index.html?v=20260804-embed1" },
+    "mandarin-quiz": { title: "Mandarin practice", src: "mandarin/quiz.html?v=20260804-embed1" },
+    mycology: { title: "Mycology", src: "mycology.html?v=20260804-embed1" },
+    books: { title: "Books", src: "books.html?v=20260804-embed1" },
   };
   const app = apps[name];
   if (!app) return;
