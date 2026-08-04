@@ -1,4 +1,4 @@
-const VISITOR_HASH = "685e365003f3413bb077e7b6d5cf3b498c51df12fc883ca818d0344231fc4cd4";
+const VISITOR_HASH = "5723360ef11043a879520412e9ad897e0ebcb99cc820ec363bfecc9d751a1a99";
 const ADMIN_HASH = "1e67aef3b01e797309c5588def71607f40a4facc6b8993af9a62306f727a2e5a";
 const CLOUD_ADMIN_EMAIL = "anthonyamaru93@gmail.com";
 const MUSIC_PLAYER_STATE_KEY = "anthony_music_player_state_v1";
@@ -125,6 +125,21 @@ function routeTo(route) {
   if (route === "music") renderMusic();
   if (route === "resume") renderResume();
   if (route === "interests") refreshDashboard();
+}
+
+function portalRouteFromUrl(url = new URL(location.href)) {
+  const requested = url.searchParams.get("page");
+  return ["resume", "interests", "music"].includes(requested) ? requested : "home";
+}
+
+function navigatePortal(route, replace = false) {
+  routeTo(route);
+  const url = new URL(location.href);
+  if (route === "home") url.searchParams.delete("page");
+  else url.searchParams.set("page", route);
+  url.searchParams.delete("v");
+  history[replace ? "replaceState" : "pushState"]({ portalRoute: route }, "", url);
+  window.scrollTo({ top: 0, behavior: "auto" });
 }
 
 function adminIsUnlocked() {
@@ -621,13 +636,20 @@ function formatBytes(bytes) {
 async function openStudyApp(name, needsAdmin) {
   if (needsAdmin && !(await ensureAdmin())) return;
   const apps = {
-    aviation: { title: "Aviation practice", src: "aviation/index.html?v=20260804-clean1" },
-    mandarin: { title: "Mandarin notebook", src: "mandarin/index.html?v=20260804-clean1" },
-    "mandarin-quiz": { title: "Mandarin practice", src: "mandarin/quiz.html?v=20260804-clean1" },
+    aviation: { title: "Aviation practice", src: "aviation/index.html?v=20260804-audio1" },
+    mandarin: { title: "Mandarin notebook", src: "mandarin/index.html?v=20260804-audio1" },
+    "mandarin-quiz": { title: "Mandarin practice", src: "mandarin/quiz.html?v=20260804-audio1" },
+    mycology: { title: "Mycology", src: "mycology.html?v=20260804-audio1" },
   };
   const app = apps[name];
   if (!app) return;
-  location.href = app.src;
+  const embeddedUrl = new URL(app.src, location.href);
+  embeddedUrl.searchParams.set("embedded", "1");
+  $("#app-modal-title").textContent = app.title;
+  $("#open-app-new-tab").href = app.src;
+  $("#app-frame").src = embeddedUrl.href;
+  $("#app-modal").hidden = false;
+  setModalOpen(true);
 }
 
 function closeStudyApp() {
@@ -675,9 +697,21 @@ $("#entry-form").addEventListener("submit", async (event) => {
     $("#entry-password").value = "";
     showPortal();
   } else {
-    $("#entry-error").textContent = "That password did not match.";
+    $("#entry-error").textContent = "That answer did not match.";
   }
 });
+
+document.addEventListener("click", (event) => {
+  const link = event.target.closest("a[href]");
+  if (!link || event.defaultPrevented || link.target || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+  const url = new URL(link.href, location.href);
+  const rootPath = location.pathname.replace(/index\.html$/, "");
+  if (url.origin !== location.origin || url.pathname.replace(/index\.html$/, "") !== rootPath) return;
+  event.preventDefault();
+  navigatePortal(portalRouteFromUrl(url));
+});
+
+window.addEventListener("popstate", () => routeTo(portalRouteFromUrl()));
 
 $("#theme-toggle").addEventListener("click", () => applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
 $("#mobile-menu-button").addEventListener("click", () => {
@@ -832,8 +866,7 @@ applyTheme(localStorage.getItem(KEYS.theme) || (matchMedia("(prefers-color-schem
 renderResume();
 renderMusic();
 refreshDashboard();
-const requestedPage = new URLSearchParams(location.search).get("page");
-const initialRoute = ["resume", "interests", "music"].includes(requestedPage) ? requestedPage : "home";
+const initialRoute = portalRouteFromUrl();
 routeTo(initialRoute);
 if (sessionStorage.getItem("anthony_visitor_unlocked") === "1") showPortal();
 if (musicCloud.isSignedIn()) syncStudyHistoryFromCloud();

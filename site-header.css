@@ -33,6 +33,8 @@
   backdrop-filter: blur(18px);
 }
 
+:root[data-embedded="true"] .main-site-header { display: none; }
+
 .main-site-brand {
   display: inline-flex;
   align-items: center;
