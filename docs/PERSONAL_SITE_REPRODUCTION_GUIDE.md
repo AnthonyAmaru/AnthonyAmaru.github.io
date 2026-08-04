@@ -174,6 +174,24 @@ Do not replace these tabs when entering an interest. Interest-specific controls 
 - Direct detail pages reuse the stable header, music bar, theme script, and mobile menu.
 - Use one shared implementation of a repeated behavior. Do not copy slightly different navigation or cloud code into every page.
 
+### Cross-site structure parity
+
+When more than one personal site uses this blueprint, treat shared structure as one product contract. A structural change is complete only after every sibling site has been checked and, when applicable, updated in the same work cycle.
+
+The shared contract is:
+
+- one stable site header with the owner's top-level navigation;
+- one persistent music bar with previous, play/pause, next, and the one-question AI control;
+- one responsive vertical back control on non-home desktop views, hidden on phones;
+- a home grid of full-tile links with an icon, short title, and no numbering;
+- an Interests grid where every card is one link and contains no nested Open, Notebook, or Test buttons;
+- interest details displayed beneath the root header/music shell when uninterrupted playback is expected, while every detail remains a directly addressable HTML page;
+- the same Music workspace order: Playlists, Library heading and bulk actions, drop zone, then Song/Artist/Playlist filters and rows;
+- Song, Artist, and Playlist sort controls, including a multi-select Artist filter;
+- the same cloud-state words, theme behavior, AI open/close behavior, and responsive control visibility.
+
+Content differences are allowed: names, palettes, logos, copy, interests, resume entries, and an owner's explicitly requested extra top-level section such as Goals. Route implementation may differ only when the owner explicitly requires separate URLs; visible behavior and shared controls must still satisfy this contract.
+
 ### Compact visual rules
 
 - Prefer buttons, cards, icons, and short labels over marketing paragraphs.
@@ -561,6 +579,8 @@ Append every future bug here. Update the relevant architecture section at the sa
 | 2026-08-04 | Large vertical back button overlapped content on phones or narrow windows. | Fixed desktop positioning was applied below its safe breakpoint. | Hide the vertical button on phones and reserve responsive space only when it is visible. | Test phone, iPad, desktop, and a narrow browser with a side panel. |
 | 2026-08-04 | The Mycology globe looked flat, abstract, and visually crude. | It approximated continents with a few thick lines on a custom 2D canvas instead of using geographic imagery and a 3D renderer. | Use the pinned Globe.GL pattern with Blue Marble imagery, terrain relief, atmosphere, a star field, geographic markers, responsive sizing, reduced-motion support, and a non-WebGL fallback. | Rotate, zoom, reset, and select every region in direct and embedded Mycology views; confirm markers filter cards and the fallback region buttons remain usable. |
 | 2026-08-04 | The detail-page back button still overlapped a large page title at medium desktop widths. | Detail pages hid the button on phones but never reserved horizontal space while the fixed button remained visible. | `site-header.js` marks standalone detail pages and shared responsive CSS gives their direct child `main` a back-button gutter from 761–1399px; embedded pages and phones keep the button hidden. | At 760, 1024, 1280, and 1440px, confirm the button never covers the title, filters, or content; repeat in an embedded interest view. |
+| 2026-08-04 | Rauny interest cards navigated away instead of opening under the persistent header and music player during the parity update. | A shared initialization helper called `querySelector` on a missing music-library container and stopped the rest of the page setup. | Every shared initializer must safely no-op when its page-specific root is absent; never pass a nullable root to a query helper that expects an element. | Load every HTML page with a clean console, then open and close each interest card while confirming one header and one music player remain mounted. |
+| 2026-08-04 | The Rauny Music page overflowed the phone viewport even though the track table had its own horizontal scroller. | Grid children retained their intrinsic 850px table width because the Music workspace and its direct children did not allow shrinking. | Give responsive grid containers and children `min-width: 0`; keep wide tables inside their dedicated `overflow-x:auto` wrapper. | At 390px width, confirm zero document-level horizontal overflow and that the track table itself remains horizontally scrollable. |
 
 ## Completion checklist for a new person
 
