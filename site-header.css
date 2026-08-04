@@ -40,20 +40,20 @@
   position: fixed;
   z-index: 60;
   top: 50%;
-  left: max(10px, env(safe-area-inset-left));
+  left: max(12px, env(safe-area-inset-left));
   display: grid;
-  width: 66px;
-  height: 190px;
+  width: 88px;
+  height: 270px;
   place-items: center;
   transform: translateY(-50%);
   border: 1px solid #c9aa3d;
-  border-radius: 10px;
+  border-radius: 14px;
   background: #f7df79;
   color: #302811;
-  box-shadow: 0 12px 30px rgba(79, 64, 18, 0.2);
+  box-shadow: 0 15px 36px rgba(79, 64, 18, 0.24);
   cursor: pointer;
-  font: 850 0.78rem/1 "DM Sans", system-ui, sans-serif;
-  letter-spacing: 0.14em;
+  font: 850 1rem/1 "DM Sans", system-ui, sans-serif;
+  letter-spacing: 0.16em;
   text-orientation: mixed;
   writing-mode: vertical-rl;
 }
@@ -116,7 +116,7 @@
 }
 
 @media (max-width: 760px) {
-  .go-back-button { left: max(5px, env(safe-area-inset-left)); width: 48px; height: 138px; font-size: 0.64rem; }
+  .go-back-button { left: max(6px, env(safe-area-inset-left)); width: 62px; height: 190px; font-size: 0.76rem; }
   .main-site-header {
     grid-template-columns: 1fr auto;
     min-height: 70px;
