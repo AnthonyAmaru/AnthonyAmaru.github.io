@@ -9,3 +9,60 @@ h1 { margin:0; font:500 clamp(3.7rem,11vw,8rem)/.86 "Newsreader",serif; letter-s
 .interest-placeholder { display:flex; min-height:190px; align-items:center; gap:18px; border:1px solid var(--line); border-radius:18px; background:var(--surface); padding:28px; }
 .interest-placeholder span { font-size:2.5rem; }
 .interest-placeholder strong { font-size:clamp(1.2rem,3vw,2rem); }
+
+.fatherhood-bubbles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(12px, 2.3vw, 24px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fatherhood-bubbles li {
+  display: grid;
+  width: clamp(132px, 17vw, 190px);
+  aspect-ratio: 1;
+  place-items: center;
+  border: 1px solid rgba(139, 112, 29, .26);
+  border-radius: 50%;
+  background: #f5df7d;
+  color: #2d2b20;
+  box-shadow: 0 14px 32px rgba(60, 70, 59, .12);
+  padding: 20px;
+  text-align: center;
+  font-size: clamp(.84rem, 1.6vw, 1.08rem);
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.fatherhood-bubbles li:nth-child(2),
+.fatherhood-bubbles li:nth-child(5) { background: #d8e4d5; }
+.fatherhood-bubbles li:nth-child(3),
+.fatherhood-bubbles li:nth-child(6) { background: #e4e7e1; }
+.fatherhood-bubbles li:nth-child(4) { width: clamp(148px, 19vw, 208px); background: #ead39a; }
+.fatherhood-bubbles li:nth-child(7) { width: clamp(145px, 18vw, 200px); background: #cbd9cb; }
+
+:root[data-theme="dark"] .fatherhood-bubbles li {
+  border-color: rgba(245, 223, 125, .28);
+  background: #645b32;
+  color: #f6f3e7;
+  box-shadow: none;
+}
+:root[data-theme="dark"] .fatherhood-bubbles li:nth-child(2),
+:root[data-theme="dark"] .fatherhood-bubbles li:nth-child(5) { background: #34483a; }
+:root[data-theme="dark"] .fatherhood-bubbles li:nth-child(3),
+:root[data-theme="dark"] .fatherhood-bubbles li:nth-child(6) { background: #3c433e; }
+:root[data-theme="dark"] .fatherhood-bubbles li:nth-child(4) { background: #584b2c; }
+:root[data-theme="dark"] .fatherhood-bubbles li:nth-child(7) { background: #304438; }
+
+.empty-interest-page { min-height: calc(100svh - 140px); }
+
+@media (max-width: 560px) {
+  .fatherhood-bubbles { gap: 10px; }
+  .fatherhood-bubbles li,
+  .fatherhood-bubbles li:nth-child(4),
+  .fatherhood-bubbles li:nth-child(7) { width: calc(50% - 5px); max-width: 170px; }
+}
