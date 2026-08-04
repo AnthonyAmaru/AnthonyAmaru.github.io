@@ -203,31 +203,21 @@ async function searchOpenLibrary(query: string): Promise<SourceResponse> {
 }
 
 async function searchCountries(query: string): Promise<SourceResponse> {
-  let countries: Array<Record<string, any>> = [];
-  if (REST_COUNTRIES_API_KEY) {
-    const data = await fetchJson(`https://api.restcountries.com/countries/v5?q=${encodeURIComponent(query)}&limit=4`, {
-      headers: { Authorization: `Bearer ${REST_COUNTRIES_API_KEY}` },
-    });
-    countries = data?.data?.objects ?? [];
-    const results = compact(countries.map((country) => ({
-      source: "rest-countries",
-      sourceLabel: sourceLabels["rest-countries"],
-      title: cleanText(country.names?.common, 180),
-      description: cleanText([country.capitals?.[0], country.region].filter(Boolean).join(" · ")),
-      meta: cleanText([country.flag?.emoji, country.population ? `${Number(country.population).toLocaleString("en-US")} people` : ""].filter(Boolean).join(" · "), 100),
-      url: "https://restcountries.com/countries",
-    })));
-    return response("rest-countries", results);
-  }
-  const data = await fetchJson(`https://restcountries.com/v3.1/name/${encodeURIComponent(query)}?fields=name,flags,capital,region,population`);
-  countries = Array.isArray(data) ? data : [];
-  const results = compact(countries.slice(0, 4).map((country) => ({
+  if (!REST_COUNTRIES_API_KEY) return response("rest-countries", [], {
+    state: "setup",
+    message: "REST Countries needs a free API key in Supabase.",
+    actionUrl: "https://restcountries.com/countries",
+  });
+  const data = await fetchJson(`https://api.restcountries.com/countries/v5?q=${encodeURIComponent(query)}&limit=4`, {
+    headers: { Authorization: `Bearer ${REST_COUNTRIES_API_KEY}` },
+  });
+  const countries = data?.data?.objects ?? [];
+  const results = compact(countries.map((country: Record<string, any>) => ({
     source: "rest-countries",
     sourceLabel: sourceLabels["rest-countries"],
-    title: cleanText(country.name?.common, 180),
-    description: cleanText([country.capital?.[0], country.region].filter(Boolean).join(" · ")),
-    meta: cleanText(country.population ? `${Number(country.population).toLocaleString("en-US")} people` : "", 100),
-    image: country.flags?.png || country.flags?.svg,
+    title: cleanText(country.names?.common, 180),
+    description: cleanText([country.capitals?.[0]?.name, country.region].filter(Boolean).join(" · ")),
+    meta: cleanText([country.flag?.emoji, country.population ? `${Number(country.population).toLocaleString("en-US")} people` : ""].filter(Boolean).join(" · "), 100),
     url: "https://restcountries.com/countries",
   })));
   return response("rest-countries", results);
