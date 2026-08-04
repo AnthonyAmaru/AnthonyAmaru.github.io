@@ -574,16 +574,6 @@ $("#reading-controls").addEventListener("click", (event) => {
   });
   renderReading();
 });
-$(".menu-button").addEventListener("click", (event) => {
-  const open = $("#site-nav").classList.toggle("open");
-  event.currentTarget.setAttribute("aria-expanded", String(open));
-});
-$("#site-nav").addEventListener("click", () => {
-  $("#site-nav").classList.remove("open");
-  $(".menu-button").setAttribute("aria-expanded", "false");
-});
-window.addEventListener("scroll", () => $(".site-header").classList.toggle("scrolled", window.scrollY > 10), { passive: true });
-
 const requestedPage = new URLSearchParams(location.search).get("page");
 const mandarinPages = ["lesson", "cards", "sounds", "words", "sentences", "plans", "reading", "characters"];
 const activePage = mandarinPages.includes(requestedPage) ? requestedPage : "home";
