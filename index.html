@@ -23,10 +23,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&amp;family=Noto+Serif+SC:wght@500;700&amp;display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=20260805-standalone1" />
+    <link rel="stylesheet" href="styles.css?v=20260805-playlisttiles1" />
     <script src="music-cloud.js?v=20260804-titleclean1" defer></script>
     <script src="book-data.js?v=20260804-book2" defer></script>
-    <script src="script.js?v=20260805-standalone1" defer></script>
+    <script src="script.js?v=20260805-playlisttiles1" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -176,15 +176,16 @@
 
         <section id="page-music" class="page-panel section-shell" data-page="music">
           <header class="page-heading"><div><h1>Music</h1></div></header>
-          <div class="music-layout">
-            <aside class="playlist-panel panel-card">
-              <div class="section-title-row"><h2>Playlists</h2><button id="new-playlist" class="small-button" type="button">+ New</button></div>
-              <button class="playlist-row active" type="button" data-playlist="all"><span>♫</span><strong>All music</strong><small id="all-track-count">0</small></button>
-              <div id="playlist-list"></div>
-            </aside>
-            <section class="library-panel panel-card">
+          <div id="playlist-browser" class="playlist-browser panel-card">
+            <div class="playlist-browser-heading"><h2>Playlists</h2><button id="new-playlist" class="small-button" type="button">+ New</button></div>
+            <div class="playlist-tile-grid" aria-label="Music collections">
+              <button class="playlist-tile all-songs-tile" type="button" data-playlist="all"><span aria-hidden="true">♫</span><strong>All songs</strong><small><b id="all-track-count">0</b> songs</small></button>
+              <div id="playlist-list" class="playlist-tile-list"></div>
+            </div>
+          </div>
+          <section id="music-library-view" class="library-panel panel-card" hidden>
               <div class="library-heading">
-                <div><h2 id="library-title">All music</h2></div>
+                <div class="library-title-group"><button id="close-music-library" class="collection-back-button" type="button">← Playlists</button><h2 id="library-title">All songs</h2></div>
                 <div class="library-actions">
                   <label class="select-all-control"><input id="select-all-tracks" type="checkbox" /><span>Select all</span></label>
                   <select id="bulk-playlist-select" class="bulk-playlist-select" aria-label="Playlist for selected songs" disabled><option value="">Playlist</option></select>
@@ -209,8 +210,7 @@
                 </div>
                 <div id="track-list" class="track-list"></div>
               </div>
-            </section>
-          </div>
+          </section>
         </section>
 
       </main>

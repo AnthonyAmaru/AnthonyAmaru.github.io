@@ -184,7 +184,7 @@ The shared contract is:
 - a home grid of full-tile links with an icon, short title, and no numbering;
 - an Interests grid where every card is one link and contains no nested Open, Notebook, or Test buttons;
 - interest details opened as directly addressable standalone HTML pages, never layered over the Interests grid;
-- the same Music workspace order: Playlists, Library heading and bulk actions, drop zone, then Song/Artist/Playlist filters and rows;
+- the same two-stage Music workspace: first an All Songs tile plus one tile per playlist, then the selected collection's Library heading, bulk actions, drop zone, Song/Artist/Playlist filters, and rows;
 - Song, Artist, and Playlist sort controls, including a multi-select Artist filter;
 - the same cloud-state words, theme behavior, AI open/close behavior, and responsive control visibility.
 
@@ -273,6 +273,8 @@ Normalize visible titles on upload and manual edit:
 
 The music page should support:
 
+- opening on a responsive tile grid containing All Songs and every playlist;
+- opening the song-management UI only after a collection tile is selected, with an in-page Playlists control to return to the tile grid;
 - selecting one, many, or all songs;
 - adding multiple selected songs to one playlist;
 - deleting selected songs with confirmation;
@@ -524,6 +526,7 @@ Append every future bug here. Update the relevant architecture section at the sa
 | 2026-08-05 | Tablet showed only Menu, and the fixed GO BACK control could overlap content. | The desktop navigation collapsed at a tablet-width breakpoint and a viewport-fixed back control ignored changing content width. | Keep large outlined primary tabs visible above 600px; use Menu only at 600px or narrower; do not generate or style a separate GO BACK control. | At 390, 768, 1024, and narrow side-panel widths, confirm correct nav visibility, outlined 44px+ targets, and zero back controls. |
 | 2026-08-05 | Mycology included an unwanted, heavy globe visualization. | The page loaded a third-party 3D globe library, texture assets, render logic, and globe-specific styles. | Mycology contains only compact filters and mushroom cards unless a future visualization is explicitly requested. Keep no globe CDN, globe DOM, renderer, textures, or globe CSS. | Confirm no globe selector, library request, canvas, or renderer is present and that all mushroom filters still work. |
 | 2026-08-05 | Mushroom photos were cut off on tablets. | Card images used `object-fit: cover`, which filled their fixed media area by cropping the image edges. | Mushroom profile images use `object-fit: contain` with centered positioning so the entire photograph remains visible at every breakpoint. | At 390, 768, and 1024px widths, confirm each photograph's natural aspect ratio fits completely inside its media area without clipping. |
+| 2026-08-05 | Music opened directly into a dense library/sidebar layout instead of presenting playlists as the first choice. | Playlist selection and song management were rendered simultaneously in one workspace. | Music uses a two-stage view on every sibling site: a responsive All Songs/playlist tile grid first, then the selected collection's existing management UI. Preserve uploads, filters, sorting, bulk actions, editing, and playlist assignment inside stage two. | Open Music on both sites at desktop, tablet, and phone widths; confirm only collection tiles appear initially, every tile opens the correct songs, and Playlists returns to the tile grid without losing cloud data. |
 | 2026-08-04 | Shared site chrome appeared more than once on some detail views. | Repeated shell injection and nested documents were both possible. | Use standalone navigation and keep only one header and player defensively in `site-header.js`. | Count each shared shell element after every direct navigation. |
 | 2026-08-04 | Music uploaded on one device did not appear on another. | Browser-only storage cannot synchronize binary files across devices. | Store audio in Supabase Storage and metadata in Postgres; keep only non-sensitive preferences locally. | Upload on device A and play on device B. |
 | 2026-08-04 | Song titles showed artist prefixes, download IDs, and parenthetical source labels. | Raw filenames and embedded metadata were displayed without normalization. | Normalize title/artist metadata on existing rows, new uploads, and manual edits while preserving original source metadata. | Confirm no visible title contains removable bracket or parenthesis labels and no song was deleted. |

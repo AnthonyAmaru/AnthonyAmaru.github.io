@@ -273,11 +273,24 @@ h1, h2 { font-family: var(--sans); font-weight: 750; letter-spacing: -.035em; }
 .mycology-card { grid-column: 1 / -1; min-height: 270px; background: linear-gradient(150deg, var(--surface-solid), var(--butter)); }
 
 /* Music */
-.music-layout { display: grid; grid-template-columns: 290px 1fr; gap: 18px; }
 .panel-card { border: 1px solid var(--line); border-radius: 28px; background: var(--surface); box-shadow: var(--shadow-sm); padding: 24px; }
-.playlist-row { display: grid; grid-template-columns: auto 1fr auto; width: 100%; align-items: center; gap: 10px; border: 0; border-radius: 14px; background: transparent; padding: 11px 12px; cursor: pointer; text-align: left; }
-.playlist-row.active { background: var(--lavender); }
-.playlist-row small { color: var(--muted); }
+.playlist-browser-heading { display: flex; min-height: 48px; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+.playlist-browser-heading h2 { margin: 0; font-size: 2rem; }
+.playlist-tile-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(210px,1fr)); gap: 12px; }
+.playlist-tile-list { display: contents; }
+.playlist-tile { display: grid; min-height: 210px; align-content: space-between; justify-items: start; overflow: hidden; border: 1px solid var(--line); border-radius: 18px; background: color-mix(in srgb,var(--surface-solid) 78%,var(--lavender)); color: var(--ink); padding: 22px; cursor: pointer; text-align: left; transition: border-color .18s ease,transform .18s ease,box-shadow .18s ease; }
+.playlist-tile:nth-child(3n+2) { background: color-mix(in srgb,var(--surface-solid) 76%,var(--sage)); }
+.playlist-tile:nth-child(3n) { background: color-mix(in srgb,var(--surface-solid) 76%,var(--butter)); }
+.playlist-tile:hover,.playlist-tile:focus-visible { border-color: var(--line-strong); box-shadow: var(--shadow-sm); outline: 0; transform: translateY(-2px); }
+.playlist-tile.active { border-color: var(--ink); }
+.playlist-tile > span { font-size: 2rem; }
+.playlist-tile strong { width: 100%; overflow: hidden; font-size: 1.15rem; text-overflow: ellipsis; white-space: nowrap; }
+.playlist-tile small { color: var(--muted); }
+.playlist-tile small b { color: var(--ink); font-size: 1rem; }
+.all-songs-tile { background: color-mix(in srgb,var(--surface-solid) 68%,var(--sky)); }
+.library-title-group { display: grid; gap: 8px; }
+.collection-back-button { width: max-content; min-height: 36px; border: 1px solid var(--line); border-radius: 10px; background: transparent; color: var(--muted); padding: 0 11px; cursor: pointer; font: inherit; font-size: .72rem; font-weight: 800; }
+.collection-back-button:hover,.collection-back-button:focus-visible { border-color: var(--line-strong); color: var(--ink); outline: 0; }
 .library-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid var(--line); padding-bottom: 20px; }
 .library-heading h2 { margin: 0; font-size: 2rem; }
 .library-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; }
@@ -471,7 +484,6 @@ h1, h2 { font-family: var(--sans); font-weight: 750; letter-spacing: -.035em; }
   .resume-layout { grid-template-columns: 1fr; }
   .interest-card { min-height: 450px; }
   .book-card { grid-template-columns: 1fr .65fr; }
-  .music-layout { grid-template-columns: 240px 1fr; }
   .book-workspace { grid-template-columns: 240px 1fr; }
   .book-editor-area { padding-inline: 30px; }
   .book-editor-controls { grid-template-columns: minmax(180px,1fr) auto; }
@@ -512,10 +524,9 @@ h1, h2 { font-family: var(--sans); font-weight: 750; letter-spacing: -.035em; }
   .assistant-heading { display: block; }
   .connection-pill { display: inline-block; margin-bottom: 18px; }
   .connector-form { display: grid; }
-  .music-layout { grid-template-columns: 1fr; }
+  .playlist-tile-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .music-drop-zone { grid-template-columns: auto 1fr; padding: 18px; }
   .music-drop-zone .button { grid-column: 1 / -1; width: 100%; }
-  .playlist-panel { order: 2; }
   .site-footer { display: grid; text-align: left; }
   .chapter-menu-button { display: inline-block; font-size: .72rem !important; }
   .book-workspace { position: relative; grid-template-columns: 1fr; }
@@ -559,6 +570,11 @@ h1, h2 { font-family: var(--sans); font-weight: 750; letter-spacing: -.035em; }
   .chapter-rail { width: min(290px, 100%); }
   .book-page-toolbar { justify-content: flex-start; overflow-x: auto; }
   .book-page-toolbar button { flex: 0 0 auto; }
+}
+
+@media (max-width: 480px) {
+  .playlist-tile-grid { grid-template-columns: 1fr; }
+  .playlist-tile { min-height: 165px; }
 }
 
 @media (max-width: 720px) {

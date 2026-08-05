@@ -41,6 +41,7 @@ let currentBookChapter = 0;
 let currentBookPage = 0;
 let bookEditorReady = false;
 let currentPlaylist = "all";
+let musicLibraryOpen = false;
 const currentArtists = new Set();
 let currentSongQuery = "";
 let musicSortColumn = "song";
@@ -151,7 +152,7 @@ function routeTo(route) {
   });
   $("#primary-nav").classList.remove("open");
   $("#mobile-menu-button").setAttribute("aria-expanded", "false");
-  if (route === "music") renderMusic();
+  if (route === "music") { musicLibraryOpen = false; renderMusic(); }
   if (route === "resume") renderResume();
   if (route === "interests") refreshDashboard();
 }
@@ -606,7 +607,10 @@ async function renderMusic() {
     musicCloudError = error.message;
   }
   $("#all-track-count").textContent = tracks.length;
-  $("#playlist-list").innerHTML = musicPlaylists.map((playlist) => `<button class="playlist-row" type="button" data-playlist="${playlist.id}"><span>♬</span><strong>${escapeHtml(playlist.name)}</strong><small>${tracks.filter((track) => String(track.playlist_id) === String(playlist.id)).length}</small></button>`).join("");
+  $("#playlist-list").innerHTML = musicPlaylists.map((playlist) => {
+    const count = tracks.filter((track) => String(track.playlist_id) === String(playlist.id)).length;
+    return `<button class="playlist-tile" type="button" data-playlist="${playlist.id}"><span aria-hidden="true">♬</span><strong>${escapeHtml(playlist.name)}</strong><small><b>${count}</b> ${count === 1 ? "song" : "songs"}</small></button>`;
+  }).join("");
   const artists = [...new Set(tracks.map(trackArtist))].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
   [...currentArtists].forEach((artist) => { if (!artists.includes(artist)) currentArtists.delete(artist); });
   $("#artist-filter-options").innerHTML = `<button id="clear-artist-filter" class="artist-filter-all" type="button">All artists</button>${artists.map((artist) => `<label class="artist-filter-option"><input type="checkbox" data-artist-filter value="${escapeHtml(artist)}" ${currentArtists.has(artist) ? "checked" : ""} /><span>${escapeHtml(artist)}</span></label>`).join("")}`;
@@ -639,10 +643,10 @@ function applyMusicFilters() {
   });
   const availableIds = new Set(tracks.map((track) => String(track.id)));
   [...selectedTrackIds].forEach((id) => { if (!availableIds.has(id)) selectedTrackIds.delete(id); });
-  $$(".playlist-row[data-playlist]").forEach((button) => button.classList.toggle("active", button.dataset.playlist === currentPlaylist));
+  $$(".playlist-tile[data-playlist]").forEach((button) => button.classList.toggle("active", button.dataset.playlist === currentPlaylist));
   syncArtistFilterUi();
   $("#playlist-filter").value = currentPlaylist;
-  $("#library-title").textContent = currentPlaylist === "all" ? "All music" : currentPlaylist === "none" ? "No playlist" : selectedPlaylist?.name || "Playlist";
+  $("#library-title").textContent = currentPlaylist === "all" ? "All songs" : currentPlaylist === "none" ? "No playlist" : selectedPlaylist?.name || "Playlist";
   const playlistOptions = musicPlaylists.map((playlist) => `<option value="${playlist.id}">${escapeHtml(playlist.name)}</option>`).join("");
   $("#track-list").innerHTML = musicCloudError ? `<div class="library-empty"><p>Cloud library unavailable.</p><small>${escapeHtml(musicCloudError)}</small></div>` : visibleTracks.length ? visibleTracks.map((track) => {
     const editing = editingTrackId === String(track.id);
@@ -660,6 +664,20 @@ function applyMusicFilters() {
   $$('[data-assign-track]').forEach((select) => { const track = tracks.find((item) => String(item.id) === select.dataset.assignTrack); select.value = track?.playlist_id || ""; });
   updateMusicSortControls();
   updateTrackSelectionControls();
+  syncMusicCollectionView();
+}
+
+function syncMusicCollectionView() {
+  $("#playlist-browser").hidden = musicLibraryOpen;
+  $("#music-library-view").hidden = !musicLibraryOpen;
+}
+
+function closeMusicLibrary() {
+  musicLibraryOpen = false;
+  selectedTrackIds.clear();
+  editingTrackId = null;
+  syncMusicCollectionView();
+  $("#playlist-browser").scrollIntoView({ block: "start", behavior: "auto" });
 }
 
 function syncArtistFilterUi() {
@@ -1036,6 +1054,7 @@ $("#quick-ai-input").addEventListener("keydown", (event) => {
 });
 
 $("#new-playlist").addEventListener("click", createPlaylist);
+$("#close-music-library").addEventListener("click", closeMusicLibrary);
 $("#assign-selected-tracks").addEventListener("click", assignSelectedTracks);
 $("#bulk-playlist-select").addEventListener("change", updateTrackSelectionControls);
 $("#song-filter").addEventListener("input", (event) => { selectedTrackIds.clear(); currentSongQuery = event.target.value; applyMusicFilters(); });
@@ -1085,7 +1104,15 @@ $("#page-music").addEventListener("click", (event) => {
   }
   if (save) return saveTrackEdits(save);
   if (cancel) { editingTrackId = null; return applyMusicFilters(); }
-  if (playlist) { selectedTrackIds.clear(); currentPlaylist = playlist.dataset.playlist; applyMusicFilters(); }
+  if (playlist) {
+    selectedTrackIds.clear();
+    currentArtists.clear();
+    currentSongQuery = "";
+    $("#song-filter").value = "";
+    currentPlaylist = playlist.dataset.playlist;
+    musicLibraryOpen = true;
+    applyMusicFilters();
+  }
   if (play) playTrack(play.dataset.playTrack);
   if (remove) deleteTrack(remove.dataset.deleteTrack);
 });
@@ -1122,6 +1149,7 @@ document.addEventListener("keydown", (event) => {
   if (event.key !== "Escape") return;
   if (!$("#quick-ai-popover").hidden) toggleQuickAi(false);
   else if (!$("#book-modal").hidden) closeBookStudio();
+  else if (musicLibraryOpen) closeMusicLibrary();
   else if (!$("#admin-modal").hidden) closeAdminModal(false);
 });
 
