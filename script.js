@@ -24,7 +24,6 @@ function normalizePortalShell() {
   if (!portal) return;
   keepFirst(".site-header", portal);
   keepFirst("#music-dock", portal);
-  keepFirst("#go-back-button", portal);
   keepFirst("#main-content", portal);
   keepFirst(".site-footer", portal);
 }
@@ -144,9 +143,6 @@ function applyTheme(theme) {
 function routeTo(route) {
   const page = $("[data-page='" + route + "']");
   if (!page) return;
-  const hasBackButton = route !== "home";
-  $("#go-back-button").hidden = !hasBackButton;
-  document.body.classList.toggle("has-back-button", hasBackButton);
   $$(".page-panel").forEach((panel) => panel.classList.toggle("active", panel === page));
   $$(".nav-link").forEach((link) => {
     const active = link.dataset.pageLink === route;
@@ -898,31 +894,6 @@ function setMusicSort(column) {
   applyMusicFilters();
 }
 
-async function openStudyApp(name, needsAdmin) {
-  if (needsAdmin && !(await ensureAdmin())) return;
-  const apps = {
-    aviation: { title: "Aviation practice", src: "aviation/index.html?v=20260804-embed1" },
-    mandarin: { title: "Mandarin notebook", src: "mandarin/index.html?v=20260804-embed1" },
-    mycology: { title: "Mycology", src: "mycology.html?v=20260804-globe2" },
-    books: { title: "Books", src: "books.html?v=20260804-embed1" },
-    ai: { title: "AI packages", src: "ai.html?v=20260804-packages1" },
-  };
-  const app = apps[name];
-  if (!app) return;
-  const embeddedUrl = new URL(app.src, location.href);
-  embeddedUrl.searchParams.set("embedded", "1");
-  $("#app-frame").src = embeddedUrl.href;
-  $("#app-modal").hidden = false;
-  setModalOpen(true);
-}
-
-function closeStudyApp() {
-  $("#app-frame").src = "about:blank";
-  $("#app-modal").hidden = true;
-  setModalOpen(false);
-  refreshDashboard();
-}
-
 function refreshDashboard() {
   const aviation = readJson("anthony_aviation_history_v1", []);
   const mandarin = readJson("anthony_mandarin_history_v1", []);
@@ -972,28 +943,11 @@ document.addEventListener("click", (event) => {
   const rootPath = location.pathname.replace(/index\.html$/, "");
   if (url.origin !== location.origin || url.pathname.replace(/index\.html$/, "") !== rootPath) return;
   event.preventDefault();
-  if (!$("#app-modal").hidden) closeStudyApp();
   if (!$("#book-modal").hidden) closeBookStudio();
   navigatePortal(portalRouteFromUrl(url));
 });
 
-window.addEventListener("message", (event) => {
-  if (event.origin !== location.origin || event.data?.type !== "anthony:portal-navigation") return;
-  const route = ["home", "resume", "interests", "music"].includes(event.data.route) ? event.data.route : "interests";
-  if (!$("#app-modal").hidden) closeStudyApp();
-  navigatePortal(route, true);
-});
-
 window.addEventListener("popstate", () => routeTo(portalRouteFromUrl()));
-
-$("#go-back-button").addEventListener("click", () => {
-  if (!$("#app-modal").hidden) return closeStudyApp();
-  if (!$("#book-modal").hidden) return closeBookStudio();
-  let sameSiteReferrer = false;
-  try { sameSiteReferrer = new URL(document.referrer).origin === location.origin; } catch { /* Use the homepage fallback. */ }
-  if (history.state?.portalRoute || (sameSiteReferrer && history.length > 1)) history.back();
-  else navigatePortal("home", true);
-});
 
 $("#theme-toggle").addEventListener("click", () => applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
 $("#mobile-menu-button").addEventListener("click", () => {
@@ -1038,7 +992,6 @@ $$('[data-close-modal]').forEach((button) => button.addEventListener("click", ()
   else { $("#" + id).hidden = true; setModalOpen(false); }
 }));
 
-$$('.interest-card[data-app]').forEach((tile) => tile.addEventListener("click", (event) => { event.preventDefault(); openStudyApp(tile.dataset.app, tile.dataset.admin === "true"); }));
 $$('[data-open-quick-ai]').forEach((button) => button.addEventListener("click", () => {
   const topic = $("#quick-ai-topic");
   if (topic) topic.value = "General";
@@ -1168,7 +1121,6 @@ window.addEventListener("pagehide", () => {
 document.addEventListener("keydown", (event) => {
   if (event.key !== "Escape") return;
   if (!$("#quick-ai-popover").hidden) toggleQuickAi(false);
-  else if (!$("#app-modal").hidden) closeStudyApp();
   else if (!$("#book-modal").hidden) closeBookStudio();
   else if (!$("#admin-modal").hidden) closeAdminModal(false);
 });

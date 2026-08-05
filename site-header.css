@@ -1,9 +1,3 @@
-:root {
-  --detail-back-left: max(12px, env(safe-area-inset-left));
-  --detail-back-width: 88px;
-  --detail-back-gutter: calc(var(--detail-back-left) + var(--detail-back-width) + 16px);
-}
-
 .main-site-header,
 .main-site-menu,
 .main-site-nav {
@@ -39,46 +33,6 @@
   backdrop-filter: blur(18px);
 }
 
-:root[data-embedded="true"] .main-site-header { display: none; }
-:root[data-embedded="true"] .go-back-button { display: none; }
-
-.go-back-button {
-  position: fixed;
-  z-index: 60;
-  top: 50%;
-  left: var(--detail-back-left);
-  display: grid;
-  width: var(--detail-back-width);
-  height: 270px;
-  place-items: center;
-  transform: translateY(-50%);
-  border: 1px solid #c9aa3d;
-  border-radius: 14px;
-  background: #f7df79;
-  color: #302811;
-  box-shadow: 0 15px 36px rgba(79, 64, 18, 0.24);
-  cursor: pointer;
-  font: 850 1rem/1 "DM Sans", system-ui, sans-serif;
-  letter-spacing: 0.16em;
-  text-orientation: mixed;
-  writing-mode: vertical-rl;
-}
-
-.go-back-button:hover,
-.go-back-button:focus-visible {
-  background: #ffe895;
-  outline: 3px solid rgba(201, 170, 61, 0.36);
-  outline-offset: 3px;
-}
-
-@media (min-width: 761px) and (max-width: 1399px) {
-  body.has-detail-back-button > main {
-    max-width: calc(100% - var(--detail-back-gutter) - 24px);
-    margin-right: 24px;
-    margin-left: var(--detail-back-gutter);
-  }
-}
-
 .main-site-brand {
   display: inline-flex;
   align-items: center;
@@ -98,21 +52,27 @@
 .main-site-nav {
   display: flex;
   justify-content: center;
-  gap: 4px;
+  gap: 8px;
 }
 
 .main-site-nav a {
-  border-radius: 999px;
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--main-header-line);
+  border-radius: 12px;
   color: var(--main-header-muted);
-  padding: 9px 13px;
-  font-size: 0.82rem;
-  font-weight: 700;
+  padding: 0 17px;
+  font-size: 0.84rem;
+  font-weight: 800;
   text-decoration: none;
 }
 
 .main-site-nav a:hover,
 .main-site-nav a:focus-visible,
 .main-site-nav a[aria-current="page"] {
+  border-color: var(--main-header-ink);
   background: var(--main-header-panel);
   color: var(--main-header-ink);
 }
@@ -129,8 +89,7 @@
   font-weight: 800;
 }
 
-@media (max-width: 760px) {
-  .go-back-button { display: none !important; }
+@media (max-width: 600px) {
   .main-site-header {
     grid-template-columns: 1fr auto;
     min-height: 70px;
@@ -139,7 +98,7 @@
   }
 
   .main-site-brand img { width: 40px; height: 40px; }
-  .main-site-menu { display: block; }
+  .main-site-menu { display: block; border-radius: 12px; }
   .main-site-nav {
     position: absolute;
     top: 70px;

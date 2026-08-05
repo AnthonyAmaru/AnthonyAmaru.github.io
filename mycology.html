@@ -8,18 +8,17 @@
     <title>Mycology · Anthony Amaru</title>
     <link rel="icon" href="anthony-favicon.ico?v=snake-1" sizes="any" />
     <link rel="icon" type="image/png" href="anthony-favicon-32.png?v=snake-1" sizes="32x32" />
-    <script src="site-theme.js?v=20260804-framefix1"></script>
+    <script src="site-theme.js?v=20260805-standalone1"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Newsreader:opsz,wght@6..72,500&amp;display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="site-header.css?v=20260804-globe2" />
-    <link rel="stylesheet" href="site-music.css?v=20260804-mobileglobe1" />
-    <link rel="stylesheet" href="mycology.css?v=20260804-globe2" />
+    <link rel="stylesheet" href="site-header.css?v=20260805-nav1" />
+    <link rel="stylesheet" href="site-music.css?v=20260805-standalone1" />
+    <link rel="stylesheet" href="mycology.css?v=20260805-noglobe1" />
     <script src="music-cloud.js?v=20260803-ai2"></script>
-    <script src="site-header.js?v=20260804-globe2" defer></script>
-    <script src="site-music.js?v=20260804-audio1" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/globe.gl@2.46.1/dist/globe.gl.min.js" integrity="sha384-fS13P48RBFel+cPUp5960AhzvtEr64LerQ00neZuM+Hi/VDxxemdQnN7IcWPYvPb" crossorigin="anonymous" defer></script>
-    <script src="mycology.js?v=20260804-globe2" defer></script>
+    <script src="site-header.js?v=20260805-nav1" defer></script>
+    <script src="site-music.js?v=20260805-standalone1" defer></script>
+    <script src="mycology.js?v=20260805-noglobe1" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -45,7 +44,6 @@
 
     <main id="main-content">
       <header class="page-heading">
-        <a href="index.html?page=interests&amp;v=20260804-clean1">← Interests</a>
         <h1>Mycology</h1>
       </header>
 
@@ -55,31 +53,6 @@
         <label><span>Season</span><select id="season-filter"><option value="all">All</option><option value="spring">Spring</option><option value="summer">Summer</option><option value="fall">Fall</option><option value="winter">Winter</option><option value="year-round">Year-round</option></select></label>
         <button id="clear-mushroom-filters" type="button">Clear</button>
         <strong id="mushroom-count" aria-live="polite">19 mushrooms</strong>
-      </section>
-
-      <section class="mushroom-globe-panel" aria-labelledby="mushroom-globe-title">
-        <div class="globe-controls">
-          <h2 id="mushroom-globe-title">Where they grow</h2>
-          <small>Drag the globe · tap a marker to filter</small>
-          <div class="globe-location-list" aria-label="Mushroom regions">
-            <button type="button" data-globe-location="all">All</button>
-            <button type="button" data-globe-location="north-america">North America</button>
-            <button type="button" data-globe-location="europe">Europe</button>
-            <button type="button" data-globe-location="norway">Norway</button>
-            <button type="button" data-globe-location="asia">Asia</button>
-            <button type="button" data-globe-location="australia">Australia</button>
-          </div>
-        </div>
-        <div class="mushroom-globe-stage">
-          <div class="globe-hud" aria-hidden="true"><i></i><span>MYCELIUM ATLAS</span></div>
-          <div id="mushroom-globe" role="img" aria-label="Realistic interactive Earth showing mushroom regions. Drag to rotate, scroll or pinch to zoom, and tap a glowing marker to filter the list."></div>
-          <div class="globe-zoom-controls" aria-label="Globe controls">
-            <button type="button" data-globe-action="zoom-in" aria-label="Zoom globe in">+</button>
-            <button type="button" data-globe-action="reset" aria-label="Reset globe view">◎</button>
-            <button type="button" data-globe-action="zoom-out" aria-label="Zoom globe out">−</button>
-          </div>
-          <p class="globe-fallback" id="globe-fallback" hidden>3D globe unavailable. Use the region buttons.</p>
-        </div>
       </section>
 
       <section class="mushroom-list" aria-label="Mushroom profiles">

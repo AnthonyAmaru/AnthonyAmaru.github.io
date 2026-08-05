@@ -1,5 +1,4 @@
 (() => {
-  if (document.documentElement.dataset.embedded === "true") return;
   const bar = document.querySelector("[data-site-music-bar]");
   if (!bar || !window.musicCloud) return;
 

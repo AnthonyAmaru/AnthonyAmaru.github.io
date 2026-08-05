@@ -53,7 +53,7 @@ Build a mobile-first personal website for <PERSON_NAME> using this uploaded blue
 
 Use a static HTML/CSS/JavaScript frontend, GitHub Pages, the custom domain <DOMAIN>, and Supabase for authenticated cross-device data and file storage. Preserve the compact, button-led interface, stable primary navigation, persistent top-level music player, light/dark themes, responsive layouts, and accessible controls.
 
-First inspect the provided repository and assets. Reuse the corrected shared-shell, embedded-navigation, cloud-auth, storage, music-deduplication, and cache-version patterns in this blueprint. Do not copy Anthony's or Rauny's personal data, credentials, domains, administrator email, passwords, or provider keys.
+First inspect the provided repository and assets. Reuse the corrected shared-shell, standalone-interest-navigation, cloud-auth, storage, music-deduplication, and cache-version patterns in this blueprint. Do not copy Anthony's or Rauny's personal data, credentials, domains, administrator email, passwords, or provider keys.
 
 If browser control is available, use the already signed-in GoDaddy, GitHub, and Supabase tabs to perform the setup. Do not request or read saved passwords, cookies, browser storage, or recovery data. Pause for the human to complete domain checkout, sign-in, CAPTCHA, 2FA, identity verification, permission grants, destructive deletion, and any public deployment confirmation not already authorized.
 
@@ -111,7 +111,7 @@ person-site/
 ├── index.html                         # entrance gate + Home/Resume/Interests/Music portal
 ├── styles.css                         # root portal design and responsive rules
 ├── script.js                          # routing, modals, book, music, AI and UI behavior
-├── site-theme.js                      # theme + embedded-page navigation bridge
+├── site-theme.js                      # shared theme initialization
 ├── site-header.css
 ├── site-header.js                     # stable detail-page shell and duplicate guard
 ├── site-music.css
@@ -169,8 +169,7 @@ Do not replace these tabs when entering an interest. Interest-specific controls 
 ### Page model
 
 - `index.html` switches the root portal between Home, Resume, Interests, and Music using `?page=` plus `history.pushState`.
-- Large interest tools can open in the root `#app-frame` overlay so the top-level music player remains mounted.
-- Every interest tool is still a real HTML page and can also be opened directly.
+- Every interest tile navigates directly to a standalone HTML page. Do not render an interest in a fixed iframe or modal over the Interests grid.
 - Direct detail pages reuse the stable header, music bar, theme script, and mobile menu.
 - Use one shared implementation of a repeated behavior. Do not copy slightly different navigation or cloud code into every page.
 
@@ -181,11 +180,10 @@ When more than one personal site uses this blueprint, treat shared structure as 
 The shared contract is:
 
 - one stable site header with the owner's top-level navigation;
-- one persistent music bar with previous, play/pause, next, and the one-question AI control;
-- one responsive vertical back control on non-home desktop views, hidden on phones;
+- one shared music bar with previous, play/pause, next, and the one-question AI control on every page;
 - a home grid of full-tile links with an icon, short title, and no numbering;
 - an Interests grid where every card is one link and contains no nested Open, Notebook, or Test buttons;
-- interest details displayed beneath the root header/music shell when uninterrupted playback is expected, while every detail remains a directly addressable HTML page;
+- interest details opened as directly addressable standalone HTML pages, never layered over the Interests grid;
 - the same Music workspace order: Playlists, Library heading and bulk actions, drop zone, then Song/Artist/Playlist filters and rows;
 - Song, Artist, and Playlist sort controls, including a multi-select Artist filter;
 - the same cloud-state words, theme behavior, AI open/close behavior, and responsive control visibility.
@@ -198,78 +196,30 @@ Content differences are allowed: names, palettes, logos, copy, interests, resume
 - Use the person's requested palette consistently in light and dark mode.
 - Keep touch targets at least 44 CSS pixels.
 - Collapse grids to one column or two compact columns on small screens.
-- Hide the large vertical desktop back button on phones.
+- Use the stable top-level navigation instead of adding a separate fixed back control.
 - Use transparent outer backgrounds for favicons and logos when requested.
 - Do not number cards unless the owner explicitly asks for numbering.
 - Make each interest tile one large keyboard-accessible control; do not add redundant Open, Notebook, or Test buttons inside it.
 - Keep visible keyboard focus, semantic headings, labels, skip links, and live status regions.
 
-### High-detail globe pattern
+## Standalone interest navigation
 
-For a contained interactive Earth visualization such as the Mycology distribution view, use the pinned Globe.GL WebGL component instead of drawing continents manually on a 2D canvas.
+This is a critical architecture rule. Each interest card is an ordinary same-site link to a complete HTML document. The root portal must not intercept it to open a fixed iframe, dialog, or overlay. This keeps the Interests grid out of the detail page's stacking context and prevents duplicate headers, players, or controls.
 
-- Use a version-pinned Globe.GL script with a verified Subresource Integrity hash.
-- Use version-pinned equirectangular Blue Marble, terrain bump, and star-field textures.
-- Render real latitude/longitude markers with tooltips, pulse rings, drag rotation, zoom, and animated region focus.
-- Keep equivalent region buttons outside the canvas for keyboard and assistive-technology access.
-- Provide a usable region-button fallback if WebGL, the CDN, or the library is unavailable.
-- Resize from the actual container with `ResizeObserver` so direct and embedded views both fit.
-- Disable auto-rotation for reduced-motion users and pause rendering while the globe is offscreen.
-- Pin external asset versions and bump the local HTML/CSS/JS cache versions together.
-
-## Correct embedded-page navigation
-
-This is a critical architecture rule. An interest page running inside `#app-frame` must never navigate that frame to the root portal. Doing so nests the complete website inside itself and duplicates the header, music player, back button, and content.
-
-The corrected child-page behavior lives in `site-theme.js`:
-
-```js
-const isEmbedded = new URLSearchParams(location.search).get("embedded") === "1"
-  || window.self !== window.top;
-
-if (isEmbedded) {
-  document.documentElement.dataset.embedded = "true";
-
-  document.addEventListener("click", (event) => {
-    const link = event.target.closest?.("a[href]");
-    if (!link || event.defaultPrevented || link.target) return;
-
-    const url = new URL(link.href, location.href);
-    const route = rootPortalRoute(url); // home, resume, interests or music; otherwise null
-    if (!route) return;
-
-    event.preventDefault();
-    window.top.postMessage(
-      { type: "anthony:portal-navigation", route },
-      location.origin
-    );
-  });
-}
-```
-
-The root portal owns the frame and handles the message in `script.js`:
-
-```js
-window.addEventListener("message", (event) => {
-  if (event.origin !== location.origin) return;
-  if (event.data?.type !== "anthony:portal-navigation") return;
-
-  const allowed = ["home", "resume", "interests", "music"];
-  const route = allowed.includes(event.data.route) ? event.data.route : "interests";
-
-  closeStudyApp();
-  navigatePortal(route, true);
-});
+```html
+<a class="interest-card" href="mycology.html?v=YYYYMMDD-change1">
+  <span aria-hidden="true">🍄</span>
+  <strong>Mycology</strong>
+</a>
 ```
 
 Additional safeguards:
 
-- Append `embedded=1` when assigning the frame URL.
-- Hide the child page's own `.main-site-header`, `.site-music-bar`, and `.go-back-button` when embedded.
-- If the root `index.html` ever detects that it is inside another frame, send the portal-navigation message to `window.top` immediately.
-- Clear the frame to `about:blank` when closing it.
-- Use `event.origin === location.origin` and an allowlisted message type.
-- Test the Books → Back to Interests sequence and confirm there is one header, one music player, zero nested portals, and no visible app frame.
+- Do not use `data-app`, `data-interest-app`, `#app-modal`, `#app-frame`, or an `embedded=1` query convention.
+- Every detail document includes exactly one shared header and one shared music bar.
+- The primary Interests tab always links to `index.html?page=interests` and returns to the complete card grid.
+- Preserve theme and music identity/position in browser storage before page unload, then restore on the destination document.
+- Test every interest tile and confirm the browser URL changes to that interest document, the Interests cards are absent, and no iframe exists.
 
 ## Shared shell and duplication protection
 
@@ -284,20 +234,18 @@ function keepSingleSiteElement(selector) {
 
 keepSingleSiteElement(".main-site-header");
 keepSingleSiteElement(".site-music-bar");
-keepSingleSiteElement(".go-back-button");
 ```
 
-This defensive cleanup does not replace the correct navigation bridge. Fix the nesting cause first.
+This defensive cleanup does not replace correct standalone navigation. Fix any duplicate markup or repeated initialization at its source.
 
 ## Theme and music persistence
 
 - Store the theme name only in `localStorage`; use a shared key across all pages.
 - Run the theme script in the document head to avoid a light-mode flash.
 - Every page must use the same theme tokens and support dark mode.
-- Keep the root music player outside embedded interest frames.
-- Opening an embedded interest must not recreate or stop the root audio element.
-- A full document navigation can interrupt HTML Audio. If uninterrupted playback is required, use the root embedded-view pattern instead of navigating away.
-- Save track identity and playback position before a genuine page unload, then restore when appropriate.
+- Include one shared music player on every standalone page.
+- Save track identity and playback position before page unload, then restore on the destination page.
+- Browsers may briefly pause HTML Audio during a full document navigation; do not reintroduce an iframe overlay to hide that platform behavior.
 
 ## Music library rules
 
@@ -514,22 +462,23 @@ Then verify:
 - top navigation remains stable on every page;
 - light/dark mode works on every route;
 - phone, tablet, narrow side-panel, and desktop layouts do not overlap;
-- the desktop back button is hidden on phones;
+- the outlined top tabs remain visible at tablet widths and collapse to Menu only at 600 CSS pixels or narrower;
+- no fixed or generated back button exists;
 - the music player keeps previous/play/next controls on phones;
 - only one shared header and one shared music player exist;
 - no secret or private credential appears in tracked files.
 
-### Required embedded-navigation regression test
+### Required standalone-interest regression test
 
 1. Open `index.html?page=interests`.
-2. Open Books.
-3. Click `← Interests` inside Books.
-4. Confirm the root URL is `index.html?page=interests`.
-5. Confirm `#app-modal` is hidden.
-6. Confirm there is one root header.
-7. Confirm there is one root music player.
-8. Confirm there is no nested portal iframe.
-9. Repeat with Mycology, Aviation, and Mandarin.
+2. Open Books and confirm the browser navigates to `books.html`.
+3. Confirm the Interests grid is not present behind the Books content.
+4. Click the primary Interests tab and confirm the browser returns to `index.html?page=interests`.
+5. Confirm there is one header and one music player on each page.
+6. Confirm there is no portal iframe, app modal, or fixed back button.
+7. Repeat with Mycology, Aviation, Mandarin, AI, and every sibling site's interest page.
+8. At 768px and 1024px widths, confirm all top tabs are visible and Menu is hidden.
+9. At 390px width, confirm Menu opens the same outlined top tabs.
 
 ### Cloud and security checks
 
@@ -571,15 +520,14 @@ Append every future bug here. Update the relevant architecture section at the sa
 
 | Date | Symptom | Root cause | Corrected rule | Regression test |
 | --- | --- | --- | --- | --- |
-| 2026-08-04 | Header, player, back button, and Interests content duplicated after Books → Back to Interests. Repeating it created deeper copies. | The embedded Books link navigated its iframe to the root portal, so the whole site loaded inside itself. | Embedded pages send an allowlisted same-origin `postMessage` to the top portal. The top portal closes the frame and changes its own route. Root portal documents detected inside a frame immediately request escape. | Books → Back to Interests leaves one header, one player, zero nested portals, and a hidden app frame. Repeat for every embedded tool. |
-| 2026-08-04 | Shared site chrome appeared more than once on some detail views. | Repeated shell injection and nested documents were both possible. | Fix nested navigation first; also keep only one header, player, and back button defensively in `site-header.js`. | Count each shared shell element after every route transition. |
+| 2026-08-05 | Mycology and several other interests looked layered over the Interests buttons, while Fatherhood looked like its own page. | Some tiles opened in a fixed iframe overlay while Fatherhood used normal document navigation. | Every interest tile navigates to a standalone HTML document. Never mount an interest in `#app-modal`, `#app-frame`, or another fixed overlay. | Open every interest; confirm its URL changes, the Interests grid is absent, exactly one header/player exists, and there is no iframe. |
+| 2026-08-05 | Tablet showed only Menu, and the fixed GO BACK control could overlap content. | The desktop navigation collapsed at a tablet-width breakpoint and a viewport-fixed back control ignored changing content width. | Keep large outlined primary tabs visible above 600px; use Menu only at 600px or narrower; do not generate or style a separate GO BACK control. | At 390, 768, 1024, and narrow side-panel widths, confirm correct nav visibility, outlined 44px+ targets, and zero back controls. |
+| 2026-08-05 | Mycology included an unwanted, heavy globe visualization. | The page loaded a third-party 3D globe library, texture assets, render logic, and globe-specific styles. | Mycology contains only compact filters and mushroom cards unless a future visualization is explicitly requested. Keep no globe CDN, globe DOM, renderer, textures, or globe CSS. | Confirm no globe selector, library request, canvas, or renderer is present and that all mushroom filters still work. |
+| 2026-08-04 | Shared site chrome appeared more than once on some detail views. | Repeated shell injection and nested documents were both possible. | Use standalone navigation and keep only one header and player defensively in `site-header.js`. | Count each shared shell element after every direct navigation. |
 | 2026-08-04 | Music uploaded on one device did not appear on another. | Browser-only storage cannot synchronize binary files across devices. | Store audio in Supabase Storage and metadata in Postgres; keep only non-sensitive preferences locally. | Upload on device A and play on device B. |
 | 2026-08-04 | Song titles showed artist prefixes, download IDs, and parenthetical source labels. | Raw filenames and embedded metadata were displayed without normalization. | Normalize title/artist metadata on existing rows, new uploads, and manual edits while preserving original source metadata. | Confirm no visible title contains removable bracket or parenthesis labels and no song was deleted. |
 | 2026-08-04 | A deployed change appeared missing. | A browser reused an older shared asset URL. | Version every changed shared CSS/JS reference consistently. | Fetch the new versioned live asset and confirm its marker before UI testing. |
-| 2026-08-04 | Large vertical back button overlapped content on phones or narrow windows. | Fixed desktop positioning was applied below its safe breakpoint. | Hide the vertical button on phones and reserve responsive space only when it is visible. | Test phone, iPad, desktop, and a narrow browser with a side panel. |
-| 2026-08-04 | The Mycology globe looked flat, abstract, and visually crude. | It approximated continents with a few thick lines on a custom 2D canvas instead of using geographic imagery and a 3D renderer. | Use the pinned Globe.GL pattern with Blue Marble imagery, terrain relief, atmosphere, a star field, geographic markers, responsive sizing, reduced-motion support, and a non-WebGL fallback. | Rotate, zoom, reset, and select every region in direct and embedded Mycology views; confirm markers filter cards and the fallback region buttons remain usable. |
-| 2026-08-04 | The detail-page back button still overlapped a large page title at medium desktop widths. | Detail pages hid the button on phones but never reserved horizontal space while the fixed button remained visible. | `site-header.js` marks standalone detail pages and shared responsive CSS gives their direct child `main` a back-button gutter from 761–1399px; embedded pages and phones keep the button hidden. | At 760, 1024, 1280, and 1440px, confirm the button never covers the title, filters, or content; repeat in an embedded interest view. |
-| 2026-08-04 | Rauny interest cards navigated away instead of opening under the persistent header and music player during the parity update. | A shared initialization helper called `querySelector` on a missing music-library container and stopped the rest of the page setup. | Every shared initializer must safely no-op when its page-specific root is absent; never pass a nullable root to a query helper that expects an element. | Load every HTML page with a clean console, then open and close each interest card while confirming one header and one music player remain mounted. |
+| 2026-08-04 | Rauny interest initialization stopped on pages without a music-library container. | A shared initialization helper called `querySelector` on a missing page-specific root. | Every shared initializer safely no-ops when its page-specific root is absent; never pass a nullable root to a query helper that expects an element. | Load every HTML page with a clean console and open each interest using direct navigation. |
 | 2026-08-04 | The Rauny Music page overflowed the phone viewport even though the track table had its own horizontal scroller. | Grid children retained their intrinsic 850px table width because the Music workspace and its direct children did not allow shrinking. | Give responsive grid containers and children `min-width: 0`; keep wide tables inside their dedicated `overflow-x:auto` wrapper. | At 390px width, confirm zero document-level horizontal overflow and that the track table itself remains horizontally scrollable. |
 
 ## Completion checklist for a new person
@@ -602,7 +550,7 @@ Append every future bug here. Update the relevant architecture section at the sa
 - [ ] Store the AI-provider secret only in Edge Function secrets.
 - [ ] Deploy and authenticate the AI gateway.
 - [ ] Test cloud files, quiz history, and editable content across devices.
-- [ ] Run the embedded-navigation regression test.
+- [ ] Run the standalone-interest regression test.
 - [ ] Test phone, tablet, narrow desktop, and dark mode.
 - [ ] Update this Markdown package for every bug fixed during the build.
 
@@ -621,6 +569,3 @@ Append every future bug here. Update the relevant architecture section at the sa
 - Supabase function authentication: https://supabase.com/docs/guides/functions/auth
 - Supabase function secrets: https://supabase.com/docs/guides/functions/secrets
 - Supabase changelog: https://supabase.com/changelog
-- Globe.GL: https://globe.gl/
-- Globe.GL source and API: https://github.com/vasturiano/globe.gl
-- NASA Blue Marble: https://science.nasa.gov/earth/multimedia/

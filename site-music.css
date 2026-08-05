@@ -20,8 +20,6 @@
   backdrop-filter: blur(18px);
 }
 
-:root[data-embedded="true"] .site-music-bar { display: none; }
-
 :root[data-theme="dark"] .site-music-bar {
   --player-bg: rgba(24, 32, 25, 0.95);
   --player-panel: #1d261f;
