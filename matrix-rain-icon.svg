@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">Falling binary code</title>
+  <defs>
+    <linearGradient id="rain" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d5ffdd" />
+      <stop offset=".28" stop-color="#78ff99" />
+      <stop offset="1" stop-color="#15923a" stop-opacity=".45" />
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-30%" width="180%" height="160%">
+      <feGaussianBlur stdDeviation=".75" result="blur" />
+      <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+    </filter>
+  </defs>
+
+  <g fill="url(#rain)" font-family="ui-monospace, SFMono-Regular, Consolas, monospace" font-size="8" font-weight="800" text-anchor="middle" filter="url(#glow)">
+    <g opacity=".62"><text x="7" y="9">1</text><text x="7" y="18">0</text><text x="7" y="27">1</text><text x="7" y="36">1</text><text x="7" y="45">0</text></g>
+    <g opacity=".9"><text x="17" y="17">0</text><text x="17" y="26">1</text><text x="17" y="35">0</text><text x="17" y="44">1</text><text x="17" y="53">1</text></g>
+    <g opacity=".72"><text x="27" y="8">1</text><text x="27" y="17">1</text><text x="27" y="26">0</text><text x="27" y="35">0</text><text x="27" y="44">1</text><text x="27" y="53">0</text><text x="27" y="62">1</text></g>
+    <g opacity="1"><text x="37" y="14">0</text><text x="37" y="23">1</text><text x="37" y="32">1</text><text x="37" y="41">0</text><text x="37" y="50">1</text><text x="37" y="59">0</text></g>
+    <g opacity=".68"><text x="47" y="7">1</text><text x="47" y="16">0</text><text x="47" y="25">0</text><text x="47" y="34">1</text><text x="47" y="43">0</text></g>
+    <g opacity=".84"><text x="57" y="21">0</text><text x="57" y="30">1</text><text x="57" y="39">0</text><text x="57" y="48">1</text><text x="57" y="57">1</text></g>
+  </g>
+</svg>
