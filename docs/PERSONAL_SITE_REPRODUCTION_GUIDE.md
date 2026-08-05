@@ -1,6 +1,6 @@
 # AI Package 01 — Personal Website Blueprint
 
-Version: 2026-08-04
+Version: 2026-08-05
 
 Reference implementation: `anthonyamaru.com`
 
@@ -119,6 +119,8 @@ person-site/
 ├── music-cloud.js                     # Supabase Auth, Data API and Storage helper
 ├── ai.html                            # downloadable AI Markdown packages
 ├── ai-packages.css
+├── blockchain.html                    # standalone blockchain/cryptocurrency interest
+├── blockchain.css
 ├── fatherhood.html
 ├── books.html
 ├── books.css
@@ -460,7 +462,7 @@ Then verify:
 - JavaScript syntax checks pass.
 - `git diff --check` passes.
 - every local link and referenced asset exists;
-- home, Resume, Interests, Music, AI Packages, Fatherhood, Books, Mycology, Aviation, Mandarin notebook, and Mandarin quiz open;
+- home, Resume, Interests, Music, AI Packages, Fatherhood, Blockchain, Books, Mycology, Aviation, Mandarin notebook, and Mandarin quiz open;
 - top navigation remains stable on every page;
 - light/dark mode works on every route;
 - phone, tablet, narrow side-panel, and desktop layouts do not overlap;
@@ -478,7 +480,7 @@ Then verify:
 4. Click the primary Interests tab and confirm the browser returns to `index.html?page=interests`.
 5. Confirm there is one header and one music player on each page.
 6. Confirm there is no portal iframe, app modal, or fixed back button.
-7. Repeat with Mycology, Aviation, Mandarin, AI, and every sibling site's interest page.
+7. Repeat with Mycology, Aviation, Mandarin, Blockchain, AI, and every sibling site's interest page.
 8. At 768px and 1024px widths, confirm all top tabs are visible and Menu is hidden.
 9. At 390px width, confirm Menu opens the same outlined top tabs.
 
@@ -504,6 +506,21 @@ Then verify:
 - Verify apex and `www` HTTPS.
 - Test the exact bug path on the live site.
 - Confirm the repository has no uncommitted changes.
+
+### Network-filter reputation checks
+
+A public Wi-Fi, school, or workplace network may block a new custom domain under a reputation category such as Cisco Umbrella's **Newly Seen Domains**. That classification means the filtering service has only recently observed the domain; it is not, by itself, proof that the site contains malware or that HTTPS is broken.
+
+When this occurs:
+
+1. Record the exact filter vendor, category, URL, and timestamp without publishing the visitor's public IP address.
+2. Verify the production URL loads over HTTPS on a different trusted network and has no certificate warning or mixed-content errors.
+3. Look up the domain in the filter vendor's official reputation center.
+4. If the threat/reputation result is incorrect, submit a reputation-correction ticket through the vendor's official dispute portal. Use a content-categorization ticket only when the website's subject category is wrong or missing.
+5. Ask the affected network administrator to allowlist the domain temporarily when access is time-sensitive; the website cannot override an organization-controlled DNS/security policy.
+6. Recheck the exact blocked route after the vendor processes the request. Do not weaken the website or remove HTTPS to work around a network filter.
+
+For Cisco products, use the Talos **Web Reputation** form for a threat/reputation correction and the separate **Content Categorization** form for an incorrect or missing content label.
 
 ## Cache-version rule
 
@@ -573,3 +590,5 @@ Append every future bug here. Update the relevant architecture section at the sa
 - Supabase function authentication: https://supabase.com/docs/guides/functions/auth
 - Supabase function secrets: https://supabase.com/docs/guides/functions/secrets
 - Supabase changelog: https://supabase.com/changelog
+- Cisco Umbrella threat definitions: https://docs.umbrella.com/umbrella-sig-gov/docs/threat-type-definitions
+- Cisco Talos reputation and categorization tickets: https://support.talosintelligence.com/docs/submit-ticket/
