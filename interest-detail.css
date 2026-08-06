@@ -142,8 +142,7 @@ h1 { margin:0; font:500 clamp(3.7rem,11vw,8rem)/.86 "Newsreader",serif; letter-s
   padding: clamp(18px, 3vw, 28px);
 }
 
-.nutrition-card-wide,
-.nutrition-goals { grid-column: 1 / -1; }
+.nutrition-card-wide { grid-column: 1 / -1; }
 
 .nutrition-card-heading {
   display: flex;
@@ -157,8 +156,7 @@ h1 { margin:0; font:500 clamp(3.7rem,11vw,8rem)/.86 "Newsreader",serif; letter-s
 .nutrition-card ul { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
 
 .nutrition-check-list { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
-.nutrition-check-list li,
-.nutrition-goals li {
+.nutrition-check-list li {
   position: relative;
   border-radius: 10px;
   background: color-mix(in srgb, var(--surface) 78%, #dce7d7);
@@ -176,18 +174,9 @@ h1 { margin:0; font:500 clamp(3.7rem,11vw,8rem)/.86 "Newsreader",serif; letter-s
 }
 
 .nutrition-check-list small { display: block; margin-top: 3px; color: var(--muted); }
-.nutrition-goals li { background: color-mix(in srgb, var(--surface) 76%, #ead39a); }
-.nutrition-goals li::before {
-  position: absolute;
-  top: 12px;
-  left: 16px;
-  content: "•";
-  font-weight: 900;
-}
 
 :root[data-theme="dark"] .nutrition-check-list li { background: #263329; }
 :root[data-theme="dark"] .nutrition-check-list li::before { color: #b9d2b5; }
-:root[data-theme="dark"] .nutrition-goals li { background: #3d3829; }
 
 @media (max-width: 560px) {
   .fatherhood-bubbles { gap: 10px; }
@@ -197,8 +186,7 @@ h1 { margin:0; font:500 clamp(3.7rem,11vw,8rem)/.86 "Newsreader",serif; letter-s
   main { align-content: start; padding-top: 32px; }
   h1 { font-size: clamp(3.2rem, 18vw, 5rem); }
   .nutrition-grid { grid-template-columns: 1fr; }
-  .nutrition-card-wide,
-  .nutrition-goals { grid-column: auto; }
+  .nutrition-card-wide { grid-column: auto; }
   .nutrition-check-list { grid-template-columns: 1fr; }
   .progression-rules ul,
   .workout-day-grid,
