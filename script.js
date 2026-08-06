@@ -157,7 +157,7 @@ function routeTo(route) {
   const page = $("[data-page='" + route + "']");
   if (!page) return;
   $$(".page-panel").forEach((panel) => panel.classList.toggle("active", panel === page));
-  $$(".nav-link").forEach((link) => {
+  $$('[data-page-link]').forEach((link) => {
     const active = link.dataset.pageLink === route;
     link.classList.toggle("active", active);
     if (active) link.setAttribute("aria-current", "page"); else link.removeAttribute("aria-current");
@@ -175,7 +175,7 @@ function detailRouteFromUrl(url = new URL(location.href)) {
 }
 
 function setPrimaryNavActive(route) {
-  $$(".nav-link").forEach((link) => {
+  $$('[data-page-link]').forEach((link) => {
     const active = link.dataset.pageLink === route;
     link.classList.toggle("active", active);
     if (active) link.setAttribute("aria-current", "page"); else link.removeAttribute("aria-current");
@@ -1283,6 +1283,12 @@ document.addEventListener("click", (event) => {
 });
 
 window.addEventListener("popstate", syncPortalUrl);
+window.addEventListener("message", (event) => {
+  const frame = $("#detail-page-frame");
+  if (event.origin !== location.origin || event.source !== frame?.contentWindow || event.data?.type !== "anthony-portal-nav") return;
+  const route = ["resume", "interests", "music"].includes(event.data.route) ? event.data.route : "home";
+  navigatePortal(route);
+});
 
 $("#theme-toggle").addEventListener("click", () => applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
 $("#mobile-menu-button").addEventListener("click", () => {

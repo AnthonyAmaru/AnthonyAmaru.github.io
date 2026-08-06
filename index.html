@@ -19,14 +19,14 @@
     <link rel="icon" type="image/png" href="anthony-favicon-16.png?v=snake-1" sizes="16x16" />
     <link rel="apple-touch-icon" href="anthony-apple-touch-icon.png?v=snake-1" sizes="180x180" />
     <link rel="manifest" href="site.webmanifest?v=snake-1" />
-    <script src="site-theme.js?v=20260805-media2"></script>
+    <script src="site-theme.js?v=20260806-footer1"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&amp;family=Noto+Serif+SC:wght@500;700&amp;display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=20260805-media2" />
+    <link rel="stylesheet" href="styles.css?v=20260806-footer1" />
     <script src="music-cloud.js?v=20260804-titleclean1" defer></script>
     <script src="book-data.js?v=20260805-bookrestore1" defer></script>
-    <script src="script.js?v=20260805-media2" defer></script>
+    <script src="script.js?v=20260806-footer1" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -62,7 +62,6 @@
         </nav>
         <div class="header-actions">
           <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch color theme"><span aria-hidden="true">☾</span></button>
-          <button id="admin-status" class="admin-chip" type="button"><span class="status-dot"></span><span>Cloud locked</span></button>
         </div>
       </header>
 
@@ -227,8 +226,16 @@
       </main>
 
       <footer class="site-footer section-shell">
-        <div><img src="anthony-brand-icon.png" alt="" /><p><strong>Anthony Amaru</strong></p></div>
+        <div class="footer-identity"><img src="anthony-brand-icon.png" alt="" /><p><strong>Anthony Amaru</strong></p></div>
         <p>anthonyamaru.com</p>
+        <div class="footer-controls">
+          <nav class="footer-nav" aria-label="Footer navigation">
+            <a class="nav-link footer-nav-link" data-page-link="resume" href="index.html?page=resume&amp;v=20260804-clean1">Resume</a>
+            <a class="nav-link footer-nav-link" data-page-link="interests" href="index.html?page=interests&amp;v=20260804-clean1">Interests</a>
+            <a class="nav-link footer-nav-link" data-page-link="music" href="index.html?page=music&amp;v=20260804-clean1">Music</a>
+          </nav>
+          <button id="admin-status" class="admin-chip footer-cloud-status" type="button"><span class="status-dot"></span><span>Cloud locked</span></button>
+        </div>
       </footer>
     </div>
 

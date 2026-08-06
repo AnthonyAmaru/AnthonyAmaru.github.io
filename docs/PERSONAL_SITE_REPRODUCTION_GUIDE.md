@@ -183,13 +183,15 @@ The shared contract is:
 
 - one stable site header with the owner's top-level navigation;
 - one shared light/dark button in every standalone-page header, visible beside Menu on phones and beside the top tabs on tablets/desktops;
+- one full-text `Cloud locked` / `Cloud synced` control in the footer, never an unlabeled status dot in the header;
+- one footer navigation that mirrors the same stable top-level tabs while leaving the original header navigation in place;
 - one shared music bar with queue, shuffle, previous, play/pause, next, and the one-question AI control on every page;
 - a home grid of full-tile links with an icon, short title, and no numbering;
 - an Interests grid where every card is one link and contains no nested Open, Notebook, or Test buttons;
 - interest details opened as directly addressable standalone HTML pages, never layered over the Interests grid;
 - the same two-stage Music workspace: first an All Songs tile plus one tile per playlist, then the selected collection's Library heading, bulk actions, drop zone, Song/Artist/Playlist filters, and rows;
 - Song, Artist, and Playlist sort controls, including a multi-select Artist filter;
-- the same cloud-state words, theme behavior, AI open/close behavior, and responsive control visibility.
+- the same cloud-state words and footer placement, theme behavior, AI open/close behavior, and responsive control visibility.
 
 Content differences are allowed: names, palettes, logos, copy, interests, resume entries, and an owner's explicitly requested extra top-level section such as Goals. Route implementation may differ only when the owner explicitly requires separate URLs; visible behavior and shared controls must still satisfy this contract.
 
@@ -248,7 +250,7 @@ This defensive cleanup does not replace correct standalone navigation. Fix any d
 - Run the theme script in the document head to avoid a light-mode flash.
 - Every page must use the same theme tokens and support dark mode.
 - Include one shared music player on every standalone page.
-- Keep the complete two-row chrome identical on portal and standalone routes: a 74px header, widened outlined primary tabs, theme, cloud state, current track, playlist queue, shuffle, previous/play/next, and the single-question AI button. Page-specific scripts must not replace or omit these shared controls.
+- Keep the complete shared shell identical on portal and standalone routes: a 74px header with widened outlined primary tabs and theme; a music row with current track, playlist queue, shuffle, previous/play/next, and the single-question AI button; and a footer with mirrored primary tabs plus the full cloud-state label. Page-specific scripts must not replace or omit these shared controls.
 - Give the top player one playlist selector and one song selector on every route; both controls must remain reachable on phones and tablets.
 - Choosing All Songs or a named playlist immediately starts its first track. Previous, next, and automatic advance must stay inside that active queue until another playlist is chosen.
 - Save active playlist, shuffle state, track identity, and playback position before page unload, then restore the same queue on the destination page.
@@ -483,6 +485,7 @@ Then verify:
 - every local link and referenced asset exists;
 - home, Resume, Interests, Music, AI Packages, Fatherhood, Blockchain, Books, Mycology, Aviation, Mandarin notebook, and Mandarin quiz open;
 - top navigation remains stable on every page;
+- footer navigation matches the top-level tabs, and the full cloud label exists only in the footer;
 - every header measures exactly 74 CSS pixels and primary desktop/tablet tabs meet the widened-button contract;
 - light/dark mode works on every route;
 - phone, tablet, narrow side-panel, and desktop layouts do not overlap;
@@ -571,6 +574,7 @@ Append every future bug here. Update the relevant architecture section at the sa
 
 | Date | Symptom | Root cause | Corrected rule | Regression test |
 | --- | --- | --- | --- | --- |
+| 2026-08-05 | On a tablet, Rauny showed `Cloud locked` while Anthony reduced the same state to an unexplained green dot. | Anthony's responsive header CSS hid the cloud label, and sibling sites placed the same control differently. | Both sites keep the full `Cloud locked` / `Cloud synced` control in the footer and mirror the stable top tabs there without removing the original header navigation. | At 390px, 768px, and 1024px on every root/detail route, confirm no cloud control is in the header, exactly one labeled cloud control is in the footer, and footer tabs match and correctly route like the top tabs. |
 | 2026-08-05 | Navigating from the embedded Mandarin notebook to Quiz could log a `MutationObserver.observe` error. | The notebook speech enhancer unconditionally observed `main` during a document transition and did not guard a missing observation root. | Every shared/dynamic initializer resolves its target once and safely no-ops when that page-specific node is absent. | Open Mandarin through the persistent shell, click Quiz, and confirm the quiz loads with hidden embedded chrome and a clean console. |
 | 2026-08-05 | The top rows visibly changed height between Resume/Interests and Aviation/Mandarin. | The portal header used 84px, standalone headers used 76px, and phone rules used 70px. | Both sites and all routes use one exact 74px header token at every breakpoint; desktop/tablet primary tabs have a 118px minimum width. | Measure portal, standalone, 390px, 768px, and 1024px headers with `getBoundingClientRect()`; each must be 74px and tablet tabs must remain visible. |
 | 2026-08-05 | Music stopped when moving from Interests into Aviation or Mandarin. | Full document navigation destroyed the playing HTML Audio element; session restoration could not be gapless and could be blocked by autoplay rules. | Keep the portal header/player mounted and load only explicitly audio-critical study routes in a normal-flow embedded shell that hides the parent content and embedded chrome. | Start a track, record the parent audio node/time, move Interests → Aviation → Interests → Mandarin, and confirm the same node remains mounted and time advances without a pause. |
