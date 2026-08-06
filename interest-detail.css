@@ -60,9 +60,75 @@ h1 { margin:0; font:500 clamp(3.7rem,11vw,8rem)/.86 "Newsreader",serif; letter-s
 
 .empty-interest-page { min-height: calc(100svh - 140px); }
 
+.nutrition-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.nutrition-card {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  padding: clamp(18px, 3vw, 28px);
+}
+
+.nutrition-card-wide,
+.nutrition-goals { grid-column: 1 / -1; }
+
+.nutrition-card-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.nutrition-card-heading span { font-size: 1.7rem; }
+.nutrition-card h2 { margin: 0; font-size: clamp(1.15rem, 2vw, 1.45rem); }
+.nutrition-card ul { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+
+.nutrition-check-list { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+.nutrition-check-list li,
+.nutrition-goals li {
+  position: relative;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--surface) 78%, #dce7d7);
+  padding: 12px 14px 12px 40px;
+  line-height: 1.35;
+}
+
+.nutrition-check-list li::before {
+  position: absolute;
+  top: 11px;
+  left: 14px;
+  color: #50704f;
+  content: "✓";
+  font-weight: 800;
+}
+
+.nutrition-check-list small { display: block; margin-top: 3px; color: var(--muted); }
+.nutrition-goals li { background: color-mix(in srgb, var(--surface) 76%, #ead39a); }
+.nutrition-goals li::before {
+  position: absolute;
+  top: 12px;
+  left: 16px;
+  content: "•";
+  font-weight: 900;
+}
+
+:root[data-theme="dark"] .nutrition-check-list li { background: #263329; }
+:root[data-theme="dark"] .nutrition-check-list li::before { color: #b9d2b5; }
+:root[data-theme="dark"] .nutrition-goals li { background: #3d3829; }
+
 @media (max-width: 560px) {
   .fatherhood-bubbles { gap: 10px; }
   .fatherhood-bubbles li,
   .fatherhood-bubbles li:nth-child(4),
   .fatherhood-bubbles li:nth-child(7) { width: calc(50% - 5px); max-width: 170px; }
+  main { align-content: start; padding-top: 32px; }
+  h1 { font-size: clamp(3.2rem, 18vw, 5rem); }
+  .nutrition-grid { grid-template-columns: 1fr; }
+  .nutrition-card-wide,
+  .nutrition-goals { grid-column: auto; }
+  .nutrition-check-list { grid-template-columns: 1fr; }
 }
