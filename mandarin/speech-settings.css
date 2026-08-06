@@ -1,0 +1,71 @@
+.mandarin-voice-settings-trigger {
+  display: flex;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid var(--line, #cbd1cc);
+  border-radius: 10px;
+  background: var(--surface, var(--paper-light, #fff));
+  color: var(--ink, #18211b);
+  padding: 8px 12px;
+  font: inherit;
+  font-size: .82rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.mandarin-voice-settings-trigger:hover,
+.mandarin-voice-settings-trigger:focus-visible,
+.mandarin-voice-settings-trigger[aria-expanded="true"] {
+  border-color: var(--ink, #18211b);
+}
+
+.mandarin-speech-settings {
+  width: min(760px, calc(100% - 32px));
+  margin: 14px auto 28px;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) auto;
+  gap: 14px;
+  align-items: end;
+  border: 1px solid var(--line, #cbd1cc);
+  border-radius: 14px;
+  background: var(--surface, var(--paper-light, #fff));
+  color: var(--ink, #18211b);
+  box-shadow: 0 12px 30px rgb(20 35 25 / 8%);
+}
+
+.mandarin-speech-settings[hidden] { display: none; }
+.mandarin-voice-field,
+.mandarin-rate-field { display: grid; gap: 7px; font-size: .78rem; font-weight: 800; }
+.mandarin-rate-field > span { display: flex; justify-content: space-between; gap: 12px; }
+.mandarin-speech-settings select {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid var(--line, #cbd1cc);
+  border-radius: 9px;
+  background: var(--surface, var(--paper-light, #fff));
+  color: inherit;
+  padding: 0 10px;
+  font: inherit;
+}
+.mandarin-speech-settings input[type="range"] { width: 100%; accent-color: var(--mint-strong, #315f42); }
+.mandarin-voice-test {
+  min-height: 42px;
+  border: 1px solid var(--mint-strong, #315f42);
+  border-radius: 9px;
+  background: var(--mint-strong, #315f42);
+  color: white;
+  padding: 0 18px;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+.mandarin-voice-test:disabled { cursor: not-allowed; opacity: .5; }
+:root[data-theme="dark"] .mandarin-voice-test { color: #121713; }
+
+@media (max-width: 680px) {
+  .mandarin-speech-settings { grid-template-columns: 1fr; }
+  .mandarin-voice-test { width: 100%; }
+}

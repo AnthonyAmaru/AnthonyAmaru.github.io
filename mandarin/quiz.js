@@ -238,6 +238,7 @@ async function loadHistoryFromCloud() {
 }
 function escapeHtml(value) { return String(value ?? "").replace(/[&<>"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[character]); }
 function speakMandarin(text) {
+  if (window.MandarinSpeech) return window.MandarinSpeech.speak(text);
   if (!("speechSynthesis" in window)) return;
   speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
