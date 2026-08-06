@@ -31,6 +31,15 @@
 .site-music-copy { display: grid; min-width: 0; }
 .site-music-copy small { color: var(--player-muted); font-size: 0.66rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
 .site-music-copy strong { overflow: hidden; font-size: 0.83rem; text-overflow: ellipsis; white-space: nowrap; }
+.site-music-timeline { display: grid; min-width: 0; grid-template-columns: auto minmax(48px,1fr) auto; align-items: center; gap: 6px; color: var(--player-muted); font-size: .58rem; font-variant-numeric: tabular-nums; line-height: 1; }
+.site-music-timeline input[type="range"] { appearance: none; -webkit-appearance: none; width: 100%; min-height: 14px; margin: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; padding: 0; cursor: pointer; }
+.site-music-timeline input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: 999px; background: linear-gradient(90deg,#55856d 0 var(--music-progress,0%),var(--player-line) var(--music-progress,0%) 100%); }
+.site-music-timeline input[type="range"]::-webkit-slider-thumb { appearance: none; -webkit-appearance: none; width: 12px; height: 12px; margin-top: -4px; border: 2px solid var(--player-panel); border-radius: 50%; background: #55856d; box-shadow: 0 0 0 1px var(--player-line); }
+.site-music-timeline input[type="range"]::-moz-range-track { height: 4px; border-radius: 999px; background: var(--player-line); }
+.site-music-timeline input[type="range"]::-moz-range-progress { height: 4px; border-radius: 999px; background: #55856d; }
+.site-music-timeline input[type="range"]::-moz-range-thumb { width: 10px; height: 10px; border: 2px solid var(--player-panel); border-radius: 50%; background: #55856d; }
+.site-music-timeline input[type="range"]:focus-visible { outline: 2px solid #55856d; outline-offset: 2px; }
+.site-music-timeline input[type="range"]:disabled { cursor: default; opacity: .48; }
 .site-music-bar select { width: 100%; min-height: 42px; border: 1px solid var(--player-line); border-radius: 11px; background: var(--player-panel); color: var(--player-ink); padding: 0 10px; font: inherit; font-size: 0.76rem; }
 .site-music-bar button { display: grid; width: 36px; height: 36px; place-items: center; border: 0; border-radius: 50%; background: transparent; color: var(--player-ink); cursor: pointer; font: inherit; font-size: 1.25rem; }
 .site-music-bar [data-site-music-play] { background: var(--player-ink); color: var(--player-bg); font-size: 0.72rem; }

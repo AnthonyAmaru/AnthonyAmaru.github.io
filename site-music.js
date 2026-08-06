@@ -46,6 +46,29 @@
   bar.insertBefore(queueButton, bar.firstElementChild);
   bar.insertBefore(shuffleButton, bar.querySelector("[data-site-music-previous]"));
   bar.append(menu);
+  const copy = bar.querySelector(".site-music-copy");
+  const timeline = document.createElement("div");
+  timeline.className = "site-music-timeline";
+  timeline.innerHTML = '<span data-site-music-current>0:00</span><input data-site-music-progress type="range" min="0" max="0" value="0" step="0.1" aria-label="Song position in music bar" disabled /><span data-site-music-duration>0:00</span>';
+  copy?.append(timeline);
+  const progress = timeline.querySelector("[data-site-music-progress]");
+
+  function formatPlaybackTime(seconds) {
+    const total = Math.max(0, Math.floor(Number(seconds) || 0));
+    return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, "0")}`;
+  }
+
+  function syncProgress() {
+    const hasTrack = currentTrackId !== null && Boolean(audio.src);
+    const duration = hasTrack && Number.isFinite(audio.duration) && audio.duration > 0 ? audio.duration : 0;
+    const current = duration ? Math.min(duration, Math.max(0, audio.currentTime || 0)) : 0;
+    progress.max = String(duration || 0);
+    progress.value = String(current);
+    progress.disabled = !duration;
+    progress.style.setProperty("--music-progress", `${duration ? (current / duration) * 100 : 0}%`);
+    timeline.querySelector("[data-site-music-current]").textContent = formatPlaybackTime(current);
+    timeline.querySelector("[data-site-music-duration]").textContent = formatPlaybackTime(duration);
+  }
 
   function readState() {
     try { return JSON.parse(sessionStorage.getItem(stateKey)) || null; } catch { return null; }
@@ -86,7 +109,9 @@
 
   function updatePlayButton() {
     playButton.textContent = audio.paused ? "▶" : "❚❚";
+    playButton.setAttribute("aria-label", audio.paused ? "Play" : "Pause");
     if ("mediaSession" in navigator) navigator.mediaSession.playbackState = currentTrackId ? (audio.paused ? "paused" : "playing") : "none";
+    syncProgress();
   }
 
   function trackArtist(track) {
@@ -104,6 +129,7 @@
   }
 
   function updateMediaPosition() {
+    syncProgress();
     if (!("mediaSession" in navigator) || typeof navigator.mediaSession.setPositionState !== "function" || !Number.isFinite(audio.duration) || audio.duration <= 0) return;
     try { navigator.mediaSession.setPositionState({ duration: audio.duration, playbackRate: audio.playbackRate, position: Math.min(audio.currentTime, audio.duration) }); } catch {}
   }
@@ -131,9 +157,10 @@
       activePlaylistId = "all";
       if (shuffleEnabled) refreshShuffle();
     }
+    const sameTrack = String(currentTrackId) === String(track.id) && Boolean(audio.src);
     currentTrackId = String(track.id);
     title.textContent = track.title;
-    if (audio.src !== track.url) audio.src = track.url;
+    if (!sameTrack) audio.src = track.url;
     renderMenus();
     updateMediaSession(track);
     if (Number(options.currentTime) > 0) {
@@ -213,10 +240,17 @@
   queueButton.addEventListener("click", () => { menu.hidden = !menu.hidden; queueButton.setAttribute("aria-expanded", String(!menu.hidden)); });
   playlistSelect.addEventListener("change", () => playPlaylist(playlistSelect.value));
   songSelect.addEventListener("change", () => { if (songSelect.value) loadTrack(songSelect.value, { play: true }); });
+  progress.addEventListener("input", () => {
+    if (!Number.isFinite(audio.duration) || audio.duration <= 0) return;
+    audio.currentTime = Math.min(audio.duration, Math.max(0, Number(progress.value)));
+    syncProgress();
+  });
+  progress.addEventListener("change", saveState);
   audio.addEventListener("play", () => { updatePlayButton(); saveState(); });
   audio.addEventListener("pause", () => { updatePlayButton(); saveState(); });
   audio.addEventListener("ended", () => step(1));
   audio.addEventListener("loadedmetadata", updateMediaPosition);
+  audio.addEventListener("durationchange", updateMediaPosition);
   audio.addEventListener("timeupdate", () => {
     updateMediaPosition();
     const second = Math.floor(audio.currentTime);
