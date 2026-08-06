@@ -257,6 +257,8 @@ h1, h2 { font-family: var(--sans); font-weight: 750; letter-spacing: -.035em; }
 .interest-card h2 { margin-bottom: 13px; font-size: clamp(2.1rem, 4vw, 3.4rem); line-height: .95; }
 .interest-card > p:not(.eyebrow), .book-card-copy > p:not(.eyebrow), .assistant-card > p { max-width: 580px; color: var(--muted); line-height: 1.65; }
 .stat-strip { display: grid; grid-template-columns: repeat(2, 1fr); max-width: 390px; margin: 34px 0 24px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.stat-strip.three { grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 100%; }
+.stat-strip.three strong { font-size: 1.45rem; }
 .stat-strip div { display: grid; gap: 2px; padding: 14px 0; }
 .stat-strip div + div { border-left: 1px solid var(--line); padding-left: 20px; }
 .stat-strip strong { font-family: var(--serif); font-size: 1.7rem; }

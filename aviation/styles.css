@@ -77,6 +77,15 @@ h2 { margin-bottom: 12px; font-family: Georgia, serif; font-size: clamp(1.45rem,
 .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 26px 0 22px; }
 .field-grid label:first-child { grid-column: 1 / -1; }
 label span { display: block; margin-bottom: 7px; color: var(--muted); font-size: .76rem; font-weight: 750; letter-spacing: .04em; }
+.chapter-picker { min-width: 0; margin: 0; border: 1px solid var(--line); border-radius: 14px; padding: 13px; background: var(--surface-strong); }
+.chapter-picker legend { padding: 0 5px; color: var(--muted); font-size: .76rem; font-weight: 750; letter-spacing: .04em; }
+.chapter-picker-actions { display: flex; gap: 7px; margin-bottom: 9px; }
+.chapter-picker-actions button { border: 1px solid var(--line); border-radius: 999px; background: var(--surface); padding: 5px 9px; cursor: pointer; color: var(--ink); font-size: .68rem; font-weight: 800; }
+.chapter-options { display: grid; max-height: 210px; gap: 5px; overflow: auto; padding-right: 4px; }
+.chapter-option { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; gap: 8px; border-radius: 9px; padding: 7px 8px; cursor: pointer; }
+.chapter-option:hover { background: var(--mint); }
+.chapter-option input { width: 17px; min-height: 17px; margin: 1px 0 0; accent-color: var(--mint-strong); }
+.chapter-option span { margin: 0; color: var(--ink); line-height: 1.35; }
 select, input { width: 100%; min-height: 48px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface-strong); color: var(--ink); padding: 0 14px; outline: none; }
 select:focus, input:focus { border-color: var(--mint-strong); box-shadow: 0 0 0 4px rgba(44, 111, 90, .12); }
 .button { min-height: 48px; border: 0; border-radius: 999px; padding: 0 20px; cursor: pointer; font-weight: 800; }

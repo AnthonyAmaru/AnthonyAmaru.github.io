@@ -4,9 +4,17 @@ const CLOUD_ADMIN_EMAIL = "anthonyamaru93@gmail.com";
 const MUSIC_PLAYER_STATE_KEY = "anthony_music_player_state_v1";
 const BOOK_CHAPTER_SIDEBAR_KEY = "anthony_book_chapter_sidebar_hidden";
 const BOOK_SPLIT_PAGES_KEY = "anthony_book_split_pages";
+const MANDARIN_WRITING_KEY = "anthony_mandarin_written_words_v1";
+const MANDARIN_WRITING_CLOUD_KEY = "mandarin_written_words_v1";
 const DETAIL_PAGES = {
   aviation: "aviation/index.html",
   mandarin: "mandarin/index.html",
+  mycology: "mycology.html",
+  books: "books.html",
+  ai: "ai.html",
+  fatherhood: "fatherhood.html",
+  gym: "gym.html",
+  blockchain: "blockchain.html",
 };
 const KEYS = {
   theme: "anthony_portal_theme",
@@ -62,6 +70,7 @@ let currentTrackId = null;
 let playerStateRestored = false;
 let shuffleEnabled = false;
 let shuffledTrackIds = [];
+let musicNavigationHandoff = false;
 let bookSplitPages = false;
 const selectedTrackIds = new Set();
 
@@ -952,10 +961,12 @@ function readMusicPlayerState() {
   try { return JSON.parse(sessionStorage.getItem(MUSIC_PLAYER_STATE_KEY)) || null; } catch { return null; }
 }
 
-function saveMusicPlayerState() {
+function saveMusicPlayerState(options = {}) {
   const track = tracks.find((item) => String(item.id) === String(currentTrackId));
   const audio = $("#audio-player");
-  sessionStorage.setItem(MUSIC_PLAYER_STATE_KEY, JSON.stringify({ playlistId: playerPlaylist, trackId: track ? String(track.id) : null, title: track?.title || $("#dock-title").textContent, currentTime: track ? Number(audio.currentTime || 0) : 0, playing: Boolean(track && !audio.paused), shuffle: shuffleEnabled }));
+  const previous = readMusicPlayerState();
+  const playing = Boolean(track && (options.keepPlaying ? (!audio.paused || previous?.playing) : !audio.paused));
+  sessionStorage.setItem(MUSIC_PLAYER_STATE_KEY, JSON.stringify({ playlistId: playerPlaylist, trackId: track ? String(track.id) : null, title: track?.title || $("#dock-title").textContent, currentTime: track ? Number(audio.currentTime || 0) : 0, playing, shuffle: shuffleEnabled }));
 }
 
 function restoreMusicPlayerState() {
@@ -976,7 +987,7 @@ function restoreMusicPlayerState() {
   currentTrackId = String(track.id);
   const audio = $("#audio-player");
   audio.src = track.url;
-  $("#dock-title").textContent = track.title;
+  $("#dock-title").textContent = playerTrackLabel(track);
   $("#dock-track-select").value = String(track.id);
   if (Number(saved.currentTime) > 0) {
     const seek = () => { audio.currentTime = Math.min(Number(saved.currentTime), Number.isFinite(audio.duration) ? audio.duration : Number(saved.currentTime)); };
@@ -1000,7 +1011,7 @@ async function playTrack(id, options = {}) {
   const sameTrack = String(currentTrackId) === String(track.id) && Boolean(audio.src);
   currentTrackId = track.id;
   if (!sameTrack) audio.src = track.url;
-  $("#dock-title").textContent = track.title;
+  $("#dock-title").textContent = playerTrackLabel(track);
   renderDock();
   updateMediaSession(track);
   try { await audio.play(); } catch { toast("Tap play to start this song."); }
@@ -1200,7 +1211,7 @@ async function saveTrackEdits(button) {
     await musicCloud.updateTrackMetadata(track, title, artist);
     editingTrackId = null;
     await renderMusic();
-    if (String(currentTrackId) === String(track.id)) $("#dock-title").textContent = title;
+    if (String(currentTrackId) === String(track.id)) $("#dock-title").textContent = playerTrackLabel(tracks.find((item) => String(item.id) === String(track.id)) || track);
     toast("Song details saved to the cloud.");
   } catch (error) {
     button.disabled = false;
@@ -1278,6 +1289,11 @@ function trackArtist(track) {
   return base.match(/^(.+?)\s[-–—]\s.+$/)?.[1]?.trim() || "Unknown artist";
 }
 
+function playerTrackLabel(track) {
+  const artist = trackArtist(track);
+  return artist && artist !== "Unknown artist" ? `${track.title} · ${artist}` : track.title;
+}
+
 function trackPlaylistName(track) {
   return musicPlaylists.find((playlist) => String(playlist.id) === String(track.playlist_id))?.name || "No playlist";
 }
@@ -1305,9 +1321,11 @@ function setMusicSort(column) {
 function refreshDashboard() {
   const aviation = readJson("anthony_aviation_history_v1", []);
   const mandarin = readJson("anthony_mandarin_history_v1", []);
+  const writingWords = readJson(MANDARIN_WRITING_KEY, []);
   $("#aviation-last-score").textContent = aviation.length ? `${aviation[0].percent}%` : "—";
   $("#aviation-test-count").textContent = aviation.length;
   $("#mandarin-last-score").textContent = mandarin.length ? `${mandarin[0].percent}%` : "—";
+  $("#mandarin-written-count").textContent = String(new Set(writingWords.map((word) => String(word || "").trim()).filter(Boolean)).size);
   $("#home-aviation-score").textContent = aviation.length ? `${aviation[0].percent}% · ${aviation[0].correct}/${aviation[0].total}` : "No aviation score yet";
   $("#home-mandarin-score").textContent = mandarin.length ? `${mandarin[0].percent}% · ${mandarin[0].correct}/${mandarin[0].total}` : "No Mandarin score yet";
   const rawBook = localStorage.getItem(KEYS.book);
@@ -1320,12 +1338,14 @@ function refreshDashboard() {
 async function syncStudyHistoryFromCloud() {
   if (!window.musicCloud?.isSignedIn()) return;
   try {
-    const [aviationRows, mandarinRows] = await Promise.all([
+    const [aviationRows, mandarinRows, writingRow] = await Promise.all([
       musicCloud.listTestAttempts("aviation"),
       musicCloud.listTestAttempts("mandarin"),
+      musicCloud.getContent("anthony", MANDARIN_WRITING_CLOUD_KEY),
     ]);
     writeJson("anthony_aviation_history_v1", aviationRows.map((row) => ({ id: row.id, date: row.completed_at, book: row.mode || "aviation", chapter: row.section || "all", correct: row.correct, total: row.total, percent: row.percent, wrong: row.wrong_answers || [] })));
     writeJson("anthony_mandarin_history_v1", mandarinRows.map((row) => ({ id: row.id, date: row.completed_at, type: row.mode || "mixed", section: row.section || null, correct: row.correct, total: row.total, percent: row.percent, wrong: row.wrong_answers || [] })));
+    if (Array.isArray(writingRow?.value)) writeJson(MANDARIN_WRITING_KEY, writingRow.value);
     refreshDashboard();
   } catch (error) { console.warn("Study history sync failed", error); }
 }
@@ -1550,14 +1570,19 @@ $("#dock-next").addEventListener("click", () => stepTrack(1));
 $("#dock-playlist-select").addEventListener("change", (event) => playDockPlaylist(event.target.value));
 $("#dock-track-select").addEventListener("change", (event) => { if (event.target.value) playTrack(event.target.value); });
 $("#audio-player").addEventListener("play", () => { updatePlayButton(); saveMusicPlayerState(); });
-$("#audio-player").addEventListener("pause", () => { updatePlayButton(); saveMusicPlayerState(); });
+$("#audio-player").addEventListener("pause", () => { updatePlayButton(); if (!musicNavigationHandoff) saveMusicPlayerState(); });
 $("#audio-player").addEventListener("ended", () => stepTrack(1));
 $("#audio-player").addEventListener("loadedmetadata", updateMediaPosition);
 $("#audio-player").addEventListener("durationchange", updateMediaPosition);
 $("#audio-player").addEventListener("timeupdate", updateMediaPosition);
+window.addEventListener("beforeunload", () => {
+  const audio = $("#audio-player");
+  musicNavigationHandoff = Boolean(currentTrackId && !audio.paused);
+  saveMusicPlayerState({ keepPlaying: musicNavigationHandoff });
+});
 window.addEventListener("pagehide", () => {
   if (bookEditorReady) commitBookEditor(false);
-  saveMusicPlayerState();
+  saveMusicPlayerState({ keepPlaying: musicNavigationHandoff });
 });
 
 document.addEventListener("keydown", (event) => {

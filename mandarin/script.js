@@ -324,9 +324,74 @@ const state = {
   known: new Set(JSON.parse(localStorage.getItem("mandarin-known") || "[]")),
 };
 
+const WRITING_WORDS_KEY = "anthony_mandarin_written_words_v1";
+const WRITING_WORDS_CLOUD_KEY = "mandarin_written_words_v1";
+let writingWords = readWritingWords();
+
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => document.querySelectorAll(selector);
 const shuffle = (items) => [...items].sort(() => Math.random() - 0.5);
+
+function normalizeWritingWords(value) {
+  return [...new Set((Array.isArray(value) ? value : []).map((word) => String(word || "").trim()).filter(Boolean))];
+}
+
+function readWritingWords() {
+  try { return normalizeWritingWords(JSON.parse(localStorage.getItem(WRITING_WORDS_KEY) || "[]")); }
+  catch { return []; }
+}
+
+function writeWritingWords(value) {
+  writingWords = normalizeWritingWords(value);
+  localStorage.setItem(WRITING_WORDS_KEY, JSON.stringify(writingWords));
+  renderWritingWords();
+}
+
+async function saveWritingWords() {
+  writeWritingWords(writingWords);
+  const status = $("#writing-save-status");
+  if (!window.musicCloud?.isSignedIn()) {
+    status.textContent = "Saved on this device";
+    return;
+  }
+  try {
+    await musicCloud.saveContent("anthony", WRITING_WORDS_CLOUD_KEY, writingWords);
+    status.textContent = "Saved to cloud";
+  } catch (error) {
+    status.textContent = "Saved on device · cloud retry needed";
+    console.warn("Mandarin writing list save failed", error);
+  }
+}
+
+async function syncWritingWordsFromCloud() {
+  const status = $("#writing-save-status");
+  if (!window.musicCloud?.isSignedIn()) {
+    status.textContent = "Saved on this device";
+    return renderWritingWords();
+  }
+  try {
+    const row = await musicCloud.getContent("anthony", WRITING_WORDS_CLOUD_KEY);
+    const merged = normalizeWritingWords([...(row?.value || []), ...writingWords]);
+    writeWritingWords(merged);
+    if (!row?.value || merged.length !== normalizeWritingWords(row.value).length) await musicCloud.saveContent("anthony", WRITING_WORDS_CLOUD_KEY, merged);
+    status.textContent = "Synced privately across devices";
+  } catch (error) {
+    status.textContent = "Saved on device · cloud unavailable";
+    console.warn("Mandarin writing list sync failed", error);
+  }
+}
+
+function renderWritingWords() {
+  const list = $("#writing-word-list");
+  $("#writing-word-count").textContent = String(writingWords.length);
+  $("#writing-word-empty").hidden = writingWords.length > 0;
+  list.innerHTML = writingWords.map((word) => `<li><span lang="zh-Hans">${escapeHtml(word)}</span><button type="button" data-remove-writing-word="${escapeHtml(word)}" aria-label="Remove ${escapeHtml(word)}">×</button></li>`).join("");
+  enhanceMandarinSpeech(list);
+}
+
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>\"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '\"': "&quot;" })[character]);
+}
 
 function updateProgress() {
   const percent = Math.round((state.known.size / vocabulary.length) * 100);
@@ -604,6 +669,22 @@ $("#toggle-pinyin").addEventListener("click", (event) => {
   event.currentTarget.setAttribute("aria-pressed", String(!state.showPinyin));
   renderVocabulary();
 });
+$("#writing-word-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const input = $("#writing-word-input");
+  const word = input.value.trim();
+  if (!word) return;
+  if (!writingWords.includes(word)) writingWords.push(word);
+  input.value = "";
+  await saveWritingWords();
+  input.focus();
+});
+$("#writing-word-list").addEventListener("click", async (event) => {
+  const button = event.target.closest("[data-remove-writing-word]");
+  if (!button) return;
+  writingWords = writingWords.filter((word) => word !== button.dataset.removeWritingWord);
+  await saveWritingWords();
+});
 $("#reading-controls").addEventListener("click", (event) => {
   const button = event.target.closest("button[data-layer]");
   if (!button) return;
@@ -628,7 +709,7 @@ document.addEventListener("keydown", (event) => {
   speakFromElement(target);
 });
 const requestedPage = new URLSearchParams(location.search).get("page");
-const mandarinPages = ["lesson", "cards", "sounds", "words", "sentences", "plans", "reading", "characters"];
+const mandarinPages = ["lesson", "cards", "sounds", "words", "writing", "sentences", "plans", "reading", "characters"];
 const activePage = mandarinPages.includes(requestedPage) ? requestedPage : "home";
 $$('.mandarin-page').forEach((page) => { page.hidden = page.dataset.page !== activePage; });
 $$('[data-page-link]').forEach((link) => {
@@ -644,9 +725,11 @@ renderPatterns();
 renderDialogue();
 renderReading();
 renderCharacters();
+renderWritingWords();
 makeSession();
 updateProgress();
 enhanceMandarinSpeech();
+syncWritingWordsFromCloud();
 const mandarinMain = $("main");
 if (mandarinMain) {
   new MutationObserver((records) => records.forEach((record) => record.addedNodes.forEach((node) => {

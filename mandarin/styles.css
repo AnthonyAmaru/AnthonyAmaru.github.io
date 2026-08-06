@@ -121,7 +121,7 @@ a { color: inherit; }
 .progress-track { height: 6px; overflow: hidden; background: rgba(255,255,255,.12); border-radius: 99px; }
 .progress-track span { display: block; width: 0; height: 100%; background: var(--red); transition: width .4s ease; }
 
-.lesson-section, .study-section, .pronunciation-section, .vocab-section, .pattern-section, .dialogue-section, .character-section { padding-block: 84px; }
+.lesson-section, .study-section, .pronunciation-section, .vocab-section, .writing-section, .pattern-section, .dialogue-section, .character-section { padding-block: 84px; }
 .section-heading { margin-bottom: 48px; }
 .section-heading h2, .reading-intro h2, .closing-section h2 { font-size: clamp(2.5rem, 5vw, 4.8rem); }
 .compact-heading { margin-bottom: 26px; }
@@ -208,6 +208,19 @@ a { color: inherit; }
 .word-meaning { margin: 18px 0 0; color: var(--ink-soft); font-size: .86rem; line-height: 1.4; }
 .word-category { display: block; margin-top: 16px; color: var(--red); font-size: .66rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
 .empty-state { padding: 50px; text-align: center; color: var(--ink-soft); }
+
+.writing-section { min-height: 560px; }
+.writing-heading { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+.writing-heading strong { display: grid; min-width: 62px; height: 62px; place-items: center; border-radius: 50%; background: var(--ink); color: white; font-size: 1.2rem; }
+.writing-word-form { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; max-width: 680px; }
+.writing-word-form input { width: 100%; min-height: 50px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper-light); color: var(--ink); padding: 0 16px; font: 600 1.35rem var(--serif-sc); outline: none; }
+.writing-word-form input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(63,118,84,.12); }
+.writing-save-status { margin: 12px 0 24px; color: var(--ink-soft); font-size: .74rem; }
+.writing-word-list { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 9px; margin: 0; padding: 0; list-style: none; }
+.writing-word-list li { display: flex; min-height: 70px; align-items: center; justify-content: space-between; gap: 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper-light); padding: 12px 10px 12px 16px; }
+.writing-word-list span { font: 600 1.55rem var(--serif-sc); }
+.writing-word-list button { width: 30px; height: 30px; border: 0; border-radius: 50%; background: transparent; color: var(--ink-soft); cursor: pointer; font-size: 1.1rem; }
+.writing-word-list button:hover,.writing-word-list button:focus-visible { background: var(--red); color: white; }
 
 .pattern-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 26px; }
 .pattern-list { border-top: 1px solid var(--line); }
@@ -296,6 +309,7 @@ a { color: inherit; }
   .reading-inner { grid-template-columns: 1fr; }
   .reading-intro { position: static; }
   .character-grid { grid-template-columns: repeat(6, 1fr); }
+  .writing-word-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
 @media (max-width: 720px) {
@@ -306,7 +320,7 @@ a { color: inherit; }
   .hero-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
   .hero-phrase { padding: 36px 26px; }
   .seal { width: 66px; height: 66px; right: 20px; }
-  .lesson-section, .study-section, .pronunciation-section, .vocab-section, .pattern-section, .dialogue-section, .character-section, .reading-section { padding-block: 64px; }
+  .lesson-section, .study-section, .pronunciation-section, .vocab-section, .writing-section, .pattern-section, .dialogue-section, .character-section, .reading-section { padding-block: 64px; }
   .split-heading { grid-template-columns: 1fr; gap: 18px; }
   .section-heading { margin-bottom: 34px; }
   .section-heading h2, .reading-intro h2, .closing-section h2 { font-size: clamp(2.5rem, 13vw, 4rem); }
@@ -322,6 +336,7 @@ a { color: inherit; }
   .sound-notes { grid-template-columns: 1fr; }
   .vocab-section { padding-inline: 14px; }
   .vocab-grid { grid-template-columns: repeat(2, 1fr); }
+  .writing-word-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .word-card { min-height: 170px; padding: 18px; }
   .word-hanzi { font-size: 1.95rem; }
   .pattern-item { grid-template-columns: 1fr; gap: 6px; padding: 22px 0; }
@@ -341,6 +356,8 @@ a { color: inherit; }
   .greeting-grid { grid-template-columns: 1fr; }
   .vocab-grid { grid-template-columns: 1fr; }
   .word-card { min-height: auto; }
+  .writing-word-form { grid-template-columns: 1fr; }
+  .writing-word-list { grid-template-columns: 1fr; }
   .character-grid { grid-template-columns: repeat(4, 1fr); }
 }
 

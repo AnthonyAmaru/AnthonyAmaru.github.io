@@ -19,6 +19,7 @@
   let shuffleEnabled = false;
   let shuffledTrackIds = [];
   let lastSavedSecond = -1;
+  let navigationHandoff = false;
 
   playlistSelect.dataset.siteMusicPlaylist = "";
   playlistSelect.setAttribute("aria-label", "Choose and play a playlist");
@@ -95,14 +96,16 @@
     return shuffledTrackIds.map((id) => byId.get(id)).filter(Boolean);
   }
 
-  function saveState() {
+  function saveState(options = {}) {
     const track = tracks.find((item) => String(item.id) === String(currentTrackId));
+    const previous = readState();
+    const playing = Boolean(track && (options.keepPlaying ? (!audio.paused || previous?.playing) : !audio.paused));
     sessionStorage.setItem(stateKey, JSON.stringify({
       playlistId: activePlaylistId,
       trackId: track ? String(track.id) : null,
       title: track?.title || title.textContent,
       currentTime: track ? Number(audio.currentTime || 0) : 0,
-      playing: Boolean(track && !audio.paused),
+      playing,
       shuffle: shuffleEnabled,
     }));
   }
@@ -116,6 +119,11 @@
 
   function trackArtist(track) {
     return String(track?.source_metadata?.artist || "").trim() || "Unknown artist";
+  }
+
+  function playerTrackLabel(track) {
+    const artist = trackArtist(track);
+    return artist && artist !== "Unknown artist" ? `${track.title} · ${artist}` : track.title;
   }
 
   function updateMediaSession(track) {
@@ -159,7 +167,7 @@
     }
     const sameTrack = String(currentTrackId) === String(track.id) && Boolean(audio.src);
     currentTrackId = String(track.id);
-    title.textContent = track.title;
+    title.textContent = playerTrackLabel(track);
     if (!sameTrack) audio.src = track.url;
     renderMenus();
     updateMediaSession(track);
@@ -247,7 +255,7 @@
   });
   progress.addEventListener("change", saveState);
   audio.addEventListener("play", () => { updatePlayButton(); saveState(); });
-  audio.addEventListener("pause", () => { updatePlayButton(); saveState(); });
+  audio.addEventListener("pause", () => { updatePlayButton(); if (!navigationHandoff) saveState(); });
   audio.addEventListener("ended", () => step(1));
   audio.addEventListener("loadedmetadata", updateMediaPosition);
   audio.addEventListener("durationchange", updateMediaPosition);
@@ -256,7 +264,19 @@
     const second = Math.floor(audio.currentTime);
     if (second !== lastSavedSecond && second % 3 === 0) { lastSavedSecond = second; saveState(); }
   });
-  window.addEventListener("pagehide", saveState);
+  document.addEventListener("click", (event) => {
+    const link = event.target.closest("a[href]");
+    if (!link || link.target || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const destination = new URL(link.href, location.href);
+    if (destination.origin !== location.origin || !currentTrackId || audio.paused) return;
+    navigationHandoff = true;
+    saveState({ keepPlaying: true });
+  }, true);
+  window.addEventListener("beforeunload", () => {
+    navigationHandoff = Boolean(currentTrackId && !audio.paused) || navigationHandoff;
+    saveState({ keepPlaying: navigationHandoff });
+  });
+  window.addEventListener("pagehide", () => saveState({ keepPlaying: navigationHandoff }));
   document.addEventListener("click", (event) => {
     if (menu.hidden || event.target.closest(".site-music-menu") || event.target.closest("[data-site-music-queue]")) return;
     menu.hidden = true; queueButton.setAttribute("aria-expanded", "false");

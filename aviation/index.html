@@ -6,17 +6,17 @@
     <meta name="theme-color" content="#f2f4f0" />
     <title>Aviation Practice · Anthony Amaru</title>
     <link rel="icon" href="../anthony-favicon.ico?v=snake-1" sizes="any" />
-    <script src="../site-theme.js?v=20260806-seek1"></script>
-    <link rel="stylesheet" href="../site-header.css?v=20260806-seek1" />
-    <link rel="stylesheet" href="../site-music.css?v=20260806-seek1" />
-    <link rel="stylesheet" href="styles.css?v=20260805-study1" />
+    <script src="../site-theme.js?v=20260806-study2"></script>
+    <link rel="stylesheet" href="../site-header.css?v=20260806-study2" />
+    <link rel="stylesheet" href="../site-music.css?v=20260806-study2" />
+    <link rel="stylesheet" href="styles.css?v=20260806-multichapter1" />
     <script src="afh_questions.js"></script>
     <script src="phak_questions.js"></script>
     <script src="../music-cloud.js"></script>
-    <script src="../site-header.js?v=20260806-seek1" defer></script>
-    <script src="../site-music.js?v=20260806-seek1" defer></script>
-    <script src="../site-ai.js?v=20260806-seek1" defer></script>
-    <script src="script.js?v=20260806-seek1" defer></script>
+    <script src="../site-header.js?v=20260806-study2" defer></script>
+    <script src="../site-music.js?v=20260806-study2" defer></script>
+    <script src="../site-ai.js?v=20260806-study2" defer></script>
+    <script src="script.js?v=20260806-multichapter1" defer></script>
   </head>
   <body>
     <div id="admin-lock" class="admin-lock" hidden>
@@ -78,10 +78,14 @@
                   <option value="afh">Airplane Flying Handbook</option>
                 </select>
               </label>
-              <label>
-                <span>Chapter</span>
-                <select id="chapter-select"></select>
-              </label>
+              <fieldset class="chapter-picker">
+                <legend>Chapters</legend>
+                <div class="chapter-picker-actions">
+                  <button id="select-all-chapters" type="button">Select all</button>
+                  <button id="clear-all-chapters" type="button">Clear</button>
+                </div>
+                <div id="chapter-options" class="chapter-options" aria-label="Choose one or more chapters"></div>
+              </fieldset>
               <label>
                 <span>Questions</span>
                 <select id="question-count">

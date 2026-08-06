@@ -70,7 +70,11 @@ function bookName(bookKey) { return books[bookKey]?.title || (bookKey === "wrong
 function chapterName(bookKey, partKey) {
   if (bookKey === "wrong") return "Saved misses";
   if (partKey === "all") return "All chapters";
-  return books[bookKey]?.parts?.[partKey]?.title || partKey;
+  const selected = Array.isArray(partKey) ? partKey : String(partKey || "").split(",").filter(Boolean);
+  if (!selected.length) return "No chapters";
+  const allKeys = Object.keys(books[bookKey]?.parts || {});
+  if (selected.length === allKeys.length && allKeys.every((key) => selected.includes(key))) return "All chapters";
+  return selected.map((key) => books[bookKey]?.parts?.[key]?.title || key).join(" · ");
 }
 function questionKey(question) { return `${question.bookKey || "aviation"}:${question.id}`; }
 function getWrongBank() { try { return JSON.parse(localStorage.getItem(WRONG_BANK_KEY)) || []; } catch { return []; } }
@@ -154,23 +158,31 @@ function showView(id) {
 
 function populateChapters() {
   const bookKey = $("#book-select").value;
-  const options = ['<option value="all">All chapters</option>'];
-  Object.entries(books[bookKey].parts).forEach(([key, part]) => {
-    options.push(`<option value="${key}">${escapeHtml(part.title)}</option>`);
-  });
-  $("#chapter-select").innerHTML = options.join("");
+  $("#chapter-options").innerHTML = Object.entries(books[bookKey].parts).map(([key, part]) => `
+    <label class="chapter-option">
+      <input type="checkbox" value="${escapeHtml(key)}" checked />
+      <span>${escapeHtml(part.title)}</span>
+    </label>
+  `).join("");
   updateAvailability();
+}
+
+function selectedChapterKeys() {
+  return [...document.querySelectorAll("#chapter-options input:checked")].map((input) => input.value);
 }
 
 function availableQuestions() {
   const bookKey = $("#book-select").value;
-  const partKey = $("#chapter-select").value;
-  return partKey === "all" ? allQuestions(bookKey) : flattenPart(bookKey, partKey);
+  return selectedChapterKeys().flatMap((partKey) => flattenPart(bookKey, partKey));
 }
 
 function updateAvailability() {
+  const selected = selectedChapterKeys();
   const count = availableQuestions().length;
-  $("#question-availability").textContent = `${count.toLocaleString()} questions available in this selection.`;
+  $("#start-test").disabled = count === 0;
+  $("#question-availability").textContent = selected.length
+    ? `${count.toLocaleString()} questions available across ${selected.length} selected chapter${selected.length === 1 ? "" : "s"}.`
+    : "Choose at least one chapter.";
 }
 
 function startTest(questions = null, context = null) {
@@ -185,7 +197,7 @@ function startTest(questions = null, context = null) {
   appState.responses = appState.session.map(() => ({ selected: null, checked: false, isCorrect: false }));
   appState.mode = context?.mode || "standard";
   appState.book = context?.book || $("#book-select").value;
-  appState.chapter = context?.chapter || $("#chapter-select").value;
+  appState.chapter = context?.chapter || selectedChapterKeys().join(",");
   showView("quiz-view");
   renderQuestion();
 }
@@ -351,7 +363,15 @@ $("#aviation-unlock-form").addEventListener("submit", async (event) => {
 });
 
 $("#book-select").addEventListener("change", populateChapters);
-$("#chapter-select").addEventListener("change", updateAvailability);
+$("#chapter-options").addEventListener("change", updateAvailability);
+$("#select-all-chapters").addEventListener("click", () => {
+  document.querySelectorAll("#chapter-options input").forEach((input) => { input.checked = true; });
+  updateAvailability();
+});
+$("#clear-all-chapters").addEventListener("click", () => {
+  document.querySelectorAll("#chapter-options input").forEach((input) => { input.checked = false; });
+  updateAvailability();
+});
 $("#start-test").addEventListener("click", () => startTest());
 $("#start-wrong-bank").addEventListener("click", () => startTest(getWrongBank(), { mode: "wrong", book: "wrong", chapter: "saved" }));
 $("#answer-options").addEventListener("click", (event) => {

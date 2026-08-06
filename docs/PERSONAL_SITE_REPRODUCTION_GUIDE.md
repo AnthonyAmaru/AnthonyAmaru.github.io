@@ -185,10 +185,10 @@ The shared contract is:
 - one shared light/dark button in every standalone-page header, visible beside Menu on phones and beside the top tabs on tablets/desktops;
 - one full-text `Cloud locked` / `Cloud synced` control in the footer, never an unlabeled status dot in the header;
 - one footer navigation that mirrors the same stable top-level tabs while leaving the original header navigation in place;
-- one shared music bar with the same order and dimensions on every sibling site: queue, current track with a draggable time scrubber, a text-labeled `Shuffle` button, previous, play/pause, next, and the one-question AI control;
+- one shared music bar with the same order and dimensions on every sibling site: queue, current song plus artist with a draggable time scrubber, a text-labeled `Shuffle` button, previous, play/pause, next, and the one-question AI control;
 - a home grid of full-tile links with an icon, short title, and no numbering;
 - an Interests grid where every card is one link and contains no nested Open, Notebook, or Test buttons;
-- interest details opened as directly addressable standalone HTML pages, never layered over the Interests grid;
+- interest details remain directly addressable standalone HTML pages and may also open inside a normal-flow persistent shell that fully replaces the visible Interests grid; never layer them over visible portal content;
 - the same two-stage Music workspace: first an All Songs tile plus one tile per playlist, then the selected collection's Library heading, bulk actions, drop zone, Song/Artist/Playlist filters, and rows;
 - Song, Artist, and Playlist sort controls, including a multi-select Artist filter;
 - the same cloud-state words and footer placement, theme behavior, AI open/close behavior, and responsive control visibility.
@@ -209,7 +209,7 @@ Content differences are allowed: names, palettes, logos, copy, interests, resume
 
 ## Interest navigation and the persistent study shell
 
-Ordinary interests remain same-site links to complete HTML documents. Aviation and Mandarin are audio-critical exceptions: the root portal intercepts those two links and loads the complete study document in a normal-flow iframe below the persistent top header and music bar. The root Interests grid and footer are hidden while the study shell is active, and the embedded document hides its own header and music bar before first paint. This preserves one audio element without reproducing the old layered-overlay bug.
+Every Anthony interest remains a directly addressable complete HTML document. When an interest is opened from the root portal, the portal intercepts that link and loads the document in a normal-flow iframe below the persistent top header and music bar. The root Interests grid and footer are hidden while the detail shell is active, and the embedded document hides its own header and music bar before first paint. This preserves one audio element across Interests → detail → Interests without reproducing the old layered-overlay bug.
 
 ```html
 <a class="interest-card" href="mycology.html?v=YYYYMMDD-change1">
@@ -221,11 +221,11 @@ Ordinary interests remain same-site links to complete HTML documents. Aviation a
 Additional safeguards:
 
 - Do not use `data-app`, `data-interest-app`, `#app-modal`, or a fixed overlay for interests.
-- Limit `embedded=1` to explicitly audio-critical study pages. The parent must hide `main` and the footer, the iframe must live in normal flow, and the embedded document must hide both shared chrome rows before paint.
+- Use `embedded=1` only for portal-managed detail routing. The parent must hide `main` and the footer, the iframe must live in normal flow, and the embedded document must hide both shared chrome rows before paint.
 - Every direct detail URL still works independently with exactly one shared header and one shared music bar.
 - The primary Interests tab always links to `index.html?page=interests` and returns to the complete card grid.
 - Preserve theme and music identity/position in browser storage before page unload, then restore on the destination document.
-- For normal interests, confirm direct document navigation and no iframe. For Aviation and Mandarin from the portal, confirm `?detail=` routing, one parent audio element, hidden embedded chrome, no visible Interests grid, and uninterrupted `currentTime` progression.
+- Confirm every direct detail URL works as a standalone document. From the portal, confirm `?detail=` routing, one parent audio element, hidden embedded chrome, no visible Interests grid, and uninterrupted `currentTime` progression for every interest.
 
 ## Shared shell and duplication protection
 
@@ -253,11 +253,18 @@ This defensive cleanup does not replace correct standalone navigation. Fix any d
 - Keep the complete shared shell identical on portal and standalone routes: a 74px header with widened outlined primary tabs and theme; a music row with current track, playlist queue, shuffle, previous/play/next, and the single-question AI button; and a footer with mirrored primary tabs plus the full cloud-state label. Page-specific scripts must not replace or omit these shared controls.
 - Give the top player one playlist selector and one song selector on every route; both controls must remain reachable on phones and tablets.
 - Put synchronized current-time/duration scrubbers in both the top player and Music library. Dragging either control must seek the same audio element without replacing or restarting its source.
+- Show both the song title and artist in the shared top player while keeping the library's Song and Artist fields independently editable.
 - A row play button for the active track toggles pause/resume. Only selecting a different track may replace the audio source and start a new song.
 - Choosing All Songs or a named playlist immediately starts its first track. Previous, next, and automatic advance must stay inside that active queue until another playlist is chosen.
 - Save active playlist, shuffle state, track identity, and playback position before page unload, then restore the same queue on the destination page.
 - Register Media Session metadata and safe action handlers for play, pause, previous, next, seek backward, seek forward, and seek-to. Vehicle and hardware controls remain conditional on what the browser exposes.
-- Full document navigation destroys the active audio element. Use the persistent study shell for routes that explicitly require gapless playback; storage restoration is only a fallback for ordinary standalone navigation.
+- Full document navigation destroys the active audio element. Use the persistent detail shell for portal navigation; for unavoidable standalone navigation, save a playing handoff before unload and never let the unload-generated pause event overwrite it.
+
+## Study selection and writing trackers
+
+- Aviation test builders use a checkbox list so one, several, or all chapters can be selected. Build the question pool from the union of selected chapters and save the readable selected-chapter label with score history.
+- Mandarin keeps the learned-vocabulary count separate from a manually managed “Words I can write” list.
+- Save the writing list immediately to local storage and synchronize it through the authenticated, owner-scoped `site_content` row when cloud access is active. The Interests tile reads the same key and displays its current count.
 
 ## Music library rules
 
@@ -576,6 +583,7 @@ Append every future bug here. Update the relevant architecture section at the sa
 
 | Date | Symptom | Root cause | Corrected rule | Regression test |
 | --- | --- | --- | --- | --- |
+| 2026-08-05 | Music paused when navigating Interests → Fatherhood → Interests. | Only Aviation and Mandarin were routed through the persistent shell; Fatherhood and the other interest tiles performed full-document navigation, destroying the active audio element. | Route every portal-opened Anthony interest through the normal-flow persistent detail shell, keep direct URLs standalone, and preserve the last playing state during unavoidable standalone unloads. | Start a track, record the parent audio node and `currentTime`, navigate Interests → Fatherhood → Interests and through every other tile, and confirm the same node remains mounted, unpaused, and advancing. |
 | 2026-08-05 | Music had no way to seek within a song, and pressing the active row's pause icon restarted the song. | The players exposed no range control, and each row click unconditionally reassigned `audio.src` before calling play. | Both the music bar and Music page have synchronized scrubbers; clicking the active track toggles pause/resume and preserves `currentTime`, while only a different track replaces the source. | Play a song, seek with each scrubber, click its row pause button, confirm `currentTime` stops without resetting, then resume and confirm it continues from the same position. |
 | 2026-08-05 | Rauny's music bar looked structurally different from Anthony's, and shuffle was represented by an unclear symbol. | The sibling sites used different player markup order, dimensions, spacing, and control labels. | Sibling music bars use the same element order, 68px minimum height, compact control geometry, and a visible `Shuffle` text button; only owner-specific color tokens may differ. | Compare both sites at phone, tablet, and desktop widths; confirm the order is queue/current track/Shuffle/previous/play/next/AI, `Shuffle` is readable, and toggling it updates `aria-pressed`. |
 | 2026-08-05 | On a tablet, Rauny showed `Cloud locked` while Anthony reduced the same state to an unexplained green dot. | Anthony's responsive header CSS hid the cloud label, and sibling sites placed the same control differently. | Both sites keep the full `Cloud locked` / `Cloud synced` control in the footer and mirror the stable top tabs there without removing the original header navigation. | At 390px, 768px, and 1024px on every root/detail route, confirm no cloud control is in the header, exactly one labeled cloud control is in the footer, and footer tabs match and correctly route like the top tabs. |
