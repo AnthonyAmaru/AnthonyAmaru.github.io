@@ -81,8 +81,9 @@ const resumeDefaults = {
 };
 
 const BOOK_CLOUD_KEY = "hypothesis_of_man_workbook_v2";
+const BOOK_SCHEMA_VERSION = 3;
 const bookDefaults = window.HYPOTHESIS_BOOK_DEFAULTS || {
-  version: 2,
+  version: BOOK_SCHEMA_VERSION,
   title: "A Hypothesis of Man",
   updatedAt: null,
   chapters: ["Chapter 1 — Genesis"].map((title, index) => ({
@@ -273,15 +274,21 @@ function normalizeBook(rawBook) {
     if (fallback) usedDefaultIds.add(fallback.id);
     let pages;
     if (Array.isArray(chapter.pages) && chapter.pages.length) {
-      pages = chapter.pages.map((page, pageIndex) => ({
-        id: page.id || `${chapter.id || `chapter-${index + 1}`}-page-${pageIndex + 1}`,
-        content: typeof page.content === "string" ? page.content : "",
-        ...(page.image ? { image: page.image, imageAlt: page.imageAlt || "Chapter figure" } : {}),
-      }));
+      pages = chapter.pages.map((page, pageIndex) => {
+        const fallbackPage = fallback?.pages?.[pageIndex] || fallback?.pages?.[0];
+        const savedContent = typeof page.content === "string" ? page.content : "";
+        const useImportedNotes = sourceVersion < BOOK_SCHEMA_VERSION && !savedContent.trim() && fallbackPage?.content;
+        const image = page.image || (sourceVersion < BOOK_SCHEMA_VERSION ? fallbackPage?.image : "");
+        return {
+          id: page.id || `${chapter.id || `chapter-${index + 1}`}-page-${pageIndex + 1}`,
+          content: useImportedNotes ? fallbackPage.content : savedContent,
+          ...(image ? { image, imageAlt: page.imageAlt || fallbackPage?.imageAlt || "Chapter figure" } : {}),
+        };
+      });
     } else {
       const legacyContent = typeof chapter.content === "string" ? chapter.content : "";
       const fallbackPage = fallback?.pages?.[0];
-      const useImportedNotes = sourceVersion < 2 && !legacyContent.trim() && fallbackPage;
+      const useImportedNotes = sourceVersion < BOOK_SCHEMA_VERSION && !legacyContent.trim() && fallbackPage;
       pages = [{
         id: `${chapter.id || fallback?.id || `chapter-${index + 1}`}-page-1`,
         content: useImportedNotes ? fallbackPage.content : legacyContent,
@@ -298,7 +305,7 @@ function normalizeBook(rawBook) {
     if (!usedDefaultIds.has(chapter.id)) chapters.push(chapter);
   });
   return {
-    version: 2,
+    version: BOOK_SCHEMA_VERSION,
     title: rawBook.title || defaults.title,
     updatedAt: rawBook.updatedAt || null,
     chapters,
@@ -308,7 +315,7 @@ function normalizeBook(rawBook) {
 function getBook() {
   const rawBook = readJson(KEYS.book, null);
   const book = normalizeBook(rawBook);
-  if (!rawBook || Number(rawBook.version || 1) < 2 || rawBook.chapters?.some((chapter) => !Array.isArray(chapter.pages))) {
+  if (!rawBook || Number(rawBook.version || 1) < BOOK_SCHEMA_VERSION || rawBook.chapters?.some((chapter) => !Array.isArray(chapter.pages))) {
     writeJson(KEYS.book, book);
   }
   return book;
@@ -340,7 +347,7 @@ function queueBookCloudSave(book) {
 }
 
 function saveBook(book, status, syncCloud = true) {
-  book.version = 2;
+  book.version = BOOK_SCHEMA_VERSION;
   book.updatedAt = new Date().toISOString();
   writeJson(KEYS.book, book);
   $("#book-save-status").textContent = status || (musicCloud.isSignedIn() ? "Saving to cloud…" : "Saved on this device");
@@ -369,6 +376,7 @@ async function syncBookFromCloud() {
       $("#book-save-status").textContent = "Saved to cloud";
       return seeded;
     }
+    const cloudNeedsUpgrade = Number(row.value.version || 1) < BOOK_SCHEMA_VERSION;
     const cloudBook = normalizeBook(row.value);
     cloudBook.updatedAt = cloudBook.updatedAt || row.updated_at;
     const localTime = Date.parse(localBook.updatedAt || 0);
@@ -382,6 +390,7 @@ async function syncBookFromCloud() {
       return localBook;
     }
     writeJson(KEYS.book, cloudBook);
+    if (cloudNeedsUpgrade) await musicCloud.saveContent("anthony", BOOK_CLOUD_KEY, cloudBook);
     $("#book-save-status").textContent = "Cloud copy loaded";
     return cloudBook;
   } catch (error) {
@@ -504,7 +513,7 @@ async function importBookFile(file) {
       if (!Array.isArray(parsed.chapters)) throw new Error("The backup does not contain a chapters list.");
       imported = normalizeBook(parsed);
     } else {
-      imported = normalizeBook({ version: 2, title: "A Hypothesis of Man", updatedAt: null, chapters: parseMarkdownBook(text) });
+      imported = normalizeBook({ version: BOOK_SCHEMA_VERSION, title: "A Hypothesis of Man", updatedAt: null, chapters: parseMarkdownBook(text) });
     }
     saveBook(imported);
     currentBookChapter = 0;
@@ -935,7 +944,7 @@ async function syncStudyHistoryFromCloud() {
       musicCloud.listTestAttempts("mandarin"),
     ]);
     writeJson("anthony_aviation_history_v1", aviationRows.map((row) => ({ id: row.id, date: row.completed_at, book: row.mode || "aviation", chapter: row.section || "all", correct: row.correct, total: row.total, percent: row.percent, wrong: row.wrong_answers || [] })));
-    writeJson("anthony_mandarin_history_v1", mandarinRows.map((row) => ({ id: row.id, date: row.completed_at, type: row.mode || "mixed", correct: row.correct, total: row.total, percent: row.percent, wrong: row.wrong_answers || [] })));
+    writeJson("anthony_mandarin_history_v1", mandarinRows.map((row) => ({ id: row.id, date: row.completed_at, type: row.mode || "mixed", section: row.section || null, correct: row.correct, total: row.total, percent: row.percent, wrong: row.wrong_answers || [] })));
     refreshDashboard();
   } catch (error) { console.warn("Study history sync failed", error); }
 }

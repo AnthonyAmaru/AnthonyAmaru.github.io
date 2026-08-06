@@ -285,32 +285,20 @@ const pronunciationDrills = [
   [10, "chuò", "ch", "4th tone"], [11, "shuǐ", "sh", "3rd tone"], [12, "ròu", "r", "4th tone"],
 ];
 
-const readings = {
-  chinese: [
-    "今天是7月31号，星期五。今天是我的生日。我问我的朋友小李：“你有时间吗？我们去小猫饭店吃饭吧，我请客。”",
-    "11点半，我们到了饭店。今天太热了。我问服务员：“有冰水吗？”",
-    "我要两杯冰水。这个饭店的鸡肉西兰花和馄饨很好吃。",
-    "我吃了一碗鸡肉西兰花和一碗馄饨。小李不喜欢吃鸡肉。他饿了，吃了三碗馄饨。",
-    "我去买单。服务员说：“你的中文很好。一共153块。”",
-    "我说：“谢谢。我还要打包一碗面条。”",
-  ],
-  pinyin: [
-    "Jīntiān shì qī yuè sānshíyī hào, xīngqīwǔ. Jīntiān shì wǒ de shēngrì. Wǒ wèn wǒ de péngyou Xiǎo Lǐ: “Nǐ yǒu shíjiān ma? Wǒmen qù Xiǎomāo Fàndiàn chīfàn ba, wǒ qǐngkè.”",
-    "Shíyī diǎn bàn, wǒmen dào le fàndiàn. Jīntiān tài rè le. Wǒ wèn fúwùyuán: “Yǒu bīngshuǐ ma?”",
-    "Wǒ yào liǎng bēi bīngshuǐ. Zhè ge fàndiàn de jīròu xīlánhuā hé húntun hěn hǎochī.",
-    "Wǒ chī le yì wǎn jīròu xīlánhuā hé yì wǎn húntun. Xiǎo Lǐ bù xǐhuan chī jīròu. Tā è le, chī le sān wǎn húntun.",
-    "Wǒ qù mǎidān. Fúwùyuán shuō: “Nǐ de zhōngwén hěn hǎo. Yígòng yìbǎi wǔshísān kuài.”",
-    "Wǒ shuō: “Xièxie. Wǒ hái yào dǎbāo yì wǎn miàntiáo.”",
-  ],
-  english: [
-    "Today is Friday, July 31. Today is my birthday. I ask my friend Xiao Li, “Do you have time? Let's go eat at Little Cat Restaurant. It's my treat.”",
-    "At 11:30, we arrive at the restaurant. It is very hot today. I ask the server, “Do you have ice water?”",
-    "I want two cups of ice water. This restaurant's chicken with broccoli and wontons are delicious.",
-    "I eat one bowl of chicken with broccoli and one bowl of wontons. Xiao Li does not like chicken. He gets hungry and eats three bowls of wontons.",
-    "I go to pay the bill. The server says, “Your Chinese is very good. The total is 153 yuan.”",
-    "I say, “Thank you. I also want one bowl of noodles packed to go.”",
-  ],
-};
+const conversationReadings = [
+  {
+    chinese: "周末，Anthony问小李：“你明天下午有时间吗？我们一起去小猫饭店吃饭吧。”小李说：“当然有时间。几点见面？”Anthony说：“五点方便吗？”小李说：“好的，明天见。”",
+    pinyin: "Zhōumò, Anthony wèn Xiǎo Lǐ: “Nǐ míngtiān xiàwǔ yǒu shíjiān ma? Wǒmen yìqǐ qù Xiǎomāo Fàndiàn chīfàn ba.” Xiǎo Lǐ shuō: “Dāngrán yǒu shíjiān. Jǐ diǎn jiànmiàn?” Anthony shuō: “Wǔ diǎn fāngbiàn ma?” Xiǎo Lǐ shuō: “Hǎo de, míngtiān jiàn.”",
+    english: "On the weekend, Anthony asks Xiao Li, “Do you have time tomorrow afternoon? Let's go eat together at Little Cat Restaurant.” Xiao Li says, “Of course. What time should we meet?” Anthony asks, “Is five o'clock convenient?” Xiao Li says, “Okay, see you tomorrow.”",
+    newWords: [["周末", "zhōumò", "weekend"], ["一起", "yìqǐ", "together"], ["当然", "dāngrán", "of course"], ["见面", "jiànmiàn", "meet"], ["方便", "fāngbiàn", "convenient"]],
+  },
+  {
+    chinese: "到了饭店，服务员问：“你们想喝什么？”Anthony说：“我要两杯冰水，再来一碗馄饨。”小李说：“我想尝试牛肉面。”服务员说：“没问题，请稍等。”吃完以后，Anthony去买单，他们都觉得很好吃。",
+    pinyin: "Dào le fàndiàn, fúwùyuán wèn: “Nǐmen xiǎng hē shénme?” Anthony shuō: “Wǒ yào liǎng bēi bīngshuǐ, zài lái yì wǎn húntun.” Xiǎo Lǐ shuō: “Wǒ xiǎng chángshì niúròu miàn.” Fúwùyuán shuō: “Méi wèntí, qǐng shāo děng.” Chī wán yǐhòu, Anthony qù mǎidān, tāmen dōu juéde hěn hǎochī.",
+    english: "At the restaurant, the server asks, “What would you like to drink?” Anthony says, “I want two cups of ice water and another bowl of wontons.” Xiao Li says, “I want to try beef noodles.” The server says, “No problem, please wait a moment.” After eating, Anthony pays the bill, and they both think the food is delicious.",
+    newWords: [["再来", "zài lái", "another"], ["尝试", "chángshì", "try"], ["没问题", "méi wèntí", "no problem"], ["稍等", "shāo děng", "wait a moment"], ["觉得", "juéde", "think or feel"]],
+  },
+];
 
 const characters = [
   ["我", "wǒ", "I; me"], ["你", "nǐ", "you"], ["他", "tā", "he"], ["们", "men", "plural marker"],
@@ -492,14 +480,46 @@ function renderPatterns() {
 function renderReading() {
   const article = $("#reading-copy");
   article.replaceChildren();
-  readings[state.readingLayer].forEach((line) => {
+  conversationReadings.forEach((reading) => {
     const paragraph = document.createElement("p");
     paragraph.className = "reading-paragraph";
     paragraph.dataset.layer = state.readingLayer;
-    paragraph.textContent = line;
-    if (state.readingLayer === "chinese") paragraph.lang = "zh-Hans";
-    article.append(paragraph);
+    const line = reading[state.readingLayer];
+    if (state.readingLayer === "chinese") {
+      paragraph.lang = "zh-Hans";
+      appendHighlightedWords(paragraph, line, reading.newWords.map(([word]) => word));
+    } else paragraph.textContent = line;
+    const wordList = document.createElement("div");
+    wordList.className = "new-word-list";
+    reading.newWords.slice(0, 5).forEach(([word, pinyin, meaning]) => {
+      const chip = document.createElement("span");
+      chip.textContent = `${word} · ${pinyin} · ${meaning}`;
+      wordList.append(chip);
+    });
+    article.append(paragraph, wordList);
   });
+}
+
+function appendHighlightedWords(container, text, words) {
+  const pattern = new RegExp(`(${words.map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`, "g");
+  text.split(pattern).filter(Boolean).forEach((piece) => {
+    if (words.includes(piece)) {
+      const mark = document.createElement("mark");
+      mark.className = "new-word";
+      mark.textContent = piece;
+      container.append(mark);
+    } else container.append(document.createTextNode(piece));
+  });
+}
+
+function speakMandarin(text) {
+  if (!("speechSynthesis" in window)) return;
+  speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "zh-CN";
+  utterance.rate = 0.82;
+  utterance.voice = speechSynthesis.getVoices().find((voice) => /^zh[-_]/i.test(voice.lang)) || null;
+  speechSynthesis.speak(utterance);
 }
 
 function renderDialogue() {
@@ -574,6 +594,7 @@ $("#reading-controls").addEventListener("click", (event) => {
   });
   renderReading();
 });
+$("#speak-reading").addEventListener("click", () => speakMandarin(conversationReadings.map((reading) => reading.chinese).join("。")));
 const requestedPage = new URLSearchParams(location.search).get("page");
 const mandarinPages = ["lesson", "cards", "sounds", "words", "sentences", "plans", "reading", "characters"];
 const activePage = mandarinPages.includes(requestedPage) ? requestedPage : "home";

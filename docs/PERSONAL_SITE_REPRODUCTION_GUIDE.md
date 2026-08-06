@@ -288,9 +288,16 @@ The music page should support:
 ## Quiz and editable-content rules
 
 - Save every completed quiz to `test_attempts` with subject, mode, section, score, total, percentage, wrong-answer JSON, and completion time.
+- Keep one indexed response object per question. Previous/Next navigation must restore the selected answer, checked state, feedback, and score without pushing duplicate results or counting an answer twice.
+- Display human-readable subject, book, and chapter/section labels in score history; do not expose only internal keys such as `phak` or `part_1`.
+- Maintain one owner-only wrong bank per subject in `site_content`, with a local recovery copy. Deduplicate by a stable question key, add every miss, and remove an item only after it is answered correctly during a wrong-bank test.
+- Treat the signed-in cloud wrong bank as authoritative when it exists so a question removed on one device does not reappear from stale local state on another device.
 - Load recent attempts after administrator authentication so history follows the owner across devices.
 - Store editable small JSON documents in `site_content` using `(user_id, site, content_key)` as the key.
+- For system speech, use the browser Web Speech API with an explicit language such as `zh-CN`, a user-triggered button, and a graceful no-op when no compatible voice is installed. Do not require a paid speech service for basic pronunciation.
+- Reading exercises may introduce at most five new terms per paragraph. Keep the remaining text within the known vocabulary, highlight the new terms, and list their pronunciation and meaning beside the paragraph.
 - Debounce manuscript saves, show save state, and keep a local recovery copy.
+- Version manuscript schemas. During a schema upgrade, backfill an empty saved page from its matching packaged default, preserve every nonempty user page, and persist the upgraded document locally and to the authenticated cloud record.
 - For larger or important documents, add append-only revisions rather than overwriting the only cloud copy.
 - Static entrance passwords are presentation gates only. They are not data security.
 - Supabase Auth plus RLS is the security boundary for writes and private reads.
@@ -493,7 +500,11 @@ Then verify:
 - Confirm title normalization removes source identifiers without deleting the song.
 - Select several songs and move them to one playlist.
 - Save one quiz and confirm its score and wrong answers on a second device.
+- Answer a question incorrectly, confirm it appears once in the subject's wrong bank on a second device, retest it correctly, and confirm it disappears on both devices.
+- Move forward, back, and forward in a quiz; confirm the answer and feedback are restored and the score is counted once.
+- Confirm every historical Aviation attempt shows its handbook and chapter, and every Mandarin attempt shows Mandarin plus its practice section.
 - Save editable content and confirm it on a second device.
+- Seed the prior manuscript schema with an empty Chapter 1 page and confirm the packaged Chapter 1 details and figure are restored; repeat with custom text and confirm it is never overwritten.
 - Confirm unauthenticated private reads and all unauthorized writes fail.
 - Confirm the AI gateway rejects an unsigned or non-admin request.
 - Confirm the AI-provider key is absent from the repository and browser responses.
@@ -539,6 +550,10 @@ Append every future bug here. Update the relevant architecture section at the sa
 
 | Date | Symptom | Root cause | Corrected rule | Regression test |
 | --- | --- | --- | --- | --- |
+| 2026-08-05 | Mandarin and Aviation tests could not return to a prior question. | Each render reset one global selected/checked state, while results were appended rather than indexed by question. | Store responses by question index and render Previous/Next from that stable state; recompute the score from checked responses. | Answer question 1, open question 2, return to question 1, and confirm its selection, feedback, and single score point remain unchanged. |
+| 2026-08-05 | Incorrect questions were visible only in the just-finished result and could not be retested as a durable bank. | Attempt rows stored misses for history, but there was no deduplicated subject-level review document or removal workflow. | Store separate owner-only Mandarin and Aviation wrong banks in `site_content`; add misses by stable key and remove them only after a correct wrong-bank retry. | Miss the same question twice and confirm one bank item; retry it correctly and confirm it disappears locally and on a second signed-in device. |
+| 2026-08-05 | Aviation history showed only an internal book abbreviation and did not show the tested chapter. | The renderer ignored the saved `section` and did not derive human-readable labels from the question source model. | Persist/derive both book and chapter labels for every attempt; Mandarin history likewise displays its subject and practice section. | Complete a chapter-specific PHAK test and confirm the score row names both the handbook and chapter after cloud reload. |
+| 2026-08-05 | Chapter 1 opened with an empty page although packaged manuscript details existed. | A saved version-2 page with empty `content` was treated as authoritative; default seeding handled only the older single `chapter.content` shape. | On a versioned manuscript upgrade, backfill only empty pages from matching packaged defaults, preserve nonempty writing, and persist the version-3 copy locally and to cloud. | Normalize a v2 empty Chapter 1 page and confirm content/figure restoration; normalize a v2 custom page and confirm its text is preserved. |
 | 2026-08-05 | Mycology and several other interests looked layered over the Interests buttons, while Fatherhood looked like its own page. | Some tiles opened in a fixed iframe overlay while Fatherhood used normal document navigation. | Every interest tile navigates to a standalone HTML document. Never mount an interest in `#app-modal`, `#app-frame`, or another fixed overlay. | Open every interest; confirm its URL changes, the Interests grid is absent, exactly one header/player exists, and there is no iframe. |
 | 2026-08-05 | Tablet showed only Menu, and the fixed GO BACK control could overlap content. | The desktop navigation collapsed at a tablet-width breakpoint and a viewport-fixed back control ignored changing content width. | Keep large outlined primary tabs visible above 600px; use Menu only at 600px or narrower; do not generate or style a separate GO BACK control. | At 390, 768, 1024, and narrow side-panel widths, confirm correct nav visibility, outlined 44px+ targets, and zero back controls. |
 | 2026-08-05 | Mycology included an unwanted, heavy globe visualization. | The page loaded a third-party 3D globe library, texture assets, render logic, and globe-specific styles. | Mycology contains only compact filters and mushroom cards unless a future visualization is explicitly requested. Keep no globe CDN, globe DOM, renderer, textures, or globe CSS. | Confirm no globe selector, library request, canvas, or renderer is present and that all mushroom filters still work. |

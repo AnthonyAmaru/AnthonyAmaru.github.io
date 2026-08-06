@@ -1,5 +1,5 @@
 window.HYPOTHESIS_BOOK_DEFAULTS = {
-  "version": 2,
+  "version": 3,
   "title": "A Hypothesis of Man",
   "updatedAt": null,
   "chapters": [

@@ -9,13 +9,13 @@
     <script src="../site-theme.js?v=20260805-standalone1"></script>
     <link rel="stylesheet" href="../site-header.css?v=20260805-nav1" />
     <link rel="stylesheet" href="../site-music.css?v=20260805-standalone1" />
-    <link rel="stylesheet" href="styles.css?v=20260803-theme1" />
+    <link rel="stylesheet" href="styles.css?v=20260805-study1" />
     <script src="afh_questions.js"></script>
     <script src="phak_questions.js"></script>
     <script src="../music-cloud.js"></script>
     <script src="../site-header.js?v=20260805-nav1" defer></script>
     <script src="../site-music.js?v=20260805-standalone1" defer></script>
-    <script src="script.js" defer></script>
+    <script src="script.js?v=20260805-study1" defer></script>
   </head>
   <body>
     <div id="admin-lock" class="admin-lock" hidden>
@@ -92,6 +92,10 @@
             </div>
             <button id="start-test" class="button primary" type="button">Start practice test</button>
             <p id="question-availability" class="fine-print"></p>
+            <div class="wrong-bank-panel">
+              <span><strong id="wrong-bank-count">0</strong> saved misses</span>
+              <button id="start-wrong-bank" class="button secondary" type="button" disabled>Test wrong bank</button>
+            </div>
           </article>
 
           <article class="panel history-panel">
@@ -134,6 +138,7 @@
           <div id="answer-options" class="answer-options"></div>
           <div id="answer-feedback" class="answer-feedback" hidden></div>
           <div class="question-actions">
+            <button id="previous-question" class="button secondary" type="button">Previous</button>
             <button id="check-answer" class="button primary" type="button" disabled>Check answer</button>
             <button id="next-question" class="button primary" type="button" hidden>Next question</button>
           </div>

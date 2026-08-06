@@ -9,12 +9,12 @@
     <script src="../site-theme.js?v=20260805-standalone1"></script>
     <link rel="stylesheet" href="../site-header.css?v=20260805-nav1" />
     <link rel="stylesheet" href="../site-music.css?v=20260805-standalone1" />
-    <link rel="stylesheet" href="../aviation/styles.css?v=20260803-theme1" />
-    <link rel="stylesheet" href="quiz.css?v=20260803-theme1" />
+    <link rel="stylesheet" href="../aviation/styles.css?v=20260805-study1" />
+    <link rel="stylesheet" href="quiz.css?v=20260805-study1" />
     <script src="../music-cloud.js"></script>
     <script src="../site-header.js?v=20260805-nav1" defer></script>
     <script src="../site-music.js?v=20260805-standalone1" defer></script>
-    <script src="quiz.js?v=20260803-pages2" defer></script>
+    <script src="quiz.js?v=20260805-study1" defer></script>
   </head>
   <body>
     <div id="admin-lock" class="admin-lock" hidden>
@@ -31,9 +31,9 @@
       <a class="main-site-brand" href="../index.html?v=20260803-nav1" aria-label="Anthony Amaru home"><img src="../anthony-brand-icon.png" alt="" /><strong>Anthony Amaru</strong></a>
       <button class="main-site-menu" type="button" data-main-site-menu aria-expanded="false" aria-controls="main-site-nav">Menu</button>
       <nav id="main-site-nav" class="main-site-nav" data-main-site-nav aria-label="Primary navigation">
-        <a href="../index.html?page=resume&amp;v=20260804-clean1">Resume</a>
-        <a href="../index.html?page=interests&amp;v=20260804-clean1" aria-current="page">Interests</a>
-        <a href="../index.html?page=music&amp;v=20260804-clean1">Music</a>
+        <a href="../index.html?page=resume&amp;v=20260805-study1">Resume</a>
+        <a href="../index.html?page=interests&amp;v=20260805-study1" aria-current="page">Interests</a>
+        <a href="../index.html?page=music&amp;v=20260805-study1">Music</a>
       </nav>
     </header>
 
@@ -55,16 +55,16 @@
 
     <main>
       <nav class="mandarin-section-menu" aria-label="Mandarin study sections">
-        <a href="index.html?v=20260804-clean1">Mandarin Home</a>
-        <a href="index.html?page=lesson&amp;v=20260804-clean1">Lesson</a>
-        <a href="index.html?page=cards&amp;v=20260804-clean1">Cards</a>
-        <a href="index.html?page=sounds&amp;v=20260804-clean1">Sounds</a>
-        <a href="index.html?page=words&amp;v=20260804-clean1">Words</a>
-        <a href="index.html?page=sentences&amp;v=20260804-clean1">Sentences</a>
-        <a href="index.html?page=plans&amp;v=20260804-clean1">Plans</a>
-        <a href="index.html?page=reading&amp;v=20260804-clean1">Reading</a>
-        <a href="index.html?page=characters&amp;v=20260804-clean1">Characters</a>
-        <a href="quiz.html?v=20260804-clean1" aria-current="page">Quiz</a>
+        <a href="index.html?v=20260805-study1">Mandarin Home</a>
+        <a href="index.html?page=lesson&amp;v=20260805-study1">Lesson</a>
+        <a href="index.html?page=cards&amp;v=20260805-study1">Cards</a>
+        <a href="index.html?page=sounds&amp;v=20260805-study1">Sounds</a>
+        <a href="index.html?page=words&amp;v=20260805-study1">Words</a>
+        <a href="index.html?page=sentences&amp;v=20260805-study1">Sentences</a>
+        <a href="index.html?page=plans&amp;v=20260805-study1">Plans</a>
+        <a href="index.html?page=reading&amp;v=20260805-study1">Reading</a>
+        <a href="index.html?page=characters&amp;v=20260805-study1">Characters</a>
+        <a href="quiz.html?v=20260805-study1" aria-current="page">Quiz</a>
       </nav>
 
       <section id="setup-view" class="view active">
@@ -76,6 +76,10 @@
               <label><span>Questions</span><select id="question-count"><option value="5">5 questions</option><option value="10" selected>10 questions</option><option value="20">20 questions</option></select></label>
             </div>
             <button id="start-quiz" class="button primary" type="button">Start</button>
+            <div class="wrong-bank-panel">
+              <span><strong id="wrong-bank-count">0</strong> saved misses</span>
+              <button id="start-wrong-bank" class="button secondary" type="button" disabled>Test wrong bank</button>
+            </div>
           </article>
           <article class="panel history-panel">
             <div class="panel-heading"><div><p id="history-sync-status" class="eyebrow">Device</p><h2>Scores</h2></div><button id="clear-history" class="text-button" type="button">Clear</button></div>
@@ -90,10 +94,11 @@
         <article class="panel question-card mandarin-card">
           <div class="question-meta"><span id="question-type"></span><span id="question-pinyin"></span></div>
           <p id="question-chinese" class="question-chinese" lang="zh-Hans"></p>
+          <button id="speak-question" class="speech-button" type="button" aria-label="Speak this Mandarin question" title="Speak Mandarin">🔊</button>
           <h2 id="question-text"></h2>
           <div id="answer-options" class="answer-options"></div>
           <div id="answer-feedback" class="answer-feedback" hidden></div>
-          <div class="question-actions"><button id="check-answer" class="button primary" type="button" disabled>Check</button><button id="next-question" class="button primary" type="button" hidden>Next</button></div>
+          <div class="question-actions"><button id="previous-question" class="button secondary" type="button">Previous</button><button id="check-answer" class="button primary" type="button" disabled>Check</button><button id="next-question" class="button primary" type="button" hidden>Next</button></div>
         </article>
       </section>
 
