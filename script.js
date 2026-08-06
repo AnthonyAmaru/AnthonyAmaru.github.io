@@ -6,6 +6,7 @@ const BOOK_CHAPTER_SIDEBAR_KEY = "anthony_book_chapter_sidebar_hidden";
 const BOOK_SPLIT_PAGES_KEY = "anthony_book_split_pages";
 const MANDARIN_WRITING_KEY = "anthony_mandarin_written_words_v1";
 const MANDARIN_WRITING_CLOUD_KEY = "mandarin_written_words_v1";
+const DETAIL_SHELL_VERSION = "20260806-detailcache1";
 const DETAIL_PAGES = {
   aviation: "aviation/index.html",
   mandarin: "mandarin/index.html",
@@ -212,7 +213,8 @@ function showDetailPage(detail) {
   shell.hidden = false;
   const target = new URL(path, location.href);
   target.searchParams.set("embedded", "1");
-  if (frame.dataset.detail !== detail) {
+  target.searchParams.set("shell", DETAIL_SHELL_VERSION);
+  if (frame.src !== target.href) {
     frame.dataset.detail = detail;
     frame.src = target.href;
   }
