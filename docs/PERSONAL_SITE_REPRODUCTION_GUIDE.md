@@ -271,6 +271,18 @@ This defensive cleanup does not replace correct standalone navigation. Fix any d
 - Mandarin keeps the learned-vocabulary count separate from a manually managed “Words I can write” list.
 - Save the writing list immediately to local storage and synchronize it through the authenticated, owner-scoped `site_content` row when cloud access is active. The Interests tile reads the same key and displays its current count.
 
+## Tile hubs and private activity trackers
+
+- Open a multi-tool interest on a compact tile hub before showing its tools. Each tile is one full keyboard-accessible link; do not render every tool in one long scrolling document.
+- Keep the URL directly addressable with a stable query such as `?section=tracker`, while the interest title returns to the tile hub.
+- Put private diary data in one versioned, owner-scoped `site_content` JSON document. A workout entry contains a stable ID, date, program, workout, optional body weight and notes, exercises, working sets, and created/updated timestamps.
+- Treat Supabase Auth plus administrator membership and RLS as the private-data boundary. A signed-out visitor sees only the lock, never preloaded diary values.
+- Derive weekly completion, history totals, progression cues, and charts in the browser from the saved entries. Do not store duplicate chart data.
+- Keep edit and delete tied to stable entry IDs. Confirm deletion and never replace unrelated entries.
+- Prefer exercises that already have diary data at the top of chart selectors so a saved workout produces a useful chart immediately.
+- When CSS Grid or Flex children contain inputs, selects, or charts, use `min-width: 0` and `minmax(0, 1fr)` through every nested container. Test that the document itself has no horizontal overflow at 390px; only an intentionally wide inner data table may scroll.
+- Every component that defines both a visible `display` value and a `hidden` state must include an explicit `[hidden] { display: none !important; }` guard.
+
 ## Music library rules
 
 Binary music files belong in Supabase Storage, not `localStorage` and not the Git repository. Track metadata belongs in `music_tracks`.
@@ -603,6 +615,7 @@ Append every future bug here. Update the relevant architecture section at the sa
 
 | Date | Symptom | Root cause | Corrected rule | Regression test |
 | --- | --- | --- | --- | --- |
+| 2026-08-06 | The new Gym tracker fit on desktop but its workout and chart panels overflowed a phone viewport. | Nested Grid children kept the intrinsic width of form fields and chart selectors because intermediate containers used the default `min-width:auto`. | Responsive tool workspaces set `min-width:0` on every nested Grid/Flex container and use `grid-template-columns:minmax(0,1fr)` on single-column wrappers. | Open every Gym tile at 390px, 768px, and desktop widths; confirm `documentElement.scrollWidth === innerWidth`, then enter and edit a workout without controls clipping. |
 | 2026-08-06 | Tax tools appeared behind the administrator lock before authentication, and the lock remained over the workspace after authentication. | Author styles assigned `display:grid` to both lock and workspace, which outranked the browser's default `[hidden] { display:none }` rule. | Every protected, lock, or panel-switched component that also defines `display` must include an explicit `[hidden] { display:none !important }` guard. Authentication controls both data access and mutually exclusive lock/workspace visibility. | Load Taxes signed out and confirm only the lock is visible; sign in and confirm the lock has zero layout size, the workspace is visible, and exactly one workspace panel is visible. |
 | 2026-08-06 | On a tablet, Author looked like it was sitting on top of the Interests page. | The manuscript editor was a viewport-fixed `book-modal`, leaving the Interests document underneath even though the editor covered it visually. | Author uses a real `?detail=author` route and a normal-flow workspace inside the persistent portal. Hide the Interests `main` and footer while it is active, preserve the header/player, and never position the editor as a fixed overlay. | Open Author at 390px, 768px, and 1024px; confirm the URL has `detail=author`, the grid/footer are absent from the layout, the editor scrolls normally without layered content, browser Back and the Interests tab restore the grid, and the same audio element remains mounted. |
 | 2026-08-06 | Private Bills balances and payment details could have been downloaded from the public site's HTML even though the page showed an admin gate. | A client-side password screen controls presentation only; values embedded in static GitHub Pages files remain public in source and repository history. | Keep the public Bills document as a value-free locked shell. Store its data in owner-scoped Supabase `site_content`, rely on Auth plus RLS for private reads, and render only after an allowlisted administrator signs in. Amend any unpushed commit that contained private values before publishing. | Search the published source and GitHub tree for every private label/value and find none; query as `anon` and see zero Bills rows; sign in as the allowlisted admin and confirm the dashboard loads. |

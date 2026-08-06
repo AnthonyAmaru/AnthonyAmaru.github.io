@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#f2f4f0" />
-    <meta name="description" content="Anthony Amaru's gym and nutrition space." />
+    <meta name="description" content="Anthony Amaru's gym and nutrition workspace." />
     <title>Gym &amp; Nutrition · Anthony Amaru</title>
     <link rel="icon" href="anthony-favicon.ico?v=snake-1" sizes="any" />
     <link rel="icon" type="image/png" href="anthony-favicon-32.png?v=snake-1" sizes="32x32" />
@@ -14,12 +14,13 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Newsreader:opsz,wght@6..72,500&amp;display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="site-header.css?v=20260806-study2" />
     <link rel="stylesheet" href="site-music.css?v=20260806-study2" />
-    <link rel="stylesheet" href="interest-detail.css?v=20260806-compactgym1" />
-    <script src="music-cloud.js?v=20260804-titleclean1"></script>
+    <link rel="stylesheet" href="interest-detail.css?v=20260806-gymtiles1" />
+    <link rel="stylesheet" href="gym.css?v=20260806-gymtiles1" />
+    <script src="music-cloud.js?v=20260806-tax2"></script>
     <script src="site-header.js?v=20260806-study2" defer></script>
     <script src="site-music.js?v=20260806-study2" defer></script>
     <script src="site-ai.js?v=20260806-study2" defer></script>
-    <script src="gym-programs.js?v=20260806-programs1" defer></script>
+    <script src="gym-programs.js?v=20260806-gymtiles1" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -40,199 +41,123 @@
       <button type="button" data-site-music-play aria-label="Play or pause">▶</button>
       <button type="button" data-site-music-next aria-label="Next song">›</button>
     </aside>
-    <main id="main-content">
-      <h1 class="gym-page-title">Gym &amp; Nutrition</h1>
 
-      <section class="workout-planner" aria-labelledby="training-title">
-        <div class="workout-section-heading">
-          <span aria-hidden="true">🏋️</span>
-          <h2 id="training-title">Training</h2>
+    <main id="main-content" class="gym-page">
+      <a class="gym-title-link" href="gym.html?v=20260806-gymtiles1"><h1 class="gym-page-title">Gym &amp; Nutrition</h1></a>
+
+      <nav class="gym-hub" data-gym-hub aria-label="Gym and nutrition sections">
+        <a class="gym-hub-tile nutrition" href="gym.html?section=nutrition&amp;v=20260806-gymtiles1">
+          <span aria-hidden="true">🥗</span><strong>Nutrition</strong>
+        </a>
+        <a class="gym-hub-tile tracker" href="gym.html?section=tracker&amp;v=20260806-gymtiles1">
+          <span aria-hidden="true">📈</span><strong>Gym Tracker</strong>
+        </a>
+        <a class="gym-hub-tile program" href="gym.html?section=program&amp;v=20260806-gymtiles1">
+          <span aria-hidden="true">🏋️</span><strong>Gym Program</strong>
+        </a>
+      </nav>
+
+      <section class="gym-view" data-gym-view="nutrition" hidden aria-labelledby="nutrition-title">
+        <h2 id="nutrition-title">Nutrition</h2>
+        <div class="nutrition-grid">
+          <section class="nutrition-card nutrition-card-wide" aria-labelledby="supplements-title">
+            <div class="nutrition-card-heading"><span aria-hidden="true">💊</span><h3 id="supplements-title">Vitamins &amp; supplements</h3></div>
+            <ul class="nutrition-check-list">
+              <li>Vitamin B12</li><li>Vitamin D</li><li>Vitamin C</li><li>Omega-3</li>
+              <li>Magnesium</li><li>Collagen</li><li>Creatine</li><li>Calcium</li>
+            </ul>
+          </section>
+          <section class="nutrition-card" aria-labelledby="preworkout-title">
+            <div class="nutrition-card-heading"><span aria-hidden="true">⚡</span><h3 id="preworkout-title">Pre-workout</h3></div>
+            <ul class="nutrition-check-list"><li>TruLabs Electrolyte Mix</li></ul>
+          </section>
+          <section class="nutrition-card" aria-labelledby="protein-title">
+            <div class="nutrition-card-heading"><span aria-hidden="true">🥤</span><h3 id="protein-title">Protein</h3></div>
+            <ul class="nutrition-check-list"><li>Morning Drink</li><li>Whey Protein Powder <small>post-workout</small></li></ul>
+          </section>
         </div>
-
-        <div class="progression-rules" aria-label="Progression rules">
-          <strong>Progression</strong>
-          <ul>
-            <li>Increase weight only when every working set reaches 12 reps or the calf rule.</li>
-            <li>If any set is under 12 reps, keep the same weight next session.</li>
-            <li>Never decrease weight unless making an executive decision.</li>
-            <li>Controlled reps. Full range of motion.</li>
-          </ul>
-        </div>
-
-        <nav class="workout-tabs" aria-label="Training programs">
-          <button type="button" class="active" data-workout-tab="ppl" aria-pressed="true">Push / Pull / Legs</button>
-          <button type="button" data-workout-tab="upper-lower" aria-pressed="false">Upper / Lower</button>
-        </nav>
-
-        <div class="workout-panel" data-workout-panel="ppl">
-          <div class="training-schedule" aria-label="Push pull legs weekly schedule">
-            <span><strong>Monday</strong>Legs</span>
-            <span><strong>Tuesday</strong>Push</span>
-            <span><strong>Wednesday</strong>Pull</span>
-            <span><strong>Thursday–Sunday</strong>Recovery / Optional Cardio</span>
-          </div>
-
-          <div class="workout-day-grid">
-            <details open>
-              <summary>Legs <span>9 exercises</span></summary>
-              <ul>
-                <li>Leg Press</li>
-                <li>Seated Leg Press</li>
-                <li>Romanian Deadlift (RDL)</li>
-                <li>Split Squats</li>
-                <li>Leg Extension</li>
-                <li>Leg Curl</li>
-                <li>Hip Abduction</li>
-                <li>Hip Adduction</li>
-                <li>Barbell Standing Calf Raise</li>
-              </ul>
-            </details>
-            <details>
-              <summary>Push <span>11 exercises</span></summary>
-              <ul>
-                <li>Dumbbell Bench Press</li>
-                <li>Incline Dumbbell Press</li>
-                <li>Seated Chest Press</li>
-                <li>Seated Dumbbell Shoulder Press</li>
-                <li>Lateral Raises</li>
-                <li>Incline Bench Press</li>
-                <li>Seated Chest Fly</li>
-                <li>Single-Arm Standing Cable Chest Fly (SACCF)</li>
-                <li>Dips</li>
-                <li>Triceps Rope Pushdown</li>
-                <li>Overhead Triceps Extension</li>
-              </ul>
-            </details>
-            <details>
-              <summary>Pull <span>8 exercises</span></summary>
-              <ul>
-                <li>Assisted Pull-Ups</li>
-                <li>Iso-Lateral Row (Machine)</li>
-                <li>Seated Cable Row</li>
-                <li>Close-Grip Pulldown</li>
-                <li>Straight-Arm Pulldown</li>
-                <li>Rear Delt Fly / Face Pull</li>
-                <li>Dumbbell Curls</li>
-                <li>Cable Bicep Curls</li>
-              </ul>
-            </details>
-          </div>
-        </div>
-
-        <div class="workout-panel" data-workout-panel="upper-lower" hidden>
-          <div class="training-schedule" aria-label="Upper lower weekly schedule">
-            <span><strong>Monday</strong>Upper A</span>
-            <span><strong>Tuesday</strong>Lower A</span>
-            <span><strong>Wednesday</strong>Upper B</span>
-            <span><strong>Thursday</strong>Lower B</span>
-            <span><strong>Friday</strong>Upper C</span>
-            <span><strong>Saturday</strong>Recovery / Optional Cardio</span>
-            <span><strong>Sunday</strong>Recovery</span>
-          </div>
-
-          <div class="workout-day-grid">
-            <details open>
-              <summary>Upper A <span>7 exercises</span></summary>
-              <ul>
-                <li>Dumbbell Bench Press</li>
-                <li>Iso-Lateral Row (Machine, Overhand)</li>
-                <li>Incline Dumbbell Press</li>
-                <li>Assisted Pull-Ups</li>
-                <li>Lateral Raises</li>
-                <li>Triceps Rope Pushdown</li>
-                <li>Dumbbell Curls</li>
-              </ul>
-            </details>
-            <details>
-              <summary>Lower A <span>5 exercises</span></summary>
-              <ul>
-                <li>Leg Press</li>
-                <li>Romanian Deadlift (RDL)</li>
-                <li>Split Squats</li>
-                <li>Leg Curl</li>
-                <li>Barbell Standing Calf Raise</li>
-              </ul>
-            </details>
-            <details>
-              <summary>Upper B <span>7 exercises</span></summary>
-              <ul>
-                <li>Incline Bench Press</li>
-                <li>Seated Cable Row</li>
-                <li>Seated Chest Fly</li>
-                <li>Straight-Arm Pulldown</li>
-                <li>Rear Delt Fly / Face Pull</li>
-                <li>Dumbbell Curls</li>
-                <li>Overhead Triceps Extension</li>
-              </ul>
-            </details>
-            <details>
-              <summary>Lower B <span>6 exercises</span></summary>
-              <ul>
-                <li>Seated Leg Press</li>
-                <li>Hip Abduction</li>
-                <li>Hip Adduction</li>
-                <li>Leg Extension</li>
-                <li>Leg Curl</li>
-                <li>Barbell Standing Calf Raise</li>
-              </ul>
-            </details>
-            <details>
-              <summary>Upper C <span>7 exercises</span></summary>
-              <ul>
-                <li>Seated Chest Press</li>
-                <li>Close-Grip Pulldown</li>
-                <li>Single-Arm Standing Cable Chest Fly (SACCF)</li>
-                <li>Seated Dumbbell Shoulder Press</li>
-                <li>Dips</li>
-                <li>Cable Bicep Curls</li>
-                <li>Dumbbell Skull Crushers</li>
-              </ul>
-            </details>
-          </div>
-        </div>
-
       </section>
 
-      <div class="nutrition-grid">
-        <section class="nutrition-card nutrition-card-wide" aria-labelledby="supplements-title">
-          <div class="nutrition-card-heading">
-            <span aria-hidden="true">💊</span>
-            <h2 id="supplements-title">Supplements</h2>
-          </div>
-          <ul class="nutrition-check-list">
-            <li>Vitamin B12</li>
-            <li>Vitamin D</li>
-            <li>Vitamin C</li>
-            <li>Omega-3</li>
-            <li>Magnesium</li>
-            <li>Collagen</li>
-            <li>Creatine</li>
-            <li>Calcium</li>
-          </ul>
+      <section class="gym-view gym-tracker-view" data-gym-view="tracker" hidden aria-labelledby="tracker-title">
+        <div class="gym-view-heading"><h2 id="tracker-title">Gym Tracker</h2><span data-gym-save-status role="status" aria-live="polite"></span></div>
+
+        <section class="gym-lock" data-gym-lock>
+          <span aria-hidden="true">🔒</span>
+          <h3>Admin approval required</h3>
+          <form data-gym-auth>
+            <label for="gym-password">Admin password</label>
+            <div><input id="gym-password" type="password" autocomplete="current-password" required /><button type="submit">Unlock</button></div>
+          </form>
+          <p data-gym-auth-message role="status" aria-live="polite"></p>
         </section>
 
-        <section class="nutrition-card" aria-labelledby="preworkout-title">
-          <div class="nutrition-card-heading">
-            <span aria-hidden="true">⚡</span>
-            <h2 id="preworkout-title">Pre-workout</h2>
-          </div>
-          <ul class="nutrition-check-list">
-            <li>TruLabs Electrolyte Mix</li>
-          </ul>
-        </section>
+        <div class="gym-tracker" data-gym-tracker hidden>
+          <section class="gym-week-panel" aria-labelledby="gym-week-title">
+            <div class="tracker-panel-heading">
+              <h3 id="gym-week-title">This week</h3>
+              <div class="gym-week-controls">
+                <button type="button" data-gym-week-previous aria-label="Previous week">‹</button>
+                <input type="week" data-gym-week aria-label="Week" />
+                <button type="button" data-gym-week-next aria-label="Next week">›</button>
+              </div>
+            </div>
+            <div class="gym-week-grid" data-gym-week-grid></div>
+          </section>
 
-        <section class="nutrition-card" aria-labelledby="protein-title">
-          <div class="nutrition-card-heading">
-            <span aria-hidden="true">🥤</span>
-            <h2 id="protein-title">Protein</h2>
-          </div>
-          <ul class="nutrition-check-list">
-            <li>Premier Protein Drink</li>
-            <li>Whey Protein Powder <small>post-workout</small></li>
-          </ul>
-        </section>
+          <section class="gym-log-panel" aria-labelledby="gym-log-title">
+            <div class="tracker-panel-heading"><h3 id="gym-log-title">Workout diary</h3><button type="button" class="secondary" data-gym-new-workout>New workout</button></div>
+            <form class="gym-workout-form" data-gym-workout-form>
+              <input type="hidden" name="entryId" />
+              <div class="gym-log-fields">
+                <label>Date<input type="date" name="date" required /></label>
+                <label>Program<select name="program" required><option value="ppl">Push / Pull / Legs</option><option value="upper-lower">Original Split</option></select></label>
+                <label>Workout<select name="workout" required></select></label>
+                <label>Body weight <small>lb</small><input type="number" name="bodyWeight" min="0" step="0.1" inputmode="decimal" /></label>
+              </div>
+              <div class="gym-exercise-editor" data-gym-exercise-editor></div>
+              <label class="gym-notes-field">Notes<textarea name="notes" rows="3"></textarea></label>
+              <div class="gym-form-actions"><button type="button" class="secondary" data-gym-clear>Clear</button><button type="submit">Save workout</button></div>
+            </form>
+          </section>
 
-      </div>
+          <section class="gym-progress-panel" aria-labelledby="gym-progress-title">
+            <div class="tracker-panel-heading">
+              <h3 id="gym-progress-title">Progress</h3>
+              <div class="gym-chart-controls">
+                <select data-gym-chart-exercise aria-label="Exercise"></select>
+                <select data-gym-chart-metric aria-label="Chart metric"><option value="maxWeight">Max weight</option><option value="volume">Volume</option><option value="estimatedOneRepMax">Estimated 1RM</option></select>
+              </div>
+            </div>
+            <div class="gym-chart" data-gym-chart></div>
+          </section>
+
+          <section class="gym-history-panel" aria-labelledby="gym-history-title">
+            <div class="tracker-panel-heading"><h3 id="gym-history-title">Workout history</h3><strong data-gym-history-count></strong></div>
+            <div class="gym-history" data-gym-history></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="gym-view" data-gym-view="program" hidden aria-labelledby="training-title">
+        <div class="workout-planner">
+          <div class="workout-section-heading"><span aria-hidden="true">🏋️</span><h2 id="training-title">Gym Program</h2></div>
+          <div class="progression-rules" aria-label="Progression rules">
+            <strong>Progression</strong>
+            <ul>
+              <li>Increase weight only when every working set reaches 12 reps or the calf rule.</li>
+              <li>If any set is under 12 reps, keep the same weight next session.</li>
+              <li>Never decrease weight unless making an executive decision.</li>
+              <li>Controlled reps. Full range of motion.</li>
+            </ul>
+          </div>
+          <nav class="workout-tabs" aria-label="Training programs">
+            <button type="button" class="active" data-workout-tab="ppl" aria-pressed="true">Push / Pull / Legs</button>
+            <button type="button" data-workout-tab="upper-lower" aria-pressed="false">Original Split</button>
+          </nav>
+          <div class="workout-panel" data-workout-panel="ppl"></div>
+          <div class="workout-panel" data-workout-panel="upper-lower" hidden></div>
+        </div>
+      </section>
     </main>
   </body>
 </html>
