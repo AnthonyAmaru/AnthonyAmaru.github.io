@@ -23,10 +23,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&amp;family=Noto+Serif+SC:wght@500;700&amp;display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=20260806-study2" />
+    <link rel="stylesheet" href="styles.css?v=20260806-authorpage1" />
     <script src="music-cloud.js?v=20260804-titleclean1" defer></script>
     <script src="book-data.js?v=20260805-bookrestore1" defer></script>
-    <script src="script.js?v=20260806-bills3" defer></script>
+    <script src="script.js?v=20260806-authorpage1" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -147,7 +147,7 @@
               <div class="stat-strip three"><div><strong>135</strong><span>known words</span></div><div><strong id="mandarin-written-count">0</strong><span>words I can write</span></div><div><strong id="mandarin-last-score">—</strong><span>last quiz</span></div></div>
             </a>
 
-            <a id="open-book-studio" class="interest-card book-card" href="#book-studio" aria-label="Open A Hypothesis of Man">
+            <a id="open-book-studio" class="interest-card book-card" href="index.html?detail=author&amp;v=20260806-authorpage1" aria-label="Open A Hypothesis of Man">
               <div class="book-card-copy">
                 <div class="interest-icon" aria-hidden="true">✒️</div>
                 <h2>Author</h2>
@@ -245,6 +245,25 @@
 
       </main>
 
+      <section id="book-modal" class="book-modal" aria-label="A Hypothesis of Man author studio" hidden>
+        <span id="book-save-status" hidden>Saved on this device</span>
+        <div class="book-workspace">
+          <aside id="chapter-rail" class="chapter-rail"><div class="chapter-rail-heading"><span>Chapters</span><button id="add-chapter" type="button" aria-label="Add chapter">+</button></div><nav id="chapter-list"></nav><div class="book-privacy"><span>🔒</span><p>Private cloud copy.</p></div></aside>
+          <main class="book-editor-area">
+            <div class="book-editor-controls">
+              <label class="book-title-label"><span>Chapter</span><input id="book-chapter-title" aria-label="Chapter title" /></label>
+              <div class="book-page-toolbar" aria-label="Chapter pages"><button id="chapter-sidebar-toggle" class="chapter-sidebar-toggle" type="button" aria-controls="chapter-rail" aria-expanded="true">Hide chapters</button><button id="chapter-menu" class="chapter-menu-button" type="button" aria-controls="chapter-rail" aria-expanded="false">Chapters</button><button id="book-prev-page" type="button" aria-label="Previous page">←</button><strong id="book-page-position">Page 1 of 1</strong><button id="book-next-page" type="button" aria-label="Next page">→</button><button id="add-book-page" type="button">+ Page</button><button id="book-split-pages" type="button" aria-pressed="false">Two pages</button><button id="export-book-word" type="button">Word</button></div>
+            </div>
+            <details id="book-page-figure" class="book-page-figure" hidden><summary>Figure</summary><img id="book-page-image" alt="" /></details>
+            <div id="book-page-spread" class="book-page-spread">
+              <label class="book-content-label"><span id="book-primary-page-label">Page 1</span><textarea id="book-chapter-content" spellcheck="true" placeholder="Write here…"></textarea></label>
+              <label id="book-secondary-page" class="book-content-label book-secondary-page" hidden><span id="book-secondary-page-label">Page 2</span><textarea id="book-chapter-content-secondary" spellcheck="true" placeholder="Write here…"></textarea></label>
+            </div>
+            <footer><span id="book-word-count">0 words</span><span id="book-updated">Not edited yet</span></footer>
+          </main>
+        </div>
+      </section>
+
       <footer class="site-footer section-shell">
         <div class="footer-identity"><img src="anthony-brand-icon.png" alt="" /><p><strong>Anthony Amaru</strong></p></div>
         <p>anthonyamaru.com</p>
@@ -272,25 +291,6 @@
           <button class="button primary full" type="submit">Unlock this session</button>
         </form>
       </section>
-    </div>
-
-    <div id="book-modal" class="book-modal" hidden>
-      <span id="book-save-status" hidden>Saved on this device</span>
-      <div class="book-workspace">
-        <aside id="chapter-rail" class="chapter-rail"><div class="chapter-rail-heading"><span>Chapters</span><button id="add-chapter" type="button" aria-label="Add chapter">+</button></div><nav id="chapter-list"></nav><div class="book-privacy"><span>🔒</span><p>Private cloud copy.</p></div></aside>
-        <main class="book-editor-area">
-          <div class="book-editor-controls">
-            <label class="book-title-label"><span>Chapter</span><input id="book-chapter-title" aria-label="Chapter title" /></label>
-            <div class="book-page-toolbar" aria-label="Chapter pages"><button id="chapter-sidebar-toggle" class="chapter-sidebar-toggle" type="button" aria-controls="chapter-rail" aria-expanded="true">Hide chapters</button><button id="chapter-menu" class="chapter-menu-button" type="button" aria-controls="chapter-rail" aria-expanded="false">Chapters</button><button id="book-prev-page" type="button" aria-label="Previous page">←</button><strong id="book-page-position">Page 1 of 1</strong><button id="book-next-page" type="button" aria-label="Next page">→</button><button id="add-book-page" type="button">+ Page</button><button id="book-split-pages" type="button" aria-pressed="false">Two pages</button><button id="export-book-word" type="button">Word</button></div>
-          </div>
-          <details id="book-page-figure" class="book-page-figure" hidden><summary>Figure</summary><img id="book-page-image" alt="" /></details>
-          <div id="book-page-spread" class="book-page-spread">
-            <label class="book-content-label"><span id="book-primary-page-label">Page 1</span><textarea id="book-chapter-content" spellcheck="true" placeholder="Write here…"></textarea></label>
-            <label id="book-secondary-page" class="book-content-label book-secondary-page" hidden><span id="book-secondary-page-label">Page 2</span><textarea id="book-chapter-content-secondary" spellcheck="true" placeholder="Write here…"></textarea></label>
-          </div>
-          <footer><span id="book-word-count">0 words</span><span id="book-updated">Not edited yet</span></footer>
-        </main>
-      </div>
     </div>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>

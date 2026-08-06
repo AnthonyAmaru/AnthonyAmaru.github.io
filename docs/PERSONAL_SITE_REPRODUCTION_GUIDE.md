@@ -210,9 +210,9 @@ Content differences are allowed: names, palettes, logos, copy, interests, resume
 - Make each interest tile one large keyboard-accessible control; do not add redundant Open, Notebook, or Test buttons inside it.
 - Keep visible keyboard focus, semantic headings, labels, skip links, and live status regions.
 
-## Interest navigation and the persistent study shell
+## Interest navigation and the persistent detail shell
 
-Every Anthony interest remains a directly addressable complete HTML document. When an interest is opened from the root portal, the portal intercepts that link and loads the document in a normal-flow iframe below the persistent top header and music bar. The root Interests grid and footer are hidden while the detail shell is active, and the embedded document hides its own header and music bar before first paint. This preserves one audio element across Interests → detail → Interests without reproducing the old layered-overlay bug.
+Every content-based Anthony interest remains a directly addressable complete HTML document. When an interest is opened from the root portal, the portal intercepts that link and loads the document in a normal-flow iframe below the persistent top header and music bar. The root Interests grid and footer are hidden while the detail shell is active, and the embedded document hides its own header and music bar before first paint. This preserves one audio element across Interests → detail → Interests without reproducing the old layered-overlay bug. Author is the editor exception: it uses the routed `?detail=author` workspace owned by the root document so its existing private manuscript state remains bound to the same application, but it still replaces the Interests grid in normal flow and is never a fixed modal or overlay.
 
 ```html
 <a class="interest-card" href="mycology.html?v=YYYYMMDD-change1">
@@ -224,6 +224,7 @@ Every Anthony interest remains a directly addressable complete HTML document. Wh
 Additional safeguards:
 
 - Do not use `data-app`, `data-interest-app`, `#app-modal`, or a fixed overlay for interests.
+- The Author workspace belongs inside the persistent portal after `main`, uses a normal-flow minimum-height layout, hides `main` and the footer while active, and restores them when leaving the route.
 - Use `embedded=1` only for portal-managed detail routing. The parent must hide `main` and the footer, the iframe must live in normal flow, and the embedded document must hide both shared chrome rows before paint.
 - Every direct detail URL still works independently with exactly one shared header and one shared music bar.
 - The primary Interests tab always links to `index.html?page=interests` and returns to the complete card grid.
@@ -508,15 +509,15 @@ Then verify:
 - only one shared header and one shared music player exist;
 - no secret or private credential appears in tracked files.
 
-### Required standalone-interest regression test
+### Required interest-route regression test
 
 1. Open `index.html?page=interests`.
-2. Open Books and confirm the browser navigates to `books.html`.
-3. Confirm the Interests grid is not present behind the Books content.
-4. Click the primary Interests tab and confirm the browser returns to `index.html?page=interests`.
-5. Confirm there is one header and one music player on each page.
-6. Confirm there is no portal iframe, app modal, or fixed back button for ordinary interests.
-7. Open Aviation and Mandarin from the portal; confirm the persistent study shell hides the Interests grid and embedded chrome, contains exactly one study iframe, and leaves exactly one parent audio element playing.
+2. Open Books and confirm the portal URL becomes `?detail=books`, the normal-flow detail shell replaces the grid, and the direct `books.html` URL still works independently.
+3. Click the primary Interests tab and confirm the browser returns to `index.html?page=interests`.
+4. Open Author and confirm the URL becomes `?detail=author`, the Interests grid and footer are absent, and the editor occupies normal document flow below the persistent header and music player.
+5. Confirm there is one header and one music player on each route.
+6. Confirm there is no app modal, fixed detail overlay, or fixed back button for any interest.
+7. Move through Aviation, Mandarin, Author, and Books; confirm each route hides the Interests grid, embedded documents hide their duplicate chrome, and exactly one parent audio element keeps playing.
 8. At 768px and 1024px widths, confirm all top tabs are visible and Menu is hidden.
 9. At 390px width, confirm Menu opens the same outlined top tabs.
 
@@ -587,6 +588,7 @@ Append every future bug here. Update the relevant architecture section at the sa
 
 | Date | Symptom | Root cause | Corrected rule | Regression test |
 | --- | --- | --- | --- | --- |
+| 2026-08-06 | On a tablet, Author looked like it was sitting on top of the Interests page. | The manuscript editor was a viewport-fixed `book-modal`, leaving the Interests document underneath even though the editor covered it visually. | Author uses a real `?detail=author` route and a normal-flow workspace inside the persistent portal. Hide the Interests `main` and footer while it is active, preserve the header/player, and never position the editor as a fixed overlay. | Open Author at 390px, 768px, and 1024px; confirm the URL has `detail=author`, the grid/footer are absent from the layout, the editor scrolls normally without layered content, browser Back and the Interests tab restore the grid, and the same audio element remains mounted. |
 | 2026-08-06 | Private Bills balances and payment details could have been downloaded from the public site's HTML even though the page showed an admin gate. | A client-side password screen controls presentation only; values embedded in static GitHub Pages files remain public in source and repository history. | Keep the public Bills document as a value-free locked shell. Store its data in owner-scoped Supabase `site_content`, rely on Auth plus RLS for private reads, and render only after an allowlisted administrator signs in. Amend any unpushed commit that contained private values before publishing. | Search the published source and GitHub tree for every private label/value and find none; query as `anon` and see zero Bills rows; sign in as the allowlisted admin and confirm the dashboard loads. |
 | 2026-08-06 | Exercise Reference remained visible from Interests after it had been removed from the live Gym document. | The parent iframe always requested unversioned `gym.html?embedded=1` and skipped assigning `src` whenever `data-detail` was already `gym`, so cached or already-mounted HTML survived the deployment. | Add a cache version to every detail-shell iframe URL, bump it with detail changes, and replace the iframe whenever its complete URL differs from the current target. | Open Gym from Interests, return to Interests, deploy a Gym HTML change with a bumped detail version, refresh the portal, reopen Gym, and confirm the iframe URL carries the new version and removed content is absent. |
 | 2026-08-05 | Music paused when navigating Interests → Fatherhood → Interests. | Only Aviation and Mandarin were routed through the persistent shell; Fatherhood and the other interest tiles performed full-document navigation, destroying the active audio element. | Route every portal-opened Anthony interest through the normal-flow persistent detail shell, keep direct URLs standalone, and preserve the last playing state during unavoidable standalone unloads. | Start a track, record the parent audio node and `currentTime`, navigate Interests → Fatherhood → Interests and through every other tile, and confirm the same node remains mounted, unpaused, and advancing. |

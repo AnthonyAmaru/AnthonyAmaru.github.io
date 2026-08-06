@@ -155,6 +155,7 @@ function showPortal() {
   $("#entry-gate").hidden = true;
   $("#portal").hidden = false;
   refreshDashboard();
+  if (detailRouteFromUrl() === "author") syncPortalUrl();
 }
 
 function applyTheme(theme) {
@@ -167,6 +168,7 @@ function applyTheme(theme) {
 
 function routeTo(route) {
   closeDetailPage();
+  if (!$("#book-modal").hidden) closeBookStudio();
   const page = $("[data-page='" + route + "']");
   if (!page) return;
   $$(".page-panel").forEach((panel) => panel.classList.toggle("active", panel === page));
@@ -184,6 +186,7 @@ function routeTo(route) {
 
 function detailRouteFromUrl(url = new URL(location.href)) {
   const detail = url.searchParams.get("detail");
+  if (detail === "author") return detail;
   return Object.hasOwn(DETAIL_PAGES, detail) ? detail : null;
 }
 
@@ -206,6 +209,7 @@ function closeDetailPage() {
 function showDetailPage(detail) {
   const path = DETAIL_PAGES[detail];
   if (!path) return false;
+  if (!$("#book-modal").hidden) closeBookStudio();
   $$(".page-panel").forEach((panel) => panel.classList.remove("active"));
   $("#main-content").hidden = true;
   $(".site-footer").hidden = true;
@@ -227,6 +231,12 @@ function showDetailPage(detail) {
 
 function syncPortalUrl() {
   const detail = detailRouteFromUrl();
+  if (detail === "author") {
+    void openBookStudio().then((opened) => {
+      if (!opened && detailRouteFromUrl() === "author") navigatePortal("interests", true);
+    });
+    return;
+  }
   if (detail) showDetailPage(detail); else routeTo(portalRouteFromUrl());
 }
 
@@ -253,6 +263,16 @@ function navigateDetail(detail) {
   url.searchParams.delete("v");
   url.searchParams.set("detail", detail);
   history.pushState({ detail }, "", url);
+  window.scrollTo({ top: 0, behavior: "auto" });
+}
+
+async function navigateAuthor() {
+  if (!(await openBookStudio())) return;
+  const url = new URL(location.href);
+  url.searchParams.delete("page");
+  url.searchParams.delete("v");
+  url.searchParams.set("detail", "author");
+  history.pushState({ detail: "author" }, "", url);
   window.scrollTo({ top: 0, behavior: "auto" });
 }
 
@@ -580,10 +600,12 @@ function queueBookSave() {
 }
 
 async function openBookStudio() {
-  if (!(await ensureCloudMusicAdmin())) return;
+  if (!(await ensureCloudMusicAdmin())) return false;
   await syncBookFromCloud();
+  closeDetailPage();
+  $("#main-content").hidden = true;
+  $(".site-footer").hidden = true;
   $("#book-modal").hidden = false;
-  setModalOpen(true);
   currentBookChapter = 0;
   currentBookPage = 0;
   bookEditorReady = false;
@@ -591,13 +613,15 @@ async function openBookStudio() {
   setBookSplitPages(localStorage.getItem(BOOK_SPLIT_PAGES_KEY) === "true", false);
   renderChapterList();
   loadBookChapter(0, 0, false);
+  return true;
 }
 
 function closeBookStudio() {
-  commitBookEditor();
+  if (bookEditorReady) commitBookEditor();
   bookEditorReady = false;
   $("#book-modal").hidden = true;
-  setModalOpen(false);
+  $("#main-content").hidden = false;
+  $(".site-footer").hidden = false;
 }
 
 function parseMarkdownBook(text) {
@@ -1443,7 +1467,7 @@ $$('[data-open-quick-ai]').forEach((button) => button.addEventListener("click", 
   toggleQuickAi(true);
 }));
 
-$("#open-book-studio").addEventListener("click", (event) => { event.preventDefault(); openBookStudio(); });
+$("#open-book-studio").addEventListener("click", (event) => { event.preventDefault(); void navigateAuthor(); });
 $("#chapter-sidebar-toggle").addEventListener("click", () => setChapterSidebarHidden(!$(".book-workspace").classList.contains("chapters-hidden")));
 $("#chapter-menu").addEventListener("click", () => {
   const rail = $(".chapter-rail");
@@ -1593,7 +1617,7 @@ window.addEventListener("pagehide", () => {
 document.addEventListener("keydown", (event) => {
   if (event.key !== "Escape") return;
   if (!$("#quick-ai-popover").hidden) toggleQuickAi(false);
-  else if (!$("#book-modal").hidden) closeBookStudio();
+  else if (!$("#book-modal").hidden) navigatePortal("interests");
   else if (musicLibraryOpen) closeMusicLibrary();
   else if (!$("#admin-modal").hidden) closeAdminModal(false);
 });
@@ -1605,7 +1629,9 @@ renderResume();
 renderMusic();
 refreshDashboard();
 const initialRoute = portalRouteFromUrl();
-if (!showDetailPage(detailRouteFromUrl())) routeTo(initialRoute);
+const initialDetail = detailRouteFromUrl();
+if (initialDetail === "author") routeTo("interests");
+else if (!showDetailPage(initialDetail)) routeTo(initialRoute);
 installMediaSession();
 if (sessionStorage.getItem("anthony_visitor_unlocked") === "1") showPortal();
 if (musicCloud.isSignedIn()) syncStudyHistoryFromCloud();

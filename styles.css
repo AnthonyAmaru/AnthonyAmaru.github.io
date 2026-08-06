@@ -386,7 +386,7 @@ h1, h2 { font-family: var(--sans); font-weight: 750; letter-spacing: -.035em; }
 .stack-form textarea { min-height: 130px; padding-block: 12px; resize: vertical; }
 .two-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 /* Book studio */
-.book-modal { position: fixed; z-index: 48; inset: calc(var(--header-height) + 68px) 0 0; display: grid; background: var(--canvas-soft); }
+.book-modal { display: grid; min-height: calc(100svh - var(--header-height) - 68px); background: var(--canvas-soft); }
 .chapter-menu-button { display: none; }
 .book-workspace { display: grid; grid-template-columns: 290px 1fr; min-height: 0; }
 .book-workspace.chapters-hidden { grid-template-columns: 1fr; }
