@@ -32,7 +32,7 @@
   shuffleButton.dataset.siteMusicShuffle = "";
   shuffleButton.setAttribute("aria-label", "Shuffle songs");
   shuffleButton.setAttribute("aria-pressed", "false");
-  shuffleButton.textContent = "⇄";
+  shuffleButton.textContent = "Shuffle";
   menu.id = "site-music-menu";
   menu.className = "site-music-menu";
   menu.hidden = true;
