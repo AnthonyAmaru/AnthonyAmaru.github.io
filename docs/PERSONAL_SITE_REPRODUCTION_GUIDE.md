@@ -456,9 +456,24 @@ A publishable key is designed for public clients when RLS is correct. A secret k
 
 - `site-music`: public downloads, authenticated administrator uploads/updates/deletes.
 - `site-art`: private, authenticated administrator reads/uploads/deletes through policies or signed URLs.
+- `tax-documents`: private, 20 MB per file, PDF/JPG/PNG only, and readable/writable only when the path belongs to the authenticated allowlisted administrator.
 - Paths use `SITE_SLUG/USER_UUID/FILE`.
 - A public bucket allows public downloads; uploads still require Storage RLS policies.
 - Storage upsert requires the policies needed for insert, select, and update. Avoid upsert when a new immutable object path is sufficient.
+
+### Private tax workspace
+
+Treat tax data as a private application, even when the surrounding site is public and static:
+
+- Keep the public HTML free of names, birth dates, addresses, tax identifiers, balances, W-2 values, and document paths.
+- Store the editable organizer in owner-scoped `site_content` behind Auth, administrator membership, explicit grants, and RLS.
+- Store source documents only in the private `tax-documents` bucket. Never use a public URL for a tax document.
+- Download private files with the signed-in user's JWT and revoke temporary browser blob URLs after viewing.
+- Hash files before upload to prevent accidental duplicates. Use random immutable object names rather than user-supplied filenames in paths.
+- Perform OCR locally in the browser where practical. Do not send W-2 text, SSNs, bank information, IP PINs, or prior-year AGI to a general LLM provider.
+- Treat OCR and mappings as drafts. Require the owner to review every W-2 box against the original and then file through an official IRS/NJ service or qualified preparer.
+- Do not persist the full SSN, refund bank account, prior-year AGI, e-file PIN, or IRS Identity Protection PIN in this website. Enter them only into the official filing service for the active session.
+- A static personal site must not claim to e-file or transmit returns unless it has a separately audited, authorized e-file integration. The reusable pattern is an organizer and review worksheet only.
 
 ## Phase 5 — protected AI gateway
 
@@ -588,6 +603,7 @@ Append every future bug here. Update the relevant architecture section at the sa
 
 | Date | Symptom | Root cause | Corrected rule | Regression test |
 | --- | --- | --- | --- | --- |
+| 2026-08-06 | Tax tools appeared behind the administrator lock before authentication, and the lock remained over the workspace after authentication. | Author styles assigned `display:grid` to both lock and workspace, which outranked the browser's default `[hidden] { display:none }` rule. | Every protected, lock, or panel-switched component that also defines `display` must include an explicit `[hidden] { display:none !important }` guard. Authentication controls both data access and mutually exclusive lock/workspace visibility. | Load Taxes signed out and confirm only the lock is visible; sign in and confirm the lock has zero layout size, the workspace is visible, and exactly one workspace panel is visible. |
 | 2026-08-06 | On a tablet, Author looked like it was sitting on top of the Interests page. | The manuscript editor was a viewport-fixed `book-modal`, leaving the Interests document underneath even though the editor covered it visually. | Author uses a real `?detail=author` route and a normal-flow workspace inside the persistent portal. Hide the Interests `main` and footer while it is active, preserve the header/player, and never position the editor as a fixed overlay. | Open Author at 390px, 768px, and 1024px; confirm the URL has `detail=author`, the grid/footer are absent from the layout, the editor scrolls normally without layered content, browser Back and the Interests tab restore the grid, and the same audio element remains mounted. |
 | 2026-08-06 | Private Bills balances and payment details could have been downloaded from the public site's HTML even though the page showed an admin gate. | A client-side password screen controls presentation only; values embedded in static GitHub Pages files remain public in source and repository history. | Keep the public Bills document as a value-free locked shell. Store its data in owner-scoped Supabase `site_content`, rely on Auth plus RLS for private reads, and render only after an allowlisted administrator signs in. Amend any unpushed commit that contained private values before publishing. | Search the published source and GitHub tree for every private label/value and find none; query as `anon` and see zero Bills rows; sign in as the allowlisted admin and confirm the dashboard loads. |
 | 2026-08-06 | Exercise Reference remained visible from Interests after it had been removed from the live Gym document. | The parent iframe always requested unversioned `gym.html?embedded=1` and skipped assigning `src` whenever `data-detail` was already `gym`, so cached or already-mounted HTML survived the deployment. | Add a cache version to every detail-shell iframe URL, bump it with detail changes, and replace the iframe whenever its complete URL differs from the current target. | Open Gym from Interests, return to Interests, deploy a Gym HTML change with a bumped detail version, refresh the portal, reopen Gym, and confirm the iframe URL carries the new version and removed content is absent. |
@@ -655,6 +671,10 @@ Append every future bug here. Update the relevant architecture section at the sa
 - Supabase Data API security: https://supabase.com/docs/guides/api/securing-your-api
 - Supabase RLS: https://supabase.com/docs/guides/database/postgres/row-level-security
 - Supabase Storage access control: https://supabase.com/docs/guides/storage/security/access-control
+- IRS individual filing: https://www.irs.gov/individual-tax-filing
+- IRS Free File: https://www.irs.gov/file-your-taxes-for-free
+- New Jersey income tax forms: https://www.nj.gov/treasury/taxation/prntgit.shtml
+- New Jersey online filing: https://www.nj.gov/treasury/taxation/forms/efile.shtml
 - Supabase Edge Functions: https://supabase.com/docs/guides/functions
 - Supabase function authentication: https://supabase.com/docs/guides/functions/auth
 - Supabase function secrets: https://supabase.com/docs/guides/functions/secrets

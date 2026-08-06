@@ -412,6 +412,38 @@
       return (await readResponse(response))?.[0];
     }
 
+    async uploadPrivateFile(bucket, storagePath, file) {
+      this.requireAdmin();
+      const response = await fetch(`${PROJECT_URL}/storage/v1/object/${encodeURIComponent(bucket)}/${encodeStoragePath(storagePath)}`, {
+        method: "POST",
+        headers: this.headers({ "Content-Type": file.type || "application/octet-stream", "x-upsert": "false" }, true),
+        body: file,
+      });
+      return readResponse(response);
+    }
+
+    async downloadPrivateFile(bucket, storagePath) {
+      this.requireAdmin();
+      const response = await fetch(`${PROJECT_URL}/storage/v1/object/authenticated/${encodeURIComponent(bucket)}/${encodeStoragePath(storagePath)}`, {
+        headers: this.headers({}, true),
+        cache: "no-store",
+      });
+      if (!response.ok) await readResponse(response);
+      return response.blob();
+    }
+
+    async deletePrivateFiles(bucket, storagePaths) {
+      this.requireAdmin();
+      const paths = [...new Set(storagePaths.map(String).filter(Boolean))];
+      if (!paths.length) return;
+      const response = await fetch(`${PROJECT_URL}/storage/v1/object/${encodeURIComponent(bucket)}`, {
+        method: "DELETE",
+        headers: this.headers({ "Content-Type": "application/json" }, true),
+        body: JSON.stringify({ prefixes: paths }),
+      });
+      await readResponse(response);
+    }
+
     requireAdmin() {
       if (!this.isSignedIn()) throw new Error("Administrator sign-in is required.");
     }

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#f2f4f0" />
-    <meta name="description" content="Anthony Amaru's taxes workspace." />
+    <meta name="description" content="Anthony Amaru's private tax organizer." />
     <title>Taxes · Anthony Amaru</title>
     <link rel="icon" href="anthony-favicon.ico?v=snake-1" sizes="any" />
     <link rel="icon" type="image/png" href="anthony-favicon-32.png?v=snake-1" sizes="32x32" />
@@ -15,10 +15,12 @@
     <link rel="stylesheet" href="site-header.css?v=20260806-study2" />
     <link rel="stylesheet" href="site-music.css?v=20260806-study2" />
     <link rel="stylesheet" href="interest-detail.css?v=20260806-programs1" />
-    <script src="music-cloud.js?v=20260804-titleclean1"></script>
+    <link rel="stylesheet" href="taxes.css?v=20260806-tax3" />
+    <script src="music-cloud.js?v=20260806-tax2"></script>
     <script src="site-header.js?v=20260806-study2" defer></script>
     <script src="site-music.js?v=20260806-study2" defer></script>
     <script src="site-ai.js?v=20260806-study2" defer></script>
+    <script src="taxes.js?v=20260806-tax2" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -39,9 +41,108 @@
       <button type="button" data-site-music-play aria-label="Play or pause">▶</button>
       <button type="button" data-site-music-next aria-label="Next song">›</button>
     </aside>
-    <main id="main-content" class="empty-interest-page">
-      <h1>Taxes</h1>
-      <div class="interest-placeholder"><span aria-hidden="true">🧾</span><strong>Taxes</strong></div>
+
+    <main id="main-content" class="taxes-page">
+      <header class="taxes-heading">
+        <span aria-hidden="true">🧾</span>
+        <h1>Taxes</h1>
+        <strong data-tax-year-label hidden></strong>
+      </header>
+
+      <section class="tax-lock" data-tax-lock aria-labelledby="tax-lock-title">
+        <span aria-hidden="true">🔒</span>
+        <h2 id="tax-lock-title">Admin approval required</h2>
+        <form data-tax-auth>
+          <label for="tax-password">Admin password</label>
+          <div><input id="tax-password" type="password" autocomplete="current-password" required /><button type="submit">Unlock</button></div>
+        </form>
+        <p data-tax-message role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="tax-workspace" data-tax-workspace hidden>
+        <nav class="tax-tools" aria-label="Tax tools">
+          <button type="button" class="primary" data-tax-panel-button="run" aria-pressed="true">Run Taxes</button>
+          <button type="button" data-tax-panel-button="profile" aria-pressed="false">Profile</button>
+          <button type="button" data-tax-panel-button="documents" aria-pressed="false">Documents</button>
+          <button type="button" data-tax-panel-button="draft" aria-pressed="false">Draft</button>
+          <button type="button" data-tax-panel-button="forms" aria-pressed="false">Forms</button>
+        </nav>
+
+        <section class="tax-panel tax-run-panel" data-tax-panel="run">
+          <label class="tax-drop-zone" data-tax-drop-zone for="tax-file-input">
+            <span aria-hidden="true">＋</span>
+            <strong>Drop W-2 files</strong>
+            <small>PDF · JPG · PNG</small>
+            <input id="tax-file-input" type="file" accept="application/pdf,image/jpeg,image/png" multiple hidden />
+          </label>
+          <div class="tax-run-actions">
+            <button type="button" data-tax-choose-files>Choose files</button>
+            <button type="button" data-tax-add-w2>Add W-2 manually</button>
+          </div>
+          <div class="tax-progress" data-tax-progress role="status" aria-live="polite" hidden>
+            <progress max="100" value="0"></progress><span>Ready</span>
+          </div>
+          <div class="tax-run-summary" data-tax-run-summary></div>
+        </section>
+
+        <section class="tax-panel" data-tax-panel="profile" hidden>
+          <form class="tax-profile-form" data-tax-profile-form>
+            <div class="tax-field wide"><label for="tax-legal-name">Legal name</label><input id="tax-legal-name" name="legalName" autocomplete="name" required /></div>
+            <div class="tax-field"><label for="tax-birth-date">Date of birth</label><input id="tax-birth-date" name="birthDate" type="date" autocomplete="bday" required /></div>
+            <div class="tax-field"><label for="tax-filing-status">Filing status</label><select id="tax-filing-status" name="filingStatus" required><option value="">Choose</option><option value="single">Single</option><option value="married-joint">Married filing jointly</option><option value="married-separate">Married filing separately</option><option value="head-of-household">Head of household</option><option value="qualifying-surviving-spouse">Qualifying surviving spouse</option></select></div>
+            <div class="tax-field wide"><label for="tax-address-one">Address</label><input id="tax-address-one" name="address1" autocomplete="address-line1" required /></div>
+            <div class="tax-field"><label for="tax-address-two">Unit</label><input id="tax-address-two" name="address2" autocomplete="address-line2" /></div>
+            <div class="tax-field"><label for="tax-city">City</label><input id="tax-city" name="city" autocomplete="address-level2" required /></div>
+            <div class="tax-field"><label for="tax-state">State</label><input id="tax-state" name="state" maxlength="2" autocomplete="address-level1" required /></div>
+            <div class="tax-field"><label for="tax-postal-code">ZIP</label><input id="tax-postal-code" name="postalCode" inputmode="numeric" autocomplete="postal-code" required /></div>
+            <div class="tax-field"><label for="tax-dependents">Dependents</label><input id="tax-dependents" name="dependents" type="number" min="0" step="1" required /></div>
+            <div class="tax-field"><label for="tax-occupation">Occupation</label><input id="tax-occupation" name="occupation" autocomplete="organization-title" /></div>
+            <div class="tax-field"><label for="tax-phone">Phone</label><input id="tax-phone" name="phone" type="tel" autocomplete="tel" /></div>
+            <div class="tax-field"><label for="tax-email">Email</label><input id="tax-email" name="email" type="email" autocomplete="email" /></div>
+            <div class="tax-field"><label for="tax-nj-residency">NJ residency</label><select id="tax-nj-residency" name="njResidency"><option value="full-year">Full year</option><option value="part-year">Part year</option><option value="nonresident">Nonresident</option></select></div>
+            <div class="tax-field"><label for="tax-municipality">County/municipality code</label><input id="tax-municipality" name="municipalityCode" inputmode="numeric" /></div>
+            <div class="tax-field"><label for="tax-ssn-last-four">SSN last 4 only</label><input id="tax-ssn-last-four" name="ssnLastFour" inputmode="numeric" maxlength="4" pattern="[0-9]{0,4}" autocomplete="off" /></div>
+            <div class="tax-profile-actions"><button type="submit">Save profile</button><span data-tax-profile-status role="status"></span></div>
+          </form>
+          <p class="tax-security-note">Full SSN, bank numbers, prior-year AGI, and IRS IP PIN are never stored here.</p>
+        </section>
+
+        <section class="tax-panel" data-tax-panel="documents" hidden>
+          <div class="tax-document-list" data-tax-document-list></div>
+        </section>
+
+        <section class="tax-panel" data-tax-panel="draft" hidden>
+          <div class="tax-draft" data-tax-draft></div>
+        </section>
+
+        <section class="tax-panel" data-tax-panel="forms" hidden>
+          <div class="tax-form-links" data-tax-form-links></div>
+        </section>
+      </section>
     </main>
+
+    <dialog class="tax-w2-dialog" data-tax-w2-dialog>
+      <form method="dialog" data-tax-w2-form>
+        <header><h2>W-2</h2><button type="button" data-tax-w2-close aria-label="Close">×</button></header>
+        <input type="hidden" name="id" />
+        <div class="tax-w2-grid">
+          <label class="wide">Employer<input name="employerName" /></label>
+          <label>Tax year<input name="taxYear" type="number" min="2000" max="2100" required /></label>
+          <label>Box 1 · Wages<input name="box1" inputmode="decimal" /></label>
+          <label>Box 2 · Federal withheld<input name="box2" inputmode="decimal" /></label>
+          <label>Box 3 · Social Security wages<input name="box3" inputmode="decimal" /></label>
+          <label>Box 4 · Social Security withheld<input name="box4" inputmode="decimal" /></label>
+          <label>Box 5 · Medicare wages<input name="box5" inputmode="decimal" /></label>
+          <label>Box 6 · Medicare withheld<input name="box6" inputmode="decimal" /></label>
+          <label>Box 16 · NJ wages<input name="box16" inputmode="decimal" /></label>
+          <label>Box 17 · NJ withheld<input name="box17" inputmode="decimal" /></label>
+          <label>Box 14 · UI/WF/SWF<input name="njUi" inputmode="decimal" /></label>
+          <label>Box 14 · DI<input name="njDi" inputmode="decimal" /></label>
+          <label>Box 14 · FLI<input name="njFli" inputmode="decimal" /></label>
+        </div>
+        <p data-tax-w2-ocr-note></p>
+        <div class="tax-w2-actions"><button type="button" class="danger" data-tax-w2-delete hidden>Delete W-2</button><button type="submit" value="save">Save W-2</button></div>
+      </form>
+    </dialog>
   </body>
 </html>
