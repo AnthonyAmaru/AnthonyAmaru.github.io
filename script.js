@@ -14,6 +14,8 @@ const DETAIL_PAGES = {
   ai: "ai.html",
   fatherhood: "fatherhood.html",
   gym: "gym.html",
+  taxes: "taxes.html",
+  health: "health.html",
   blockchain: "blockchain.html",
 };
 const KEYS = {
