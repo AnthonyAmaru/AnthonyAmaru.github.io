@@ -132,6 +132,36 @@ select:focus, input:focus { border-color: var(--mint-strong); box-shadow: 0 0 0 
 .wrong-bank-panel span { color: var(--muted); font-size: .9rem; }
 .wrong-bank-panel strong { color: var(--ink); font-size: 1.1rem; }
 
+.pricing-panel { margin-top: 20px; padding: 0; overflow: hidden; }
+.pricing-panel > summary { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 22px 26px; cursor: pointer; list-style: none; }
+.pricing-panel > summary::-webkit-details-marker { display: none; }
+.pricing-panel > summary span { display: grid; gap: 3px; }
+.pricing-panel > summary small { color: var(--muted); font-size: .72rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.pricing-panel > summary strong { font-size: clamp(1.15rem, 2vw, 1.45rem); }
+.pricing-panel > summary b { border-radius: 999px; background: var(--ink); color: var(--bg); padding: 9px 13px; font-size: .85rem; white-space: nowrap; }
+.pricing-panel > summary::after { content: "+"; font-size: 1.35rem; font-weight: 700; }
+.pricing-panel[open] > summary::after { content: "−"; }
+.pricing-content { display: grid; gap: 18px; border-top: 1px solid var(--line); padding: 0 26px 26px; }
+.pricing-table-wrap { overflow-x: auto; margin: 0 -26px; }
+.pricing-table-wrap table { width: 100%; min-width: 850px; border-collapse: collapse; }
+.pricing-table-wrap th, .pricing-table-wrap td { border-bottom: 1px solid var(--line); padding: 14px 16px; text-align: left; vertical-align: top; }
+.pricing-table-wrap thead th { background: rgba(220,235,245,.55); color: var(--muted); font-size: .73rem; letter-spacing: .06em; text-transform: uppercase; }
+.pricing-table-wrap tbody td { font-size: .88rem; line-height: 1.4; }
+.pricing-table-wrap td small { display: block; margin-top: 3px; color: var(--muted); }
+.pricing-table-wrap tfoot th, .pricing-table-wrap tfoot td { border-bottom: 0; background: rgba(234,211,154,.28); font-weight: 800; }
+.price-cell { font-weight: 800; white-space: nowrap; }
+.pricing-summary-grid { display: grid; grid-template-columns: 1fr .8fr 1fr; gap: 12px; }
+.pricing-summary-grid section { border: 1px solid var(--line); border-radius: 15px; background: rgba(220,235,245,.32); padding: 17px; }
+.pricing-summary-grid h3 { margin: 0 0 12px; font-size: 1rem; }
+.pricing-summary-grid ul { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.pricing-summary-grid li { display: grid; gap: 2px; }
+.pricing-summary-grid li strong { font-size: .96rem; }
+.pricing-summary-grid li span, .all-in-card span { color: var(--muted); font-size: .8rem; line-height: 1.35; }
+.pricing-summary-grid .all-in-card { display: grid; align-content: center; justify-items: center; background: rgba(234,211,154,.34); text-align: center; }
+.all-in-card small { color: var(--muted); font-weight: 800; text-transform: uppercase; }
+.all-in-card > strong { margin: 7px 0 3px; font-size: clamp(1.35rem, 3vw, 2rem); }
+.pricing-note { margin: 0; color: var(--muted); font-size: .84rem; text-align: center; }
+
 .results-card { max-width: 760px; margin: 18px auto 20px; text-align: center; }
 .result-ring { display: grid; place-items: center; width: 110px; height: 110px; margin: 0 auto 20px; border-radius: 50%; background: var(--mint); font-size: 1.7rem; font-weight: 900; }
 .result-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
@@ -161,6 +191,11 @@ footer { padding: 28px 0 44px; text-align: center; }
 :root[data-theme="dark"] .answer-option.incorrect { background: rgba(139, 70, 76, 0.28); }
 :root[data-theme="dark"] .admin-lock { background: rgba(10, 15, 12, 0.94); }
 :root[data-theme="dark"] .unlock-card { background: var(--surface-strong); }
+:root[data-theme="dark"] .pricing-table-wrap thead th,
+:root[data-theme="dark"] .pricing-summary-grid section { background: rgba(33,50,40,.86); }
+:root[data-theme="dark"] .pricing-table-wrap tfoot th,
+:root[data-theme="dark"] .pricing-table-wrap tfoot td,
+:root[data-theme="dark"] .pricing-summary-grid .all-in-card { background: rgba(88,75,44,.64); }
 
 @media (max-width: 760px) {
   .app-header { align-items: center; padding-top: 24px; }
@@ -179,6 +214,11 @@ footer { padding: 28px 0 44px; text-align: center; }
   .app-header .eyebrow { display: none; }
   .panel { border-radius: 22px; }
   .setup-panel, .history-panel, .search-panel { padding: 22px 18px; }
+  .pricing-panel > summary { gap: 10px; padding: 18px; }
+  .pricing-panel > summary b { padding: 7px 10px; font-size: .75rem; }
+  .pricing-content { padding: 0 18px 18px; }
+  .pricing-table-wrap { margin: 0 -18px; }
+  .pricing-summary-grid { grid-template-columns: 1fr; }
   .search-form { display: grid; }
   .quiz-progress-copy { display: grid; gap: 2px; text-align: right; }
   .result-actions .button { width: 100%; }
