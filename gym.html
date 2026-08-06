@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Newsreader:opsz,wght@6..72,500&amp;display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="site-header.css?v=20260806-study2" />
     <link rel="stylesheet" href="site-music.css?v=20260806-study2" />
-    <link rel="stylesheet" href="interest-detail.css?v=20260806-nogoals1" />
+    <link rel="stylesheet" href="interest-detail.css?v=20260806-compactgym1" />
     <script src="music-cloud.js?v=20260804-titleclean1"></script>
     <script src="site-header.js?v=20260806-study2" defer></script>
     <script src="site-music.js?v=20260806-study2" defer></script>
@@ -41,7 +41,7 @@
       <button type="button" data-site-music-next aria-label="Next song">›</button>
     </aside>
     <main id="main-content">
-      <h1>Gym &amp; Nutrition</h1>
+      <h1 class="gym-page-title">Gym &amp; Nutrition</h1>
 
       <section class="workout-planner" aria-labelledby="training-title">
         <div class="workout-section-heading">
@@ -62,7 +62,6 @@
         <nav class="workout-tabs" aria-label="Training programs">
           <button type="button" class="active" data-workout-tab="ppl" aria-pressed="true">Push / Pull / Legs</button>
           <button type="button" data-workout-tab="upper-lower" aria-pressed="false">Upper / Lower</button>
-          <button type="button" data-workout-tab="reference" aria-pressed="false">Exercise Reference</button>
         </nav>
 
         <div class="workout-panel" data-workout-panel="ppl">
@@ -192,14 +191,6 @@
           </div>
         </div>
 
-        <div class="workout-panel exercise-reference" data-workout-panel="reference" hidden>
-          <details open><summary>Chest <span>6 exercises</span></summary><ul><li>Dumbbell Bench Press</li><li>Incline Dumbbell Press</li><li>Incline Bench Press</li><li>Seated Chest Press</li><li>Seated Chest Fly</li><li>Single-Arm Standing Cable Chest Fly (SACCF)</li></ul></details>
-          <details><summary>Back <span>5 exercises</span></summary><ul><li>Assisted Pull-Ups</li><li>Iso-Lateral Row</li><li>Seated Cable Row</li><li>Close-Grip Pulldown</li><li>Straight-Arm Pulldown</li></ul></details>
-          <details><summary>Shoulders <span>3 exercises</span></summary><ul><li>Seated Dumbbell Shoulder Press</li><li>Lateral Raises</li><li>Rear Delt Fly / Face Pull</li></ul></details>
-          <details><summary>Triceps <span>4 exercises</span></summary><ul><li>Rope Pushdown</li><li>Overhead Triceps Extension</li><li>Dumbbell Skull Crushers</li><li>Dips</li></ul></details>
-          <details><summary>Biceps <span>2 exercises</span></summary><ul><li>Dumbbell Curls</li><li>Cable Bicep Curls</li></ul></details>
-          <details><summary>Legs <span>9 exercises</span></summary><ul><li>Leg Press</li><li>Seated Leg Press</li><li>Romanian Deadlift</li><li>Split Squats</li><li>Leg Extension</li><li>Leg Curl</li><li>Hip Abduction</li><li>Hip Adduction</li><li>Barbell Standing Calf Raise</li></ul></details>
-        </div>
       </section>
 
       <div class="nutrition-grid">

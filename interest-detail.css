@@ -59,6 +59,7 @@ h1 { margin:0; font:500 clamp(3.7rem,11vw,8rem)/.86 "Newsreader",serif; letter-s
 :root[data-theme="dark"] .fatherhood-bubbles li:nth-child(7) { background: #304438; }
 
 .empty-interest-page { min-height: calc(100svh - 140px); }
+.gym-page-title { font-size: clamp(2.25rem, 4vw, 3.6rem); line-height: 1; }
 
 .workout-planner {
   display: grid;
@@ -85,7 +86,7 @@ h1 { margin:0; font:500 clamp(3.7rem,11vw,8rem)/.86 "Newsreader",serif; letter-s
 .progression-rules ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 18px; margin: 0; padding-left: 18px; }
 .progression-rules li { line-height: 1.4; }
 
-.workout-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.workout-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .workout-tabs button {
   min-height: 52px;
   border: 1px solid var(--line);
@@ -107,24 +108,15 @@ h1 { margin:0; font:500 clamp(3.7rem,11vw,8rem)/.86 "Newsreader",serif; letter-s
 .training-schedule span { display: grid; gap: 3px; border-radius: 10px; background: color-mix(in srgb, var(--surface) 76%, #dce7d7); padding: 12px; color: var(--muted); }
 .training-schedule strong { color: var(--ink); }
 
-.workout-day-grid,
-.exercise-reference { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; align-items: start; }
-.workout-day-grid details,
-.exercise-reference details { overflow: hidden; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); }
-.workout-day-grid summary,
-.exercise-reference summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 15px; font-weight: 800; cursor: pointer; list-style: none; }
-.workout-day-grid summary::-webkit-details-marker,
-.exercise-reference summary::-webkit-details-marker { display: none; }
-.workout-day-grid summary::after,
-.exercise-reference summary::after { content: "+"; font-size: 1.2rem; }
-.workout-day-grid details[open] summary::after,
-.exercise-reference details[open] summary::after { content: "−"; }
-.workout-day-grid summary span,
-.exercise-reference summary span { margin-left: auto; color: var(--muted); font-size: .78rem; font-weight: 600; }
-.workout-day-grid ul,
-.exercise-reference ul { display: grid; gap: 8px; margin: 0; border-top: 1px solid var(--line); padding: 14px 18px 16px 34px; }
-.workout-day-grid li,
-.exercise-reference li { line-height: 1.35; }
+.workout-day-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; align-items: start; }
+.workout-day-grid details { overflow: hidden; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); }
+.workout-day-grid summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 15px; font-weight: 800; cursor: pointer; list-style: none; }
+.workout-day-grid summary::-webkit-details-marker { display: none; }
+.workout-day-grid summary::after { content: "+"; font-size: 1.2rem; }
+.workout-day-grid details[open] summary::after { content: "−"; }
+.workout-day-grid summary span { margin-left: auto; color: var(--muted); font-size: .78rem; font-weight: 600; }
+.workout-day-grid ul { display: grid; gap: 8px; margin: 0; border-top: 1px solid var(--line); padding: 14px 18px 16px 34px; }
+.workout-day-grid li { line-height: 1.35; }
 
 :root[data-theme="dark"] .progression-rules { background: #3d3829; }
 :root[data-theme="dark"] .training-schedule span { background: #263329; }
@@ -189,7 +181,6 @@ h1 { margin:0; font:500 clamp(3.7rem,11vw,8rem)/.86 "Newsreader",serif; letter-s
   .nutrition-card-wide { grid-column: auto; }
   .nutrition-check-list { grid-template-columns: 1fr; }
   .progression-rules ul,
-  .workout-day-grid,
-  .exercise-reference { grid-template-columns: 1fr; }
+  .workout-day-grid { grid-template-columns: 1fr; }
   .workout-tabs { grid-template-columns: 1fr; }
 }
