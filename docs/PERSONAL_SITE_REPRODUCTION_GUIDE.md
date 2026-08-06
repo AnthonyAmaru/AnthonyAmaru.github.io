@@ -247,6 +247,7 @@ This defensive cleanup does not replace correct standalone navigation. Fix any d
 - Run the theme script in the document head to avoid a light-mode flash.
 - Every page must use the same theme tokens and support dark mode.
 - Include one shared music player on every standalone page.
+- Keep the complete two-row chrome identical on portal and standalone routes: brand, primary tabs, theme, cloud state, current track, playlist queue, previous/play/next, and the single-question AI button. Page-specific scripts must not replace or omit these shared controls.
 - Give the top player one playlist selector and one song selector on every route; both controls must remain reachable on phones and tablets.
 - Choosing All Songs or a named playlist immediately starts its first track. Previous, next, and automatic advance must stay inside that active queue until another playlist is chosen.
 - Save active playlist, track identity, and playback position before page unload, then restore the same queue on the destination page.
@@ -302,6 +303,7 @@ The music page should support:
 - On a language notebook, make every target-language word, sentence, dialogue turn, drill, character, flashcard, and reading paragraph a keyboard-accessible pronunciation target. Use delegated events so dynamically rendered study items retain speech behavior.
 - Reading exercises may introduce at most five new terms per paragraph. Keep the remaining text within the known vocabulary, highlight the new terms, and list their pronunciation and meaning beside the paragraph.
 - Debounce manuscript saves, show save state, and keep a local recovery copy.
+- Let the writer hide the desktop chapter rail and expand the editor to full width. Keep a persistent Show chapters control, remember the preference on the device, and retain the existing off-canvas Chapters control on phone and tablet layouts.
 - Version manuscript schemas. During a schema upgrade, backfill an empty saved page from its matching packaged default, preserve every nonempty user page, and persist the upgraded document locally and to the authenticated cloud record.
 - For larger or important documents, add append-only revisions rather than overwriting the only cloud copy.
 - Static entrance passwords are presentation gates only. They are not data security.
@@ -557,6 +559,7 @@ Append every future bug here. Update the relevant architecture section at the sa
 
 | Date | Symptom | Root cause | Corrected rule | Regression test |
 | --- | --- | --- | --- | --- |
+| 2026-08-05 | Aviation and Mandarin used a differently spaced top header and their AI button disappeared. | Standalone pages loaded simplified header/player scripts that omitted the cloud action and root portal AI control. | All standalone routes load the same versioned shared header, music, and AI assets; the shared chrome contains the same navigation, theme, cloud, playlist, transport, and AI controls as the portal. | Open Resume, Interests, Aviation, Mandarin notebook, and Mandarin Quiz at desktop/tablet/phone widths; compare both top rows, confirm one of every control, unlock cloud, and submit one AI question with Enter. |
 | 2026-08-05 | The light/dark control disappeared on Aviation, Books, and Mandarin detail pages. | The root portal owned its own theme button, while the shared standalone header applied a saved theme but rendered no control. | `site-header.js` creates exactly one shared theme button and `site-theme.js` owns the persisted toggle API; every standalone page loads the same versioned assets. | Open Aviation, Books, Mandarin notebook, and Mandarin Quiz at phone/tablet/desktop widths; toggle twice and confirm the button remains visible, the theme changes, and the choice survives navigation. |
 | 2026-08-05 | Mandarin speech existed only in Reading and Quiz. | Pronunciation was wired to two dedicated buttons instead of the notebook's shared Chinese-language elements and dynamic renderers. | Use delegated speech on every `zh-Hans` or explicit speech target, enhance dynamic nodes for keyboard access, and keep the dedicated long-reading control. | Tap and keyboard-activate a greeting, flashcard, word, sound drill, sentence, dialogue, reading, and character; confirm each sends its current text to a `zh-CN` system voice. |
 | 2026-08-05 | Mandarin and Aviation tests could not return to a prior question. | Each render reset one global selected/checked state, while results were appended rather than indexed by question. | Store responses by question index and render Previous/Next from that stable state; recompute the score from checked responses. | Answer question 1, open question 2, return to question 1, and confirm its selection, feedback, and single score point remain unchanged. |

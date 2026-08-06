@@ -34,7 +34,8 @@
   songLabel.textContent = "Choose a song";
   songLabel.append(songSelect);
   menu.append(playlistLabel, songLabel);
-  bar.append(queueButton, menu);
+  bar.insertBefore(queueButton, bar.firstElementChild);
+  bar.append(menu);
 
   function readState() {
     try { return JSON.parse(sessionStorage.getItem(stateKey)) || null; } catch { return null; }

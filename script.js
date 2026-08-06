@@ -2,6 +2,7 @@ const VISITOR_HASH = "5723360ef11043a879520412e9ad897e0ebcb99cc820ec363bfecc9d75
 const ADMIN_HASH = "1e67aef3b01e797309c5588def71607f40a4facc6b8993af9a62306f727a2e5a";
 const CLOUD_ADMIN_EMAIL = "anthonyamaru93@gmail.com";
 const MUSIC_PLAYER_STATE_KEY = "anthony_music_player_state_v1";
+const BOOK_CHAPTER_SIDEBAR_KEY = "anthony_book_chapter_sidebar_hidden";
 const KEYS = {
   theme: "anthony_portal_theme",
   resume: "anthony_resume_v1",
@@ -453,6 +454,17 @@ function loadBookChapter(index, pageIndex = 0, commitCurrent = true) {
   setBookUpdatedTime(book);
   renderChapterList();
   $(".chapter-rail").classList.remove("open");
+  $("#chapter-menu").setAttribute("aria-expanded", "false");
+}
+
+function setChapterSidebarHidden(hidden, persist = true) {
+  const workspace = $(".book-workspace");
+  const toggle = $("#chapter-sidebar-toggle");
+  workspace.classList.toggle("chapters-hidden", hidden);
+  toggle.textContent = hidden ? "Show chapters" : "Hide chapters";
+  toggle.setAttribute("aria-expanded", String(!hidden));
+  if (persist) localStorage.setItem(BOOK_CHAPTER_SIDEBAR_KEY, hidden ? "true" : "false");
+  if (hidden) $("#book-chapter-content").focus();
 }
 
 function updateBookCounts() {
@@ -476,6 +488,7 @@ async function openBookStudio() {
   currentBookChapter = 0;
   currentBookPage = 0;
   bookEditorReady = false;
+  setChapterSidebarHidden(localStorage.getItem(BOOK_CHAPTER_SIDEBAR_KEY) === "true", false);
   renderChapterList();
   loadBookChapter(0, 0, false);
 }
@@ -1060,7 +1073,12 @@ $$('[data-open-quick-ai]').forEach((button) => button.addEventListener("click", 
 }));
 
 $("#open-book-studio").addEventListener("click", (event) => { event.preventDefault(); openBookStudio(); });
-$("#chapter-menu").addEventListener("click", () => $(".chapter-rail").classList.toggle("open"));
+$("#chapter-sidebar-toggle").addEventListener("click", () => setChapterSidebarHidden(!$(".book-workspace").classList.contains("chapters-hidden")));
+$("#chapter-menu").addEventListener("click", () => {
+  const rail = $(".chapter-rail");
+  rail.classList.toggle("open");
+  $("#chapter-menu").setAttribute("aria-expanded", String(rail.classList.contains("open")));
+});
 $("#chapter-list").addEventListener("click", (event) => { const button = event.target.closest("[data-chapter-index]"); if (button) loadBookChapter(Number(button.dataset.chapterIndex), 0); });
 $("#book-chapter-title").addEventListener("input", queueBookSave);
 $("#book-chapter-content").addEventListener("input", queueBookSave);

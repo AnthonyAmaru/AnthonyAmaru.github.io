@@ -338,6 +338,7 @@ $("#aviation-unlock-form").addEventListener("submit", async (event) => {
     try {
       if (!musicCloud.isSignedIn()) await musicCloud.signIn(CLOUD_ADMIN_EMAIL, password);
       sessionStorage.setItem("anthony_admin_unlocked", "1");
+      window.syncSiteCloudStatus?.();
       $("#aviation-password-error").textContent = "";
       $("#aviation-password").value = "";
       ensureAdmin();
