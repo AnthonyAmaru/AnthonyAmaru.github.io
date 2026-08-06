@@ -19,14 +19,14 @@
     <link rel="icon" type="image/png" href="anthony-favicon-16.png?v=snake-1" sizes="16x16" />
     <link rel="apple-touch-icon" href="anthony-apple-touch-icon.png?v=snake-1" sizes="180x180" />
     <link rel="manifest" href="site.webmanifest?v=snake-1" />
-    <script src="site-theme.js?v=20260805-theme2"></script>
+    <script src="site-theme.js?v=20260805-media2"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&amp;family=Noto+Serif+SC:wght@500;700&amp;display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=20260805-bookfocus1" />
+    <link rel="stylesheet" href="styles.css?v=20260805-media2" />
     <script src="music-cloud.js?v=20260804-titleclean1" defer></script>
     <script src="book-data.js?v=20260805-bookrestore1" defer></script>
-    <script src="script.js?v=20260805-bookfocus1" defer></script>
+    <script src="script.js?v=20260805-media2" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -69,6 +69,7 @@
       <section id="music-dock" class="music-dock" aria-label="Music player">
         <button id="dock-toggle" class="dock-art" type="button" aria-expanded="false" aria-controls="dock-expanded"><span aria-hidden="true">♫</span></button>
         <div class="dock-copy"><small>Now playing</small><strong id="dock-title">Nothing selected</strong></div>
+        <button id="dock-shuffle" class="dock-control dock-shuffle" type="button" aria-label="Shuffle songs" aria-pressed="false">⇄</button>
         <button id="dock-previous" class="dock-control" type="button" aria-label="Previous song">‹</button>
         <button id="dock-play" class="dock-play" type="button" aria-label="Play or pause">▶</button>
         <button id="dock-next" class="dock-control" type="button" aria-label="Next song">›</button>
@@ -87,6 +88,10 @@
           </form>
           <div id="quick-ai-answer" class="quick-ai-answer" role="status" aria-live="polite" hidden></div>
         </div>
+      </section>
+
+      <section id="detail-page-shell" class="detail-page-shell" hidden>
+        <iframe id="detail-page-frame" title="Interest page"></iframe>
       </section>
 
       <main id="main-content">
@@ -249,10 +254,13 @@
         <main class="book-editor-area">
           <div class="book-editor-controls">
             <label class="book-title-label"><span>Chapter</span><input id="book-chapter-title" aria-label="Chapter title" /></label>
-            <div class="book-page-toolbar" aria-label="Chapter pages"><button id="chapter-sidebar-toggle" class="chapter-sidebar-toggle" type="button" aria-controls="chapter-rail" aria-expanded="true">Hide chapters</button><button id="chapter-menu" class="chapter-menu-button" type="button" aria-controls="chapter-rail" aria-expanded="false">Chapters</button><button id="book-prev-page" type="button" aria-label="Previous page">←</button><strong id="book-page-position">Page 1 of 1</strong><button id="book-next-page" type="button" aria-label="Next page">→</button><button id="add-book-page" type="button">+ Page</button></div>
+            <div class="book-page-toolbar" aria-label="Chapter pages"><button id="chapter-sidebar-toggle" class="chapter-sidebar-toggle" type="button" aria-controls="chapter-rail" aria-expanded="true">Hide chapters</button><button id="chapter-menu" class="chapter-menu-button" type="button" aria-controls="chapter-rail" aria-expanded="false">Chapters</button><button id="book-prev-page" type="button" aria-label="Previous page">←</button><strong id="book-page-position">Page 1 of 1</strong><button id="book-next-page" type="button" aria-label="Next page">→</button><button id="add-book-page" type="button">+ Page</button><button id="book-split-pages" type="button" aria-pressed="false">Two pages</button><button id="export-book-word" type="button">Word</button></div>
           </div>
           <details id="book-page-figure" class="book-page-figure" hidden><summary>Figure</summary><img id="book-page-image" alt="" /></details>
-          <label class="book-content-label"><span>Page</span><textarea id="book-chapter-content" spellcheck="true" placeholder="Write here…"></textarea></label>
+          <div id="book-page-spread" class="book-page-spread">
+            <label class="book-content-label"><span id="book-primary-page-label">Page 1</span><textarea id="book-chapter-content" spellcheck="true" placeholder="Write here…"></textarea></label>
+            <label id="book-secondary-page" class="book-content-label book-secondary-page" hidden><span id="book-secondary-page-label">Page 2</span><textarea id="book-chapter-content-secondary" spellcheck="true" placeholder="Write here…"></textarea></label>
+          </div>
           <footer><span id="book-word-count">0 words</span><span id="book-updated">Not edited yet</span></footer>
         </main>
       </div>

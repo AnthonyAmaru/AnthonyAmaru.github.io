@@ -171,7 +171,7 @@ Do not replace these tabs when entering an interest. Interest-specific controls 
 ### Page model
 
 - `index.html` switches the root portal between Home, Resume, Interests, and Music using `?page=` plus `history.pushState`.
-- Every interest tile navigates directly to a standalone HTML page. Do not render an interest in a fixed iframe or modal over the Interests grid.
+- Ordinary interest tiles navigate directly to standalone HTML pages. Audio-critical study routes may use the persistent study shell described below so the one top-level audio element is not destroyed during navigation.
 - Direct detail pages reuse the stable header, music bar, theme script, and mobile menu.
 - Use one shared implementation of a repeated behavior. Do not copy slightly different navigation or cloud code into every page.
 
@@ -183,7 +183,7 @@ The shared contract is:
 
 - one stable site header with the owner's top-level navigation;
 - one shared light/dark button in every standalone-page header, visible beside Menu on phones and beside the top tabs on tablets/desktops;
-- one shared music bar with previous, play/pause, next, and the one-question AI control on every page;
+- one shared music bar with queue, shuffle, previous, play/pause, next, and the one-question AI control on every page;
 - a home grid of full-tile links with an icon, short title, and no numbering;
 - an Interests grid where every card is one link and contains no nested Open, Notebook, or Test buttons;
 - interest details opened as directly addressable standalone HTML pages, never layered over the Interests grid;
@@ -205,9 +205,9 @@ Content differences are allowed: names, palettes, logos, copy, interests, resume
 - Make each interest tile one large keyboard-accessible control; do not add redundant Open, Notebook, or Test buttons inside it.
 - Keep visible keyboard focus, semantic headings, labels, skip links, and live status regions.
 
-## Standalone interest navigation
+## Interest navigation and the persistent study shell
 
-This is a critical architecture rule. Each interest card is an ordinary same-site link to a complete HTML document. The root portal must not intercept it to open a fixed iframe, dialog, or overlay. This keeps the Interests grid out of the detail page's stacking context and prevents duplicate headers, players, or controls.
+Ordinary interests remain same-site links to complete HTML documents. Aviation and Mandarin are audio-critical exceptions: the root portal intercepts those two links and loads the complete study document in a normal-flow iframe below the persistent top header and music bar. The root Interests grid and footer are hidden while the study shell is active, and the embedded document hides its own header and music bar before first paint. This preserves one audio element without reproducing the old layered-overlay bug.
 
 ```html
 <a class="interest-card" href="mycology.html?v=YYYYMMDD-change1">
@@ -218,11 +218,12 @@ This is a critical architecture rule. Each interest card is an ordinary same-sit
 
 Additional safeguards:
 
-- Do not use `data-app`, `data-interest-app`, `#app-modal`, `#app-frame`, or an `embedded=1` query convention.
-- Every detail document includes exactly one shared header and one shared music bar.
+- Do not use `data-app`, `data-interest-app`, `#app-modal`, or a fixed overlay for interests.
+- Limit `embedded=1` to explicitly audio-critical study pages. The parent must hide `main` and the footer, the iframe must live in normal flow, and the embedded document must hide both shared chrome rows before paint.
+- Every direct detail URL still works independently with exactly one shared header and one shared music bar.
 - The primary Interests tab always links to `index.html?page=interests` and returns to the complete card grid.
 - Preserve theme and music identity/position in browser storage before page unload, then restore on the destination document.
-- Test every interest tile and confirm the browser URL changes to that interest document, the Interests cards are absent, and no iframe exists.
+- For normal interests, confirm direct document navigation and no iframe. For Aviation and Mandarin from the portal, confirm `?detail=` routing, one parent audio element, hidden embedded chrome, no visible Interests grid, and uninterrupted `currentTime` progression.
 
 ## Shared shell and duplication protection
 
@@ -247,11 +248,12 @@ This defensive cleanup does not replace correct standalone navigation. Fix any d
 - Run the theme script in the document head to avoid a light-mode flash.
 - Every page must use the same theme tokens and support dark mode.
 - Include one shared music player on every standalone page.
-- Keep the complete two-row chrome identical on portal and standalone routes: brand, primary tabs, theme, cloud state, current track, playlist queue, previous/play/next, and the single-question AI button. Page-specific scripts must not replace or omit these shared controls.
+- Keep the complete two-row chrome identical on portal and standalone routes: a 74px header, widened outlined primary tabs, theme, cloud state, current track, playlist queue, shuffle, previous/play/next, and the single-question AI button. Page-specific scripts must not replace or omit these shared controls.
 - Give the top player one playlist selector and one song selector on every route; both controls must remain reachable on phones and tablets.
 - Choosing All Songs or a named playlist immediately starts its first track. Previous, next, and automatic advance must stay inside that active queue until another playlist is chosen.
-- Save active playlist, track identity, and playback position before page unload, then restore the same queue on the destination page.
-- Browsers may briefly pause HTML Audio during a full document navigation; do not reintroduce an iframe overlay to hide that platform behavior.
+- Save active playlist, shuffle state, track identity, and playback position before page unload, then restore the same queue on the destination page.
+- Register Media Session metadata and safe action handlers for play, pause, previous, next, seek backward, seek forward, and seek-to. Vehicle and hardware controls remain conditional on what the browser exposes.
+- Full document navigation destroys the active audio element. Use the persistent study shell for routes that explicitly require gapless playback; storage restoration is only a fallback for ordinary standalone navigation.
 
 ## Music library rules
 
@@ -288,6 +290,7 @@ The music page should support:
 - editing and saving song and artist names;
 - a compact multi-select artist filter that can show any combination of artists and reset to all artists;
 - previous, play/pause, and next controls on phones;
+- a persisted shuffle control and a visually highlighted row for the active song;
 - a top-player menu that can start All Songs or any named playlist and then choose an individual song from that queue.
 
 ## Quiz and editable-content rules
@@ -303,6 +306,8 @@ The music page should support:
 - On a language notebook, make every target-language word, sentence, dialogue turn, drill, character, flashcard, and reading paragraph a keyboard-accessible pronunciation target. Use delegated events so dynamically rendered study items retain speech behavior.
 - Reading exercises may introduce at most five new terms per paragraph. Keep the remaining text within the known vocabulary, highlight the new terms, and list their pronunciation and meaning beside the paragraph.
 - Debounce manuscript saves, show save state, and keep a local recovery copy.
+- Provide a single/two-page spread toggle that edits two adjacent pages in the current chapter without merging their saved content.
+- Export the complete manuscript as a valid `.docx` package containing the book title, every chapter, every page, and page breaks; do not export HTML renamed as Word.
 - Let the writer hide the desktop chapter rail and expand the editor to full width. Keep a persistent Show chapters control, remember the preference on the device, and retain the existing off-canvas Chapters control on phone and tablet layouts.
 - Version manuscript schemas. During a schema upgrade, backfill an empty saved page from its matching packaged default, preserve every nonempty user page, and persist the upgraded document locally and to the authenticated cloud record.
 - For larger or important documents, add append-only revisions rather than overwriting the only cloud copy.
@@ -478,11 +483,12 @@ Then verify:
 - every local link and referenced asset exists;
 - home, Resume, Interests, Music, AI Packages, Fatherhood, Blockchain, Books, Mycology, Aviation, Mandarin notebook, and Mandarin quiz open;
 - top navigation remains stable on every page;
+- every header measures exactly 74 CSS pixels and primary desktop/tablet tabs meet the widened-button contract;
 - light/dark mode works on every route;
 - phone, tablet, narrow side-panel, and desktop layouts do not overlap;
 - the outlined top tabs remain visible at tablet widths and collapse to Menu only at 600 CSS pixels or narrower;
 - no fixed or generated back button exists;
-- the music player keeps previous/play/next controls on phones;
+- the music player keeps shuffle/previous/play/next controls on phones;
 - only one shared header and one shared music player exist;
 - no secret or private credential appears in tracked files.
 
@@ -493,8 +499,8 @@ Then verify:
 3. Confirm the Interests grid is not present behind the Books content.
 4. Click the primary Interests tab and confirm the browser returns to `index.html?page=interests`.
 5. Confirm there is one header and one music player on each page.
-6. Confirm there is no portal iframe, app modal, or fixed back button.
-7. Repeat with Mycology, Aviation, Mandarin, Blockchain, AI, and every sibling site's interest page.
+6. Confirm there is no portal iframe, app modal, or fixed back button for ordinary interests.
+7. Open Aviation and Mandarin from the portal; confirm the persistent study shell hides the Interests grid and embedded chrome, contains exactly one study iframe, and leaves exactly one parent audio element playing.
 8. At 768px and 1024px widths, confirm all top tabs are visible and Menu is hidden.
 9. At 390px width, confirm Menu opens the same outlined top tabs.
 
@@ -507,12 +513,18 @@ Then verify:
 - Confirm title normalization removes source identifiers without deleting the song.
 - Select several songs and move them to one playlist.
 - From the top player, choose that playlist and confirm its first song starts; use next through the final song and confirm playback wraps within the same playlist.
+- Toggle shuffle, confirm the queue order changes without repeating or dropping a song, and confirm the setting survives a reload.
+- Confirm the playing song row is highlighted and its play icon changes while audio is active.
+- Trigger Media Session play/pause/previous/next actions in a supporting browser and confirm they control the same queue.
 - Navigate to another route and confirm the top player restores the selected playlist, current song, and playback position.
+- While audio is playing, move Interests → Aviation → Interests → Mandarin and confirm the same parent audio element remains mounted and its playback time keeps advancing.
 - Save one quiz and confirm its score and wrong answers on a second device.
 - Answer a question incorrectly, confirm it appears once in the subject's wrong bank on a second device, retest it correctly, and confirm it disappears on both devices.
 - Move forward, back, and forward in a quiz; confirm the answer and feedback are restored and the score is counted once.
 - Confirm every historical Aviation attempt shows its handbook and chapter, and every Mandarin attempt shows Mandarin plus its practice section.
 - Save editable content and confirm it on a second device.
+- In the book studio, switch to two pages, edit both visible pages, switch away and back, and confirm both remained separate and saved.
+- Export Word, open the `.docx`, and confirm it contains the title, every chapter/page, and valid page breaks.
 - Seed the prior manuscript schema with an empty Chapter 1 page and confirm the packaged Chapter 1 details and figure are restored; repeat with custom text and confirm it is never overwritten.
 - Confirm unauthenticated private reads and all unauthorized writes fail.
 - Confirm the AI gateway rejects an unsigned or non-admin request.
@@ -559,6 +571,11 @@ Append every future bug here. Update the relevant architecture section at the sa
 
 | Date | Symptom | Root cause | Corrected rule | Regression test |
 | --- | --- | --- | --- | --- |
+| 2026-08-05 | Navigating from the embedded Mandarin notebook to Quiz could log a `MutationObserver.observe` error. | The notebook speech enhancer unconditionally observed `main` during a document transition and did not guard a missing observation root. | Every shared/dynamic initializer resolves its target once and safely no-ops when that page-specific node is absent. | Open Mandarin through the persistent shell, click Quiz, and confirm the quiz loads with hidden embedded chrome and a clean console. |
+| 2026-08-05 | The top rows visibly changed height between Resume/Interests and Aviation/Mandarin. | The portal header used 84px, standalone headers used 76px, and phone rules used 70px. | Both sites and all routes use one exact 74px header token at every breakpoint; desktop/tablet primary tabs have a 118px minimum width. | Measure portal, standalone, 390px, 768px, and 1024px headers with `getBoundingClientRect()`; each must be 74px and tablet tabs must remain visible. |
+| 2026-08-05 | Music stopped when moving from Interests into Aviation or Mandarin. | Full document navigation destroyed the playing HTML Audio element; session restoration could not be gapless and could be blocked by autoplay rules. | Keep the portal header/player mounted and load only explicitly audio-critical study routes in a normal-flow embedded shell that hides the parent content and embedded chrome. | Start a track, record the parent audio node/time, move Interests → Aviation → Interests → Mandarin, and confirm the same node remains mounted and time advances without a pause. |
+| 2026-08-05 | Tesla/vehicle and hardware media buttons could not control the website player. | The players exposed only clickable DOM buttons and registered no Media Session metadata or action handlers. | Register guarded Media Session metadata plus play, pause, previous, next, and seek handlers on both sites; treat vehicle mapping as browser/firmware dependent. | Invoke supported Media Session actions in browser testing, then manually verify play/pause and track changes in the target Tesla software version. |
+| 2026-08-05 | The book editor could show only one page and had no complete Word export. | The editor bound one textarea to one page and only provided local JSON/Markdown export helpers. | Bind an optional second textarea to the adjacent page, persist the view choice, and generate a real minimal Open XML `.docx` ZIP for the entire manuscript. | Edit two adjacent pages, navigate away/back, then export and validate/open the `.docx` with every chapter and page break present. |
 | 2026-08-05 | Aviation and Mandarin used a differently spaced top header and their AI button disappeared. | Standalone pages loaded simplified header/player scripts that omitted the cloud action and root portal AI control. | All standalone routes load the same versioned shared header, music, and AI assets; the shared chrome contains the same navigation, theme, cloud, playlist, transport, and AI controls as the portal. | Open Resume, Interests, Aviation, Mandarin notebook, and Mandarin Quiz at desktop/tablet/phone widths; compare both top rows, confirm one of every control, unlock cloud, and submit one AI question with Enter. |
 | 2026-08-05 | The light/dark control disappeared on Aviation, Books, and Mandarin detail pages. | The root portal owned its own theme button, while the shared standalone header applied a saved theme but rendered no control. | `site-header.js` creates exactly one shared theme button and `site-theme.js` owns the persisted toggle API; every standalone page loads the same versioned assets. | Open Aviation, Books, Mandarin notebook, and Mandarin Quiz at phone/tablet/desktop widths; toggle twice and confirm the button remains visible, the theme changes, and the choice survives navigation. |
 | 2026-08-05 | Mandarin speech existed only in Reading and Quiz. | Pronunciation was wired to two dedicated buttons instead of the notebook's shared Chinese-language elements and dynamic renderers. | Use delegated speech on every `zh-Hans` or explicit speech target, enhance dynamic nodes for keyboard access, and keep the dedicated long-reading control. | Tap and keyboard-activate a greeting, flashcard, word, sound drill, sentence, dialogue, reading, and character; confirm each sends its current text to a `zh-CN` system voice. |
@@ -567,7 +584,7 @@ Append every future bug here. Update the relevant architecture section at the sa
 | 2026-08-05 | Incorrect questions were visible only in the just-finished result and could not be retested as a durable bank. | Attempt rows stored misses for history, but there was no deduplicated subject-level review document or removal workflow. | Store separate owner-only Mandarin and Aviation wrong banks in `site_content`; add misses by stable key and remove them only after a correct wrong-bank retry. | Miss the same question twice and confirm one bank item; retry it correctly and confirm it disappears locally and on a second signed-in device. |
 | 2026-08-05 | Aviation history showed only an internal book abbreviation and did not show the tested chapter. | The renderer ignored the saved `section` and did not derive human-readable labels from the question source model. | Persist/derive both book and chapter labels for every attempt; Mandarin history likewise displays its subject and practice section. | Complete a chapter-specific PHAK test and confirm the score row names both the handbook and chapter after cloud reload. |
 | 2026-08-05 | Chapter 1 opened with an empty page although packaged manuscript details existed. | A saved version-2 page with empty `content` was treated as authoritative; default seeding handled only the older single `chapter.content` shape. | On a versioned manuscript upgrade, backfill only empty pages from matching packaged defaults, preserve nonempty writing, and persist the version-3 copy locally and to cloud. | Normalize a v2 empty Chapter 1 page and confirm content/figure restoration; normalize a v2 custom page and confirm its text is preserved. |
-| 2026-08-05 | Mycology and several other interests looked layered over the Interests buttons, while Fatherhood looked like its own page. | Some tiles opened in a fixed iframe overlay while Fatherhood used normal document navigation. | Every interest tile navigates to a standalone HTML document. Never mount an interest in `#app-modal`, `#app-frame`, or another fixed overlay. | Open every interest; confirm its URL changes, the Interests grid is absent, exactly one header/player exists, and there is no iframe. |
+| 2026-08-05 | Mycology and several other interests looked layered over the Interests buttons, while Fatherhood looked like its own page. | Some tiles opened in a fixed iframe overlay without hiding the portal underneath, while Fatherhood used normal document navigation. | Ordinary interests use standalone navigation. Only explicitly audio-critical study routes may use the normal-flow persistent shell, which hides portal content and the embedded document's duplicate chrome. Never use `#app-modal`, `#app-frame`, or a fixed overlay. | Open ordinary interests and confirm direct navigation/no iframe; open Aviation/Mandarin from the portal and confirm the grid and embedded chrome are absent while one parent player remains. |
 | 2026-08-05 | Tablet showed only Menu, and the fixed GO BACK control could overlap content. | The desktop navigation collapsed at a tablet-width breakpoint and a viewport-fixed back control ignored changing content width. | Keep large outlined primary tabs visible above 600px; use Menu only at 600px or narrower; do not generate or style a separate GO BACK control. | At 390, 768, 1024, and narrow side-panel widths, confirm correct nav visibility, outlined 44px+ targets, and zero back controls. |
 | 2026-08-05 | Mycology included an unwanted, heavy globe visualization. | The page loaded a third-party 3D globe library, texture assets, render logic, and globe-specific styles. | Mycology contains only compact filters and mushroom cards unless a future visualization is explicitly requested. Keep no globe CDN, globe DOM, renderer, textures, or globe CSS. | Confirm no globe selector, library request, canvas, or renderer is present and that all mushroom filters still work. |
 | 2026-08-05 | Mushroom photos were cut off on tablets. | Card images used `object-fit: cover`, which filled their fixed media area by cropping the image edges. | Mushroom profile images use `object-fit: contain` with centered positioning so the entire photograph remains visible at every breakpoint. | At 390, 768, and 1024px widths, confirm each photograph's natural aspect ratio fits completely inside its media area without clipping. |

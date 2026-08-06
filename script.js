@@ -3,6 +3,11 @@ const ADMIN_HASH = "1e67aef3b01e797309c5588def71607f40a4facc6b8993af9a62306f727a
 const CLOUD_ADMIN_EMAIL = "anthonyamaru93@gmail.com";
 const MUSIC_PLAYER_STATE_KEY = "anthony_music_player_state_v1";
 const BOOK_CHAPTER_SIDEBAR_KEY = "anthony_book_chapter_sidebar_hidden";
+const BOOK_SPLIT_PAGES_KEY = "anthony_book_split_pages";
+const DETAIL_PAGES = {
+  aviation: "aviation/index.html",
+  mandarin: "mandarin/index.html",
+};
 const KEYS = {
   theme: "anthony_portal_theme",
   resume: "anthony_resume_v1",
@@ -55,6 +60,9 @@ let visibleTracks = [];
 let playerPlaylist = "all";
 let currentTrackId = null;
 let playerStateRestored = false;
+let shuffleEnabled = false;
+let shuffledTrackIds = [];
+let bookSplitPages = false;
 const selectedTrackIds = new Set();
 
 const resumeDefaults = {
@@ -145,6 +153,7 @@ function applyTheme(theme) {
 }
 
 function routeTo(route) {
+  closeDetailPage();
   const page = $("[data-page='" + route + "']");
   if (!page) return;
   $$(".page-panel").forEach((panel) => panel.classList.toggle("active", panel === page));
@@ -160,6 +169,53 @@ function routeTo(route) {
   if (route === "interests") refreshDashboard();
 }
 
+function detailRouteFromUrl(url = new URL(location.href)) {
+  const detail = url.searchParams.get("detail");
+  return Object.hasOwn(DETAIL_PAGES, detail) ? detail : null;
+}
+
+function setPrimaryNavActive(route) {
+  $$(".nav-link").forEach((link) => {
+    const active = link.dataset.pageLink === route;
+    link.classList.toggle("active", active);
+    if (active) link.setAttribute("aria-current", "page"); else link.removeAttribute("aria-current");
+  });
+}
+
+function closeDetailPage() {
+  const shell = $("#detail-page-shell");
+  if (!shell || shell.hidden) return;
+  shell.hidden = true;
+  $("#main-content").hidden = false;
+  $(".site-footer").hidden = false;
+}
+
+function showDetailPage(detail) {
+  const path = DETAIL_PAGES[detail];
+  if (!path) return false;
+  $$(".page-panel").forEach((panel) => panel.classList.remove("active"));
+  $("#main-content").hidden = true;
+  $(".site-footer").hidden = true;
+  const shell = $("#detail-page-shell");
+  const frame = $("#detail-page-frame");
+  shell.hidden = false;
+  const target = new URL(path, location.href);
+  target.searchParams.set("embedded", "1");
+  if (frame.dataset.detail !== detail) {
+    frame.dataset.detail = detail;
+    frame.src = target.href;
+  }
+  setPrimaryNavActive("interests");
+  $("#primary-nav").classList.remove("open");
+  $("#mobile-menu-button").setAttribute("aria-expanded", "false");
+  return true;
+}
+
+function syncPortalUrl() {
+  const detail = detailRouteFromUrl();
+  if (detail) showDetailPage(detail); else routeTo(portalRouteFromUrl());
+}
+
 function portalRouteFromUrl(url = new URL(location.href)) {
   const requested = url.searchParams.get("page");
   return ["resume", "interests", "music"].includes(requested) ? requested : "home";
@@ -168,10 +224,21 @@ function portalRouteFromUrl(url = new URL(location.href)) {
 function navigatePortal(route, replace = false) {
   routeTo(route);
   const url = new URL(location.href);
+  url.searchParams.delete("detail");
   if (route === "home") url.searchParams.delete("page");
   else url.searchParams.set("page", route);
   url.searchParams.delete("v");
   history[replace ? "replaceState" : "pushState"]({ portalRoute: route }, "", url);
+  window.scrollTo({ top: 0, behavior: "auto" });
+}
+
+function navigateDetail(detail) {
+  if (!showDetailPage(detail)) return;
+  const url = new URL(location.href);
+  url.searchParams.delete("page");
+  url.searchParams.delete("v");
+  url.searchParams.set("detail", detail);
+  history.pushState({ detail }, "", url);
   window.scrollTo({ top: 0, behavior: "auto" });
 }
 
@@ -410,9 +477,14 @@ function renderChapterList() {
 
 function updateBookPageControls(chapter) {
   const total = chapter.pages.length;
-  $("#book-page-position").textContent = `Page ${currentBookPage + 1} of ${total}`;
+  const hasSecondPage = bookSplitPages && currentBookPage + 1 < total;
+  $("#book-page-position").textContent = hasSecondPage ? `Pages ${currentBookPage + 1}–${currentBookPage + 2} of ${total}` : `Page ${currentBookPage + 1} of ${total}`;
   $("#book-prev-page").disabled = currentBookPage === 0;
-  $("#book-next-page").disabled = currentBookPage >= total - 1;
+  $("#book-next-page").disabled = bookSplitPages ? currentBookPage + 1 >= total - 1 : currentBookPage >= total - 1;
+  $("#book-primary-page-label").textContent = `Page ${currentBookPage + 1}`;
+  $("#book-secondary-page-label").textContent = `Page ${currentBookPage + 2}`;
+  $("#book-secondary-page").hidden = !hasSecondPage;
+  $("#book-page-spread").classList.toggle("split", hasSecondPage);
   const page = chapter.pages[currentBookPage];
   const figure = $("#book-page-figure");
   figure.hidden = !page.image;
@@ -434,6 +506,7 @@ function commitBookEditor(syncCloud = true) {
   if (!chapter || !page) return book;
   chapter.title = $("#book-chapter-title").value.trim() || "Untitled chapter";
   page.content = $("#book-chapter-content").value;
+  if (bookSplitPages && chapter.pages[currentBookPage + 1]) chapter.pages[currentBookPage + 1].content = $("#book-chapter-content-secondary").value;
   saveBook(book, undefined, syncCloud);
   renderChapterList();
   return book;
@@ -448,6 +521,7 @@ function loadBookChapter(index, pageIndex = 0, commitCurrent = true) {
   currentBookPage = Math.max(0, Math.min(pageIndex, chapter.pages.length - 1));
   $("#book-chapter-title").value = chapter.title;
   $("#book-chapter-content").value = chapter.pages[currentBookPage].content || "";
+  $("#book-chapter-content-secondary").value = chapter.pages[currentBookPage + 1]?.content || "";
   bookEditorReady = true;
   updateBookCounts();
   updateBookPageControls(chapter);
@@ -467,8 +541,19 @@ function setChapterSidebarHidden(hidden, persist = true) {
   if (hidden) $("#book-chapter-content").focus();
 }
 
+function setBookSplitPages(enabled, persist = true) {
+  if (bookEditorReady) commitBookEditor();
+  bookSplitPages = Boolean(enabled);
+  const button = $("#book-split-pages");
+  button.setAttribute("aria-pressed", String(bookSplitPages));
+  button.textContent = bookSplitPages ? "Single page" : "Two pages";
+  if (persist) localStorage.setItem(BOOK_SPLIT_PAGES_KEY, bookSplitPages ? "true" : "false");
+  if (bookEditorReady) loadBookChapter(currentBookChapter, currentBookPage, false);
+}
+
 function updateBookCounts() {
-  const content = $("#book-chapter-content").value.trim();
+  const secondary = bookSplitPages && !$("#book-secondary-page").hidden ? ` ${$("#book-chapter-content-secondary").value}` : "";
+  const content = `${$("#book-chapter-content").value}${secondary}`.trim();
   const words = content ? content.split(/\s+/).length : 0;
   $("#book-word-count").textContent = `${words.toLocaleString()} word${words === 1 ? "" : "s"}`;
 }
@@ -489,6 +574,7 @@ async function openBookStudio() {
   currentBookPage = 0;
   bookEditorReady = false;
   setChapterSidebarHidden(localStorage.getItem(BOOK_CHAPTER_SIDEBAR_KEY) === "true", false);
+  setBookSplitPages(localStorage.getItem(BOOK_SPLIT_PAGES_KEY) === "true", false);
   renderChapterList();
   loadBookChapter(0, 0, false);
 }
@@ -564,6 +650,92 @@ function exportBookMarkdown() {
   const markdown = `# ${book.title}\n\n${book.chapters.map((chapter) => `## ${chapter.title}\n\n${chapter.pages.map((page, index) => `${chapter.pages.length > 1 ? `### Page ${index + 1}\n\n` : ""}${page.content || ""}`).join("\n\n")}`).join("\n\n")}`;
   downloadFile("A_Hypothesis_of_Man.md", markdown, "text/markdown");
   toast("Markdown manuscript downloaded.");
+}
+
+function xmlEscape(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" })[character]);
+}
+
+function zipCrc32(bytes) {
+  let crc = 0xffffffff;
+  for (const byte of bytes) {
+    crc ^= byte;
+    for (let bit = 0; bit < 8; bit += 1) crc = (crc >>> 1) ^ (0xedb88320 & -(crc & 1));
+  }
+  return (crc ^ 0xffffffff) >>> 0;
+}
+
+function pushZipNumber(target, value, byteCount) {
+  for (let index = 0; index < byteCount; index += 1) target.push((value >>> (index * 8)) & 0xff);
+}
+
+function createStoredZip(entries) {
+  const encoder = new TextEncoder();
+  const body = [];
+  const directory = [];
+  entries.forEach(([name, content]) => {
+    const nameBytes = encoder.encode(name);
+    const data = encoder.encode(content);
+    const crc = zipCrc32(data);
+    const offset = body.length;
+    pushZipNumber(body, 0x04034b50, 4);
+    pushZipNumber(body, 20, 2); pushZipNumber(body, 0, 2); pushZipNumber(body, 0, 2);
+    pushZipNumber(body, 0, 2); pushZipNumber(body, 0, 2); pushZipNumber(body, crc, 4);
+    pushZipNumber(body, data.length, 4); pushZipNumber(body, data.length, 4);
+    pushZipNumber(body, nameBytes.length, 2); pushZipNumber(body, 0, 2);
+    body.push(...nameBytes, ...data);
+
+    pushZipNumber(directory, 0x02014b50, 4);
+    pushZipNumber(directory, 20, 2); pushZipNumber(directory, 20, 2);
+    pushZipNumber(directory, 0, 2); pushZipNumber(directory, 0, 2);
+    pushZipNumber(directory, 0, 2); pushZipNumber(directory, 0, 2); pushZipNumber(directory, crc, 4);
+    pushZipNumber(directory, data.length, 4); pushZipNumber(directory, data.length, 4);
+    pushZipNumber(directory, nameBytes.length, 2); pushZipNumber(directory, 0, 2); pushZipNumber(directory, 0, 2);
+    pushZipNumber(directory, 0, 2); pushZipNumber(directory, 0, 2); pushZipNumber(directory, 0, 4);
+    pushZipNumber(directory, offset, 4); directory.push(...nameBytes);
+  });
+  const directoryOffset = body.length;
+  body.push(...directory);
+  pushZipNumber(body, 0x06054b50, 4); pushZipNumber(body, 0, 2); pushZipNumber(body, 0, 2);
+  pushZipNumber(body, entries.length, 2); pushZipNumber(body, entries.length, 2);
+  pushZipNumber(body, directory.length, 4); pushZipNumber(body, directoryOffset, 4); pushZipNumber(body, 0, 2);
+  return new Uint8Array(body);
+}
+
+function wordParagraph(text, options = {}) {
+  const properties = options.heading ? `<w:pPr><w:keepNext/><w:spacing w:before="${options.heading === 1 ? 240 : 160}" w:after="120"/></w:pPr>` : "";
+  const runProperties = options.heading ? `<w:rPr><w:b/><w:sz w:val="${options.heading === 1 ? 38 : 28}"/></w:rPr>` : "";
+  return `<w:p>${properties}<w:r>${runProperties}<w:t xml:space="preserve">${xmlEscape(text)}</w:t></w:r></w:p>`;
+}
+
+function createBookWordBytes(book) {
+  const documentParts = [wordParagraph(book.title, { heading: 1 })];
+  book.chapters.forEach((chapter, chapterIndex) => {
+    documentParts.push(wordParagraph(chapter.title, { heading: 2 }));
+    chapter.pages.forEach((page, pageIndex) => {
+      String(page.content || "").split(/\r?\n/).forEach((line) => documentParts.push(wordParagraph(line)));
+      const lastPage = chapterIndex === book.chapters.length - 1 && pageIndex === chapter.pages.length - 1;
+      if (!lastPage) documentParts.push('<w:p><w:r><w:br w:type="page"/></w:r></w:p>');
+    });
+  });
+  const documentXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${documentParts.join("")}<w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1080" w:right="1080" w:bottom="1080" w:left="1080"/></w:sectPr></w:body></w:document>`;
+  const contentTypes = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>';
+  const relationships = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>';
+  return createStoredZip([["[Content_Types].xml", contentTypes], ["_rels/.rels", relationships], ["word/document.xml", documentXml]]);
+}
+
+function exportBookWord() {
+  commitBookEditor();
+  const bytes = createBookWordBytes(getBook());
+  const url = URL.createObjectURL(new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "A_Hypothesis_of_Man.docx";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  toast("Word manuscript downloaded.");
 }
 
 function toggleQuickAi(force) {
@@ -682,7 +854,8 @@ function applyMusicFilters() {
     const actions = editing
       ? `<div class="track-row-actions"><button class="track-save" type="button" data-save-track="${track.id}">Save</button><button class="track-cancel" type="button" data-cancel-track="${track.id}" aria-label="Cancel editing">×</button></div>`
       : `<div class="track-row-actions"><button class="track-edit" type="button" data-edit-track="${track.id}" aria-label="Edit ${escapeHtml(track.title)}">✎</button><button class="track-delete" type="button" data-delete-track="${track.id}" aria-label="Delete ${escapeHtml(track.title)}">×</button></div>`;
-    return `<article class="track-row${editing ? " editing" : ""}" data-track-row="${track.id}"><input class="track-select" type="checkbox" data-select-track="${track.id}" aria-label="Select ${escapeHtml(track.title)}" ${selectedTrackIds.has(String(track.id)) ? "checked" : ""} /><button class="track-play" type="button" data-play-track="${track.id}" aria-label="Play ${escapeHtml(track.title)}">▶</button>${songCell}${artistCell}<select class="track-playlist-select" data-assign-track="${track.id}" aria-label="Playlist for ${escapeHtml(track.title)}"><option value="">No playlist</option>${playlistOptions}</select>${actions}</article>`;
+    const playing = String(track.id) === String(currentTrackId);
+    return `<article class="track-row${editing ? " editing" : ""}${playing ? " playing" : ""}" data-track-row="${track.id}"><input class="track-select" type="checkbox" data-select-track="${track.id}" aria-label="Select ${escapeHtml(track.title)}" ${selectedTrackIds.has(String(track.id)) ? "checked" : ""} /><button class="track-play" type="button" data-play-track="${track.id}" aria-label="Play ${escapeHtml(track.title)}">${playing && !$("#audio-player").paused ? "❚❚" : "▶"}</button>${songCell}${artistCell}<select class="track-playlist-select" data-assign-track="${track.id}" aria-label="Playlist for ${escapeHtml(track.title)}"><option value="">No playlist</option>${playlistOptions}</select>${actions}</article>`;
   }).join("") : `<div class="library-empty"><p>${tracks.length ? "No songs match these filters." : "No songs here yet."}</p></div>`;
   $$('[data-assign-track]').forEach((select) => { const track = tracks.find((item) => String(item.id) === select.dataset.assignTrack); select.value = track?.playlist_id || ""; });
   updateMusicSortControls();
@@ -743,10 +916,36 @@ function renderDock() {
   const queue = playerQueue();
   songSelect.innerHTML = queue.length ? '<option value="">Choose a song</option>' + queue.map((track) => `<option value="${track.id}">${escapeHtml(track.title)}</option>`).join("") : '<option value="">No songs in this playlist</option>';
   if (currentTrackId && queue.some((track) => String(track.id) === String(currentTrackId))) songSelect.value = String(currentTrackId);
+  $("#dock-shuffle").setAttribute("aria-pressed", String(shuffleEnabled));
+}
+
+function basePlayerQueue() {
+  return playerPlaylist === "all" ? tracks : tracks.filter((track) => String(track.playlist_id) === playerPlaylist);
+}
+
+function refreshShuffledQueue() {
+  shuffledTrackIds = basePlayerQueue().map((track) => String(track.id));
+  for (let index = shuffledTrackIds.length - 1; index > 0; index -= 1) {
+    const other = Math.floor(Math.random() * (index + 1));
+    [shuffledTrackIds[index], shuffledTrackIds[other]] = [shuffledTrackIds[other], shuffledTrackIds[index]];
+  }
 }
 
 function playerQueue() {
-  return playerPlaylist === "all" ? tracks : tracks.filter((track) => String(track.playlist_id) === playerPlaylist);
+  const base = basePlayerQueue();
+  if (!shuffleEnabled) return base;
+  const byId = new Map(base.map((track) => [String(track.id), track]));
+  shuffledTrackIds = shuffledTrackIds.filter((id) => byId.has(id));
+  base.forEach((track) => { if (!shuffledTrackIds.includes(String(track.id))) shuffledTrackIds.push(String(track.id)); });
+  return shuffledTrackIds.map((id) => byId.get(id)).filter(Boolean);
+}
+
+function setShuffle(enabled, refresh = true) {
+  shuffleEnabled = Boolean(enabled);
+  if (shuffleEnabled && refresh) refreshShuffledQueue();
+  $("#dock-shuffle").setAttribute("aria-pressed", String(shuffleEnabled));
+  renderDock();
+  saveMusicPlayerState();
 }
 
 function readMusicPlayerState() {
@@ -756,7 +955,7 @@ function readMusicPlayerState() {
 function saveMusicPlayerState() {
   const track = tracks.find((item) => String(item.id) === String(currentTrackId));
   const audio = $("#audio-player");
-  sessionStorage.setItem(MUSIC_PLAYER_STATE_KEY, JSON.stringify({ playlistId: playerPlaylist, trackId: track ? String(track.id) : null, title: track?.title || $("#dock-title").textContent, currentTime: track ? Number(audio.currentTime || 0) : 0, playing: Boolean(track && !audio.paused) }));
+  sessionStorage.setItem(MUSIC_PLAYER_STATE_KEY, JSON.stringify({ playlistId: playerPlaylist, trackId: track ? String(track.id) : null, title: track?.title || $("#dock-title").textContent, currentTime: track ? Number(audio.currentTime || 0) : 0, playing: Boolean(track && !audio.paused), shuffle: shuffleEnabled }));
 }
 
 function restoreMusicPlayerState() {
@@ -764,9 +963,14 @@ function restoreMusicPlayerState() {
   playerStateRestored = true;
   const saved = readMusicPlayerState();
   playerPlaylist = saved?.playlistId || "all";
+  shuffleEnabled = Boolean(saved?.shuffle);
   if (playerPlaylist !== "all" && !musicPlaylists.some((playlist) => String(playlist.id) === playerPlaylist)) playerPlaylist = "all";
+  if (shuffleEnabled) refreshShuffledQueue();
   const track = tracks.find((item) => String(item.id) === String(saved?.trackId));
-  if (track && !playerQueue().some((item) => String(item.id) === String(track.id))) playerPlaylist = "all";
+  if (track && !playerQueue().some((item) => String(item.id) === String(track.id))) {
+    playerPlaylist = "all";
+    if (shuffleEnabled) refreshShuffledQueue();
+  }
   renderDock();
   if (!track) return;
   currentTrackId = String(track.id);
@@ -780,25 +984,75 @@ function restoreMusicPlayerState() {
   }
   if (saved.playing) audio.play().catch(() => {});
   updatePlayButton();
+  updateMediaSession(track);
+  updateNowPlayingRows();
 }
 
 async function playTrack(id, options = {}) {
-  const track = tracks.find((item) => item.id === String(id));
+  const track = tracks.find((item) => String(item.id) === String(id));
   if (!track) return;
   if (options.playlistId && (options.playlistId === "all" || musicPlaylists.some((playlist) => String(playlist.id) === String(options.playlistId)))) playerPlaylist = String(options.playlistId);
-  if (!playerQueue().some((item) => String(item.id) === String(track.id))) playerPlaylist = "all";
+  if (!playerQueue().some((item) => String(item.id) === String(track.id))) {
+    playerPlaylist = "all";
+    if (shuffleEnabled) refreshShuffledQueue();
+  }
   currentTrackId = track.id;
   const audio = $("#audio-player");
   audio.src = track.url;
   $("#dock-title").textContent = track.title;
   renderDock();
+  updateMediaSession(track);
   try { await audio.play(); } catch { toast("Tap play to start this song."); }
   updatePlayButton();
+  updateNowPlayingRows();
   saveMusicPlayerState();
 }
 
 function updatePlayButton() {
-  $("#dock-play").textContent = $("#audio-player").paused ? "▶" : "❚❚";
+  const paused = $("#audio-player").paused;
+  $("#dock-play").textContent = paused ? "▶" : "❚❚";
+  if ("mediaSession" in navigator) navigator.mediaSession.playbackState = currentTrackId ? (paused ? "paused" : "playing") : "none";
+  updateNowPlayingRows();
+}
+
+function updateNowPlayingRows() {
+  $$('[data-track-row]').forEach((row) => {
+    const playing = String(row.dataset.trackRow) === String(currentTrackId);
+    row.classList.toggle("playing", playing);
+    const button = $("[data-play-track]", row);
+    if (button) button.textContent = playing && !$("#audio-player").paused ? "❚❚" : "▶";
+  });
+}
+
+function updateMediaSession(track) {
+  if (!("mediaSession" in navigator) || typeof MediaMetadata === "undefined" || !track) return;
+  navigator.mediaSession.metadata = new MediaMetadata({
+    title: track.title,
+    artist: trackArtist(track),
+    album: "Anthony Amaru",
+    artwork: [{ src: new URL("anthony-icon-512.png", location.href).href, sizes: "512x512", type: "image/png" }],
+  });
+}
+
+function updateMediaPosition() {
+  const audio = $("#audio-player");
+  if (!("mediaSession" in navigator) || typeof navigator.mediaSession.setPositionState !== "function" || !Number.isFinite(audio.duration) || audio.duration <= 0) return;
+  try { navigator.mediaSession.setPositionState({ duration: audio.duration, playbackRate: audio.playbackRate, position: Math.min(audio.currentTime, audio.duration) }); } catch {}
+}
+
+function installMediaSession() {
+  if (!("mediaSession" in navigator)) return;
+  const audio = $("#audio-player");
+  const handlers = {
+    play: () => audio.play().catch(() => {}),
+    pause: () => audio.pause(),
+    previoustrack: () => stepTrack(-1),
+    nexttrack: () => stepTrack(1),
+    seekbackward: (details) => { audio.currentTime = Math.max(0, audio.currentTime - (details.seekOffset || 10)); },
+    seekforward: (details) => { audio.currentTime = Math.min(audio.duration || Infinity, audio.currentTime + (details.seekOffset || 10)); },
+    seekto: (details) => { if (Number.isFinite(details.seekTime)) audio.currentTime = details.seekTime; },
+  };
+  Object.entries(handlers).forEach(([action, handler]) => { try { navigator.mediaSession.setActionHandler(action, handler); } catch {} });
 }
 
 function stepTrack(direction) {
@@ -811,6 +1065,7 @@ function stepTrack(direction) {
 async function playDockPlaylist(id) {
   playerPlaylist = id === "all" || musicPlaylists.some((playlist) => String(playlist.id) === String(id)) ? String(id) : "all";
   currentTrackId = null;
+  if (shuffleEnabled) refreshShuffledQueue();
   renderDock();
   const queue = playerQueue();
   if (queue.length) return playTrack(queue[0].id);
@@ -1014,6 +1269,12 @@ document.addEventListener("click", (event) => {
   const link = event.target.closest("a[href]");
   if (!link || event.defaultPrevented || link.target || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
   const url = new URL(link.href, location.href);
+  const detail = Object.entries(DETAIL_PAGES).find(([, path]) => url.pathname.endsWith(`/${path}`))?.[0];
+  if (url.origin === location.origin && detail) {
+    event.preventDefault();
+    navigateDetail(detail);
+    return;
+  }
   const rootPath = location.pathname.replace(/index\.html$/, "");
   if (url.origin !== location.origin || url.pathname.replace(/index\.html$/, "") !== rootPath) return;
   event.preventDefault();
@@ -1021,7 +1282,7 @@ document.addEventListener("click", (event) => {
   navigatePortal(portalRouteFromUrl(url));
 });
 
-window.addEventListener("popstate", () => routeTo(portalRouteFromUrl()));
+window.addEventListener("popstate", syncPortalUrl);
 
 $("#theme-toggle").addEventListener("click", () => applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
 $("#mobile-menu-button").addEventListener("click", () => {
@@ -1082,8 +1343,11 @@ $("#chapter-menu").addEventListener("click", () => {
 $("#chapter-list").addEventListener("click", (event) => { const button = event.target.closest("[data-chapter-index]"); if (button) loadBookChapter(Number(button.dataset.chapterIndex), 0); });
 $("#book-chapter-title").addEventListener("input", queueBookSave);
 $("#book-chapter-content").addEventListener("input", queueBookSave);
-$("#book-prev-page").addEventListener("click", () => loadBookChapter(currentBookChapter, currentBookPage - 1));
-$("#book-next-page").addEventListener("click", () => loadBookChapter(currentBookChapter, currentBookPage + 1));
+$("#book-chapter-content-secondary").addEventListener("input", queueBookSave);
+$("#book-prev-page").addEventListener("click", () => loadBookChapter(currentBookChapter, currentBookPage - (bookSplitPages ? 2 : 1)));
+$("#book-next-page").addEventListener("click", () => loadBookChapter(currentBookChapter, currentBookPage + (bookSplitPages ? 2 : 1)));
+$("#book-split-pages").addEventListener("click", () => setBookSplitPages(!bookSplitPages));
+$("#export-book-word").addEventListener("click", exportBookWord);
 $("#add-book-page").addEventListener("click", () => {
   commitBookEditor();
   const book = getBook();
@@ -1194,6 +1458,7 @@ $("#page-music").addEventListener("change", (event) => {
   }
 });
 $("#dock-toggle").addEventListener("click", () => { const expanded = $("#dock-expanded"); expanded.hidden = !expanded.hidden; $("#dock-toggle").setAttribute("aria-expanded", String(!expanded.hidden)); });
+$("#dock-shuffle").addEventListener("click", () => setShuffle(!shuffleEnabled));
 $("#dock-play").addEventListener("click", () => { const audio = $("#audio-player"); if (!audio.src && playerQueue().length) return playTrack(playerQueue()[0].id); if (audio.paused) audio.play(); else audio.pause(); });
 $("#dock-previous").addEventListener("click", () => stepTrack(-1));
 $("#dock-next").addEventListener("click", () => stepTrack(1));
@@ -1202,6 +1467,8 @@ $("#dock-track-select").addEventListener("change", (event) => { if (event.target
 $("#audio-player").addEventListener("play", () => { updatePlayButton(); saveMusicPlayerState(); });
 $("#audio-player").addEventListener("pause", () => { updatePlayButton(); saveMusicPlayerState(); });
 $("#audio-player").addEventListener("ended", () => stepTrack(1));
+$("#audio-player").addEventListener("loadedmetadata", updateMediaPosition);
+$("#audio-player").addEventListener("timeupdate", updateMediaPosition);
 window.addEventListener("pagehide", () => {
   if (bookEditorReady) commitBookEditor(false);
   saveMusicPlayerState();
@@ -1221,6 +1488,7 @@ renderResume();
 renderMusic();
 refreshDashboard();
 const initialRoute = portalRouteFromUrl();
-routeTo(initialRoute);
+if (!showDetailPage(detailRouteFromUrl())) routeTo(initialRoute);
+installMediaSession();
 if (sessionStorage.getItem("anthony_visitor_unlocked") === "1") showPortal();
 if (musicCloud.isSignedIn()) syncStudyHistoryFromCloud();

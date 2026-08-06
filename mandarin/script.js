@@ -647,6 +647,9 @@ renderCharacters();
 makeSession();
 updateProgress();
 enhanceMandarinSpeech();
-new MutationObserver((records) => records.forEach((record) => record.addedNodes.forEach((node) => {
-  if (node.nodeType === Node.ELEMENT_NODE) enhanceMandarinSpeech(node);
-}))).observe($("main"), { childList: true, subtree: true });
+const mandarinMain = $("main");
+if (mandarinMain) {
+  new MutationObserver((records) => records.forEach((record) => record.addedNodes.forEach((node) => {
+    if (node.nodeType === Node.ELEMENT_NODE) enhanceMandarinSpeech(node);
+  }))).observe(mandarinMain, { childList: true, subtree: true });
+}

@@ -1,5 +1,6 @@
 (() => {
   const themeKey = "anthony_portal_theme";
+  if (window.self !== window.top || new URLSearchParams(location.search).get("embedded") === "1") document.documentElement.dataset.embedded = "true";
 
   function applySiteTheme(value) {
     const theme = value === "dark" ? "dark" : "light";

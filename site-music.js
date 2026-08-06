@@ -1,4 +1,5 @@
 (() => {
+  if (document.documentElement.dataset.embedded === "true") return;
   const bar = document.querySelector("[data-site-music-bar]");
   if (!bar || !window.musicCloud) return;
 
@@ -7,6 +8,7 @@
   const songSelect = bar.querySelector("[data-site-music-select]");
   const playlistSelect = document.createElement("select");
   const queueButton = document.createElement("button");
+  const shuffleButton = document.createElement("button");
   const menu = document.createElement("div");
   const audio = bar.querySelector("audio");
   const playButton = bar.querySelector("[data-site-music-play]");
@@ -14,6 +16,8 @@
   let tracks = [];
   let activePlaylistId = "all";
   let currentTrackId = null;
+  let shuffleEnabled = false;
+  let shuffledTrackIds = [];
   let lastSavedSecond = -1;
 
   playlistSelect.dataset.siteMusicPlaylist = "";
@@ -24,6 +28,11 @@
   queueButton.setAttribute("aria-expanded", "false");
   queueButton.setAttribute("aria-controls", "site-music-menu");
   queueButton.textContent = "♫";
+  shuffleButton.type = "button";
+  shuffleButton.dataset.siteMusicShuffle = "";
+  shuffleButton.setAttribute("aria-label", "Shuffle songs");
+  shuffleButton.setAttribute("aria-pressed", "false");
+  shuffleButton.textContent = "⇄";
   menu.id = "site-music-menu";
   menu.className = "site-music-menu";
   menu.hidden = true;
@@ -35,16 +44,32 @@
   songLabel.append(songSelect);
   menu.append(playlistLabel, songLabel);
   bar.insertBefore(queueButton, bar.firstElementChild);
+  bar.insertBefore(shuffleButton, bar.querySelector("[data-site-music-previous]"));
   bar.append(menu);
 
   function readState() {
     try { return JSON.parse(sessionStorage.getItem(stateKey)) || null; } catch { return null; }
   }
 
+  function baseQueue() {
+    return activePlaylistId === "all" ? tracks : tracks.filter((track) => String(track.playlist_id) === activePlaylistId);
+  }
+
+  function refreshShuffle() {
+    shuffledTrackIds = baseQueue().map((track) => String(track.id));
+    for (let index = shuffledTrackIds.length - 1; index > 0; index -= 1) {
+      const other = Math.floor(Math.random() * (index + 1));
+      [shuffledTrackIds[index], shuffledTrackIds[other]] = [shuffledTrackIds[other], shuffledTrackIds[index]];
+    }
+  }
+
   function queueTracks() {
-    return activePlaylistId === "all"
-      ? tracks
-      : tracks.filter((track) => String(track.playlist_id) === activePlaylistId);
+    const base = baseQueue();
+    if (!shuffleEnabled) return base;
+    const byId = new Map(base.map((track) => [String(track.id), track]));
+    shuffledTrackIds = shuffledTrackIds.filter((id) => byId.has(id));
+    base.forEach((track) => { if (!shuffledTrackIds.includes(String(track.id))) shuffledTrackIds.push(String(track.id)); });
+    return shuffledTrackIds.map((id) => byId.get(id)).filter(Boolean);
   }
 
   function saveState() {
@@ -55,10 +80,33 @@
       title: track?.title || title.textContent,
       currentTime: track ? Number(audio.currentTime || 0) : 0,
       playing: Boolean(track && !audio.paused),
+      shuffle: shuffleEnabled,
     }));
   }
 
-  function updatePlayButton() { playButton.textContent = audio.paused ? "▶" : "❚❚"; }
+  function updatePlayButton() {
+    playButton.textContent = audio.paused ? "▶" : "❚❚";
+    if ("mediaSession" in navigator) navigator.mediaSession.playbackState = currentTrackId ? (audio.paused ? "paused" : "playing") : "none";
+  }
+
+  function trackArtist(track) {
+    return String(track?.source_metadata?.artist || "").trim() || "Unknown artist";
+  }
+
+  function updateMediaSession(track) {
+    if (!("mediaSession" in navigator) || typeof MediaMetadata === "undefined" || !track) return;
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: track.title,
+      artist: trackArtist(track),
+      album: "Anthony Amaru",
+      artwork: [{ src: new URL("/anthony-icon-512.png", location.href).href, sizes: "512x512", type: "image/png" }],
+    });
+  }
+
+  function updateMediaPosition() {
+    if (!("mediaSession" in navigator) || typeof navigator.mediaSession.setPositionState !== "function" || !Number.isFinite(audio.duration) || audio.duration <= 0) return;
+    try { navigator.mediaSession.setPositionState({ duration: audio.duration, playbackRate: audio.playbackRate, position: Math.min(audio.currentTime, audio.duration) }); } catch {}
+  }
 
   function renderMenus() {
     const validPlaylist = activePlaylistId === "all" || playlists.some((playlist) => String(playlist.id) === activePlaylistId);
@@ -69,20 +117,25 @@
       playlistSelect.add(new Option(`${playlist.name} (${count})`, String(playlist.id)));
     });
     playlistSelect.value = activePlaylistId;
-
     const queue = queueTracks();
     songSelect.replaceChildren(new Option(queue.length ? "Choose a song" : "No songs in this playlist", ""));
     queue.forEach((track) => songSelect.add(new Option(track.title, String(track.id))));
     songSelect.value = queue.some((track) => String(track.id) === String(currentTrackId)) ? String(currentTrackId) : "";
+    shuffleButton.setAttribute("aria-pressed", String(shuffleEnabled));
   }
 
   async function loadTrack(id, options = {}) {
-    const track = queueTracks().find((item) => String(item.id) === String(id));
+    const track = tracks.find((item) => String(item.id) === String(id));
     if (!track) return;
+    if (!queueTracks().some((item) => String(item.id) === String(track.id))) {
+      activePlaylistId = "all";
+      if (shuffleEnabled) refreshShuffle();
+    }
     currentTrackId = String(track.id);
     title.textContent = track.title;
-    songSelect.value = currentTrackId;
     if (audio.src !== track.url) audio.src = track.url;
+    renderMenus();
+    updateMediaSession(track);
     if (Number(options.currentTime) > 0) {
       const seek = () => { audio.currentTime = Math.min(Number(options.currentTime), Number.isFinite(audio.duration) ? audio.duration : Number(options.currentTime)); };
       if (audio.readyState >= 1) seek(); else audio.addEventListener("loadedmetadata", seek, { once: true });
@@ -95,6 +148,7 @@
   async function playPlaylist(id) {
     activePlaylistId = id === "all" || playlists.some((playlist) => String(playlist.id) === String(id)) ? String(id) : "all";
     currentTrackId = null;
+    if (shuffleEnabled) refreshShuffle();
     renderMenus();
     const queue = queueTracks();
     if (queue.length) return loadTrack(queue[0].id, { play: true });
@@ -111,8 +165,19 @@
     const queue = queueTracks();
     if (!queue.length) return;
     const index = queue.findIndex((track) => String(track.id) === String(currentTrackId));
-    const nextIndex = index < 0 ? 0 : (index + direction + queue.length) % queue.length;
-    loadTrack(queue[nextIndex].id, { play: true });
+    loadTrack(queue[index < 0 ? 0 : (index + direction + queue.length) % queue.length].id, { play: true });
+  }
+
+  function installMediaSession() {
+    if (!("mediaSession" in navigator)) return;
+    const handlers = {
+      play: () => audio.play().catch(() => {}), pause: () => audio.pause(),
+      previoustrack: () => step(-1), nexttrack: () => step(1),
+      seekbackward: (details) => { audio.currentTime = Math.max(0, audio.currentTime - (details.seekOffset || 10)); },
+      seekforward: (details) => { audio.currentTime = Math.min(audio.duration || Infinity, audio.currentTime + (details.seekOffset || 10)); },
+      seekto: (details) => { if (Number.isFinite(details.seekTime)) audio.currentTime = details.seekTime; },
+    };
+    Object.entries(handlers).forEach(([action, handler]) => { try { navigator.mediaSession.setActionHandler(action, handler); } catch {} });
   }
 
   async function initialize() {
@@ -125,14 +190,17 @@
       title.textContent = "Music unavailable";
       return;
     }
-
     const saved = readState();
     activePlaylistId = saved?.playlistId || "all";
-    if (saved?.trackId && !queueTracks().some((track) => String(track.id) === String(saved.trackId))) activePlaylistId = "all";
-    renderMenus();
-    if (saved?.trackId && queueTracks().some((track) => String(track.id) === String(saved.trackId))) {
-      await loadTrack(saved.trackId, { currentTime: saved.currentTime, play: saved.playing });
+    if (activePlaylistId !== "all" && !playlists.some((playlist) => String(playlist.id) === String(activePlaylistId))) activePlaylistId = "all";
+    shuffleEnabled = Boolean(saved?.shuffle);
+    if (shuffleEnabled) refreshShuffle();
+    if (saved?.trackId && !queueTracks().some((track) => String(track.id) === String(saved.trackId))) {
+      activePlaylistId = "all";
+      if (shuffleEnabled) refreshShuffle();
     }
+    renderMenus();
+    if (saved?.trackId && tracks.some((track) => String(track.id) === String(saved.trackId))) await loadTrack(saved.trackId, { currentTime: saved.currentTime, play: saved.playing });
   }
 
   playButton.addEventListener("click", () => {
@@ -141,30 +209,28 @@
   });
   bar.querySelector("[data-site-music-previous]").addEventListener("click", () => step(-1));
   bar.querySelector("[data-site-music-next]").addEventListener("click", () => step(1));
-  queueButton.addEventListener("click", () => {
-    menu.hidden = !menu.hidden;
-    queueButton.setAttribute("aria-expanded", String(!menu.hidden));
-  });
+  shuffleButton.addEventListener("click", () => { shuffleEnabled = !shuffleEnabled; if (shuffleEnabled) refreshShuffle(); renderMenus(); saveState(); });
+  queueButton.addEventListener("click", () => { menu.hidden = !menu.hidden; queueButton.setAttribute("aria-expanded", String(!menu.hidden)); });
   playlistSelect.addEventListener("change", () => playPlaylist(playlistSelect.value));
   songSelect.addEventListener("change", () => { if (songSelect.value) loadTrack(songSelect.value, { play: true }); });
   audio.addEventListener("play", () => { updatePlayButton(); saveState(); });
   audio.addEventListener("pause", () => { updatePlayButton(); saveState(); });
   audio.addEventListener("ended", () => step(1));
+  audio.addEventListener("loadedmetadata", updateMediaPosition);
   audio.addEventListener("timeupdate", () => {
+    updateMediaPosition();
     const second = Math.floor(audio.currentTime);
     if (second !== lastSavedSecond && second % 3 === 0) { lastSavedSecond = second; saveState(); }
   });
   window.addEventListener("pagehide", saveState);
   document.addEventListener("click", (event) => {
     if (menu.hidden || event.target.closest(".site-music-menu") || event.target.closest("[data-site-music-queue]")) return;
-    menu.hidden = true;
-    queueButton.setAttribute("aria-expanded", "false");
+    menu.hidden = true; queueButton.setAttribute("aria-expanded", "false");
   });
   document.addEventListener("keydown", (event) => {
     if (event.key !== "Escape" || menu.hidden) return;
-    menu.hidden = true;
-    queueButton.setAttribute("aria-expanded", "false");
-    queueButton.focus();
+    menu.hidden = true; queueButton.setAttribute("aria-expanded", "false"); queueButton.focus();
   });
+  installMediaSession();
   initialize();
 })();
