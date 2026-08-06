@@ -60,6 +60,75 @@ h1 { margin:0; font:500 clamp(3.7rem,11vw,8rem)/.86 "Newsreader",serif; letter-s
 
 .empty-interest-page { min-height: calc(100svh - 140px); }
 
+.workout-planner {
+  display: grid;
+  gap: 18px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  padding: clamp(18px, 3vw, 28px);
+}
+
+.workout-section-heading,
+.workout-section-heading h2 { display: flex; align-items: center; margin: 0; }
+.workout-section-heading { gap: 12px; }
+.workout-section-heading span { font-size: 1.7rem; }
+.workout-section-heading h2 { font-size: clamp(1.25rem, 2.3vw, 1.65rem); }
+
+.progression-rules {
+  border: 1px solid color-mix(in srgb, var(--line) 70%, #b99b43);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--surface) 78%, #ead39a);
+  padding: 16px;
+}
+.progression-rules > strong { display: block; margin-bottom: 10px; }
+.progression-rules ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 18px; margin: 0; padding-left: 18px; }
+.progression-rules li { line-height: 1.4; }
+
+.workout-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.workout-tabs button {
+  min-height: 52px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--ink);
+  padding: 10px 12px;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+.workout-tabs button:hover,
+.workout-tabs button:focus-visible,
+.workout-tabs button.active { border-color: var(--ink); background: var(--ink); color: var(--bg); outline: 0; }
+
+.workout-panel[hidden] { display: none; }
+.workout-panel { display: grid; gap: 14px; }
+.training-schedule { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 8px; }
+.training-schedule span { display: grid; gap: 3px; border-radius: 10px; background: color-mix(in srgb, var(--surface) 76%, #dce7d7); padding: 12px; color: var(--muted); }
+.training-schedule strong { color: var(--ink); }
+
+.workout-day-grid,
+.exercise-reference { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; align-items: start; }
+.workout-day-grid details,
+.exercise-reference details { overflow: hidden; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); }
+.workout-day-grid summary,
+.exercise-reference summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 15px; font-weight: 800; cursor: pointer; list-style: none; }
+.workout-day-grid summary::-webkit-details-marker,
+.exercise-reference summary::-webkit-details-marker { display: none; }
+.workout-day-grid summary::after,
+.exercise-reference summary::after { content: "+"; font-size: 1.2rem; }
+.workout-day-grid details[open] summary::after,
+.exercise-reference details[open] summary::after { content: "−"; }
+.workout-day-grid summary span,
+.exercise-reference summary span { margin-left: auto; color: var(--muted); font-size: .78rem; font-weight: 600; }
+.workout-day-grid ul,
+.exercise-reference ul { display: grid; gap: 8px; margin: 0; border-top: 1px solid var(--line); padding: 14px 18px 16px 34px; }
+.workout-day-grid li,
+.exercise-reference li { line-height: 1.35; }
+
+:root[data-theme="dark"] .progression-rules { background: #3d3829; }
+:root[data-theme="dark"] .training-schedule span { background: #263329; }
+
 .nutrition-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -131,4 +200,8 @@ h1 { margin:0; font:500 clamp(3.7rem,11vw,8rem)/.86 "Newsreader",serif; letter-s
   .nutrition-card-wide,
   .nutrition-goals { grid-column: auto; }
   .nutrition-check-list { grid-template-columns: 1fr; }
+  .progression-rules ul,
+  .workout-day-grid,
+  .exercise-reference { grid-template-columns: 1fr; }
+  .workout-tabs { grid-template-columns: 1fr; }
 }

@@ -14,11 +14,12 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Newsreader:opsz,wght@6..72,500&amp;display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="site-header.css?v=20260806-study2" />
     <link rel="stylesheet" href="site-music.css?v=20260806-study2" />
-    <link rel="stylesheet" href="interest-detail.css?v=20260806-gym1" />
+    <link rel="stylesheet" href="interest-detail.css?v=20260806-programs1" />
     <script src="music-cloud.js?v=20260804-titleclean1"></script>
     <script src="site-header.js?v=20260806-study2" defer></script>
     <script src="site-music.js?v=20260806-study2" defer></script>
     <script src="site-ai.js?v=20260806-study2" defer></script>
+    <script src="gym-programs.js?v=20260806-programs1" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -41,6 +42,166 @@
     </aside>
     <main id="main-content">
       <h1>Gym &amp; Nutrition</h1>
+
+      <section class="workout-planner" aria-labelledby="training-title">
+        <div class="workout-section-heading">
+          <span aria-hidden="true">🏋️</span>
+          <h2 id="training-title">Training</h2>
+        </div>
+
+        <div class="progression-rules" aria-label="Progression rules">
+          <strong>Progression</strong>
+          <ul>
+            <li>Increase weight only when every working set reaches 12 reps or the calf rule.</li>
+            <li>If any set is under 12 reps, keep the same weight next session.</li>
+            <li>Never decrease weight unless making an executive decision.</li>
+            <li>Controlled reps. Full range of motion.</li>
+          </ul>
+        </div>
+
+        <nav class="workout-tabs" aria-label="Training programs">
+          <button type="button" class="active" data-workout-tab="ppl" aria-pressed="true">Push / Pull / Legs</button>
+          <button type="button" data-workout-tab="upper-lower" aria-pressed="false">Upper / Lower</button>
+          <button type="button" data-workout-tab="reference" aria-pressed="false">Exercise Reference</button>
+        </nav>
+
+        <div class="workout-panel" data-workout-panel="ppl">
+          <div class="training-schedule" aria-label="Push pull legs weekly schedule">
+            <span><strong>Monday</strong>Legs</span>
+            <span><strong>Tuesday</strong>Push</span>
+            <span><strong>Wednesday</strong>Pull</span>
+            <span><strong>Thursday–Sunday</strong>Recovery / Optional Cardio</span>
+          </div>
+
+          <div class="workout-day-grid">
+            <details open>
+              <summary>Legs <span>9 exercises</span></summary>
+              <ul>
+                <li>Leg Press</li>
+                <li>Seated Leg Press</li>
+                <li>Romanian Deadlift (RDL)</li>
+                <li>Split Squats</li>
+                <li>Leg Extension</li>
+                <li>Leg Curl</li>
+                <li>Hip Abduction</li>
+                <li>Hip Adduction</li>
+                <li>Barbell Standing Calf Raise</li>
+              </ul>
+            </details>
+            <details>
+              <summary>Push <span>11 exercises</span></summary>
+              <ul>
+                <li>Dumbbell Bench Press</li>
+                <li>Incline Dumbbell Press</li>
+                <li>Seated Chest Press</li>
+                <li>Seated Dumbbell Shoulder Press</li>
+                <li>Lateral Raises</li>
+                <li>Incline Bench Press</li>
+                <li>Seated Chest Fly</li>
+                <li>Single-Arm Standing Cable Chest Fly (SACCF)</li>
+                <li>Dips</li>
+                <li>Triceps Rope Pushdown</li>
+                <li>Overhead Triceps Extension</li>
+              </ul>
+            </details>
+            <details>
+              <summary>Pull <span>8 exercises</span></summary>
+              <ul>
+                <li>Assisted Pull-Ups</li>
+                <li>Iso-Lateral Row (Machine)</li>
+                <li>Seated Cable Row</li>
+                <li>Close-Grip Pulldown</li>
+                <li>Straight-Arm Pulldown</li>
+                <li>Rear Delt Fly / Face Pull</li>
+                <li>Dumbbell Curls</li>
+                <li>Cable Bicep Curls</li>
+              </ul>
+            </details>
+          </div>
+        </div>
+
+        <div class="workout-panel" data-workout-panel="upper-lower" hidden>
+          <div class="training-schedule" aria-label="Upper lower weekly schedule">
+            <span><strong>Monday</strong>Upper A</span>
+            <span><strong>Tuesday</strong>Lower A</span>
+            <span><strong>Wednesday</strong>Upper B</span>
+            <span><strong>Thursday</strong>Lower B</span>
+            <span><strong>Friday</strong>Upper C</span>
+            <span><strong>Saturday</strong>Recovery / Optional Cardio</span>
+            <span><strong>Sunday</strong>Recovery</span>
+          </div>
+
+          <div class="workout-day-grid">
+            <details open>
+              <summary>Upper A <span>7 exercises</span></summary>
+              <ul>
+                <li>Dumbbell Bench Press</li>
+                <li>Iso-Lateral Row (Machine, Overhand)</li>
+                <li>Incline Dumbbell Press</li>
+                <li>Assisted Pull-Ups</li>
+                <li>Lateral Raises</li>
+                <li>Triceps Rope Pushdown</li>
+                <li>Dumbbell Curls</li>
+              </ul>
+            </details>
+            <details>
+              <summary>Lower A <span>5 exercises</span></summary>
+              <ul>
+                <li>Leg Press</li>
+                <li>Romanian Deadlift (RDL)</li>
+                <li>Split Squats</li>
+                <li>Leg Curl</li>
+                <li>Barbell Standing Calf Raise</li>
+              </ul>
+            </details>
+            <details>
+              <summary>Upper B <span>7 exercises</span></summary>
+              <ul>
+                <li>Incline Bench Press</li>
+                <li>Seated Cable Row</li>
+                <li>Seated Chest Fly</li>
+                <li>Straight-Arm Pulldown</li>
+                <li>Rear Delt Fly / Face Pull</li>
+                <li>Dumbbell Curls</li>
+                <li>Overhead Triceps Extension</li>
+              </ul>
+            </details>
+            <details>
+              <summary>Lower B <span>6 exercises</span></summary>
+              <ul>
+                <li>Seated Leg Press</li>
+                <li>Hip Abduction</li>
+                <li>Hip Adduction</li>
+                <li>Leg Extension</li>
+                <li>Leg Curl</li>
+                <li>Barbell Standing Calf Raise</li>
+              </ul>
+            </details>
+            <details>
+              <summary>Upper C <span>7 exercises</span></summary>
+              <ul>
+                <li>Seated Chest Press</li>
+                <li>Close-Grip Pulldown</li>
+                <li>Single-Arm Standing Cable Chest Fly (SACCF)</li>
+                <li>Seated Dumbbell Shoulder Press</li>
+                <li>Dips</li>
+                <li>Cable Bicep Curls</li>
+                <li>Dumbbell Skull Crushers</li>
+              </ul>
+            </details>
+          </div>
+        </div>
+
+        <div class="workout-panel exercise-reference" data-workout-panel="reference" hidden>
+          <details open><summary>Chest <span>6 exercises</span></summary><ul><li>Dumbbell Bench Press</li><li>Incline Dumbbell Press</li><li>Incline Bench Press</li><li>Seated Chest Press</li><li>Seated Chest Fly</li><li>Single-Arm Standing Cable Chest Fly (SACCF)</li></ul></details>
+          <details><summary>Back <span>5 exercises</span></summary><ul><li>Assisted Pull-Ups</li><li>Iso-Lateral Row</li><li>Seated Cable Row</li><li>Close-Grip Pulldown</li><li>Straight-Arm Pulldown</li></ul></details>
+          <details><summary>Shoulders <span>3 exercises</span></summary><ul><li>Seated Dumbbell Shoulder Press</li><li>Lateral Raises</li><li>Rear Delt Fly / Face Pull</li></ul></details>
+          <details><summary>Triceps <span>4 exercises</span></summary><ul><li>Rope Pushdown</li><li>Overhead Triceps Extension</li><li>Dumbbell Skull Crushers</li><li>Dips</li></ul></details>
+          <details><summary>Biceps <span>2 exercises</span></summary><ul><li>Dumbbell Curls</li><li>Cable Bicep Curls</li></ul></details>
+          <details><summary>Legs <span>9 exercises</span></summary><ul><li>Leg Press</li><li>Seated Leg Press</li><li>Romanian Deadlift</li><li>Split Squats</li><li>Leg Extension</li><li>Leg Curl</li><li>Hip Abduction</li><li>Hip Adduction</li><li>Barbell Standing Calf Raise</li></ul></details>
+        </div>
+      </section>
+
       <div class="nutrition-grid">
         <section class="nutrition-card nutrition-card-wide" aria-labelledby="supplements-title">
           <div class="nutrition-card-heading">
