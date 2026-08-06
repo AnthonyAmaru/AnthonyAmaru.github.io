@@ -124,6 +124,9 @@ person-site/
 ├── bills.html                         # standalone bills interest
 ├── bills.css                          # bills dashboard and responsive table styling
 ├── bills.js                           # authenticated private bills loader and renderer
+├── health.html                        # value-free private health dashboard shell
+├── health.css                         # responsive lab cards, trends and safety panels
+├── health.js                          # authenticated lab loader and evidence-based renderer
 ├── fatherhood.html
 ├── books.html
 ├── books.css
@@ -488,6 +491,19 @@ Treat tax data as a private application, even when the surrounding site is publi
 - Treat OCR and mappings as drafts. Require the owner to review every W-2 box against the original and then file through an official IRS/NJ service or qualified preparer.
 - Do not persist the full SSN, refund bank account, prior-year AGI, e-file PIN, or IRS Identity Protection PIN in this website. Enter them only into the official filing service for the active session.
 - A static personal site must not claim to e-file or transmit returns unless it has a separately audited, authorized e-file integration. The reusable pattern is an organizer and review worksheet only.
+
+### Private health workspace
+
+Treat laboratory results and medical notes as private data, even when the page route itself is public:
+
+- Keep the public HTML and JavaScript free of the owner's lab values, diagnoses, dates of birth, addresses, and uploaded report contents.
+- Store a versioned health document in owner-scoped `site_content`; load it only after Supabase Auth, administrator membership, explicit grants, and RLS all succeed.
+- Render lab values with DOM text APIs after authentication. Never interpolate untrusted record text into `innerHTML`.
+- Separate current priorities, watch items, resolved trends, latest-normal results, clinician questions, and urgent-symptom guidance. Do not label a historical abnormality as current after later results normalize.
+- Base educational guidance on current authoritative medical sources and link those sources, but make clear that the page does not diagnose or prescribe treatment.
+- Keep condition-specific safety constraints visible. For example, a liver-disease nutrition plan can override generic advice to increase sodium or start supplements.
+- Never recommend self-starting medication or high-dose supplements from a single result. Provide the concrete question or repeat test to discuss with the clinician instead.
+- Verify that no private values occur in tracked files, unauthenticated reads return no row, authenticated reads work, and the dashboard has no horizontal overflow at 390px and 768px.
 
 ## Phase 5 — protected AI gateway
 
