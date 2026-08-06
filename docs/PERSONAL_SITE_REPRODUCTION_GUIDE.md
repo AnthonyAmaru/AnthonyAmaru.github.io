@@ -182,6 +182,7 @@ When more than one personal site uses this blueprint, treat shared structure as 
 The shared contract is:
 
 - one stable site header with the owner's top-level navigation;
+- one shared light/dark button in every standalone-page header, visible beside Menu on phones and beside the top tabs on tablets/desktops;
 - one shared music bar with previous, play/pause, next, and the one-question AI control on every page;
 - a home grid of full-tile links with an icon, short title, and no numbering;
 - an Interests grid where every card is one link and contains no nested Open, Notebook, or Test buttons;
@@ -295,6 +296,7 @@ The music page should support:
 - Load recent attempts after administrator authentication so history follows the owner across devices.
 - Store editable small JSON documents in `site_content` using `(user_id, site, content_key)` as the key.
 - For system speech, use the browser Web Speech API with an explicit language such as `zh-CN`, a user-triggered button, and a graceful no-op when no compatible voice is installed. Do not require a paid speech service for basic pronunciation.
+- On a language notebook, make every target-language word, sentence, dialogue turn, drill, character, flashcard, and reading paragraph a keyboard-accessible pronunciation target. Use delegated events so dynamically rendered study items retain speech behavior.
 - Reading exercises may introduce at most five new terms per paragraph. Keep the remaining text within the known vocabulary, highlight the new terms, and list their pronunciation and meaning beside the paragraph.
 - Debounce manuscript saves, show save state, and keep a local recovery copy.
 - Version manuscript schemas. During a schema upgrade, backfill an empty saved page from its matching packaged default, preserve every nonempty user page, and persist the upgraded document locally and to the authenticated cloud record.
@@ -550,6 +552,8 @@ Append every future bug here. Update the relevant architecture section at the sa
 
 | Date | Symptom | Root cause | Corrected rule | Regression test |
 | --- | --- | --- | --- | --- |
+| 2026-08-05 | The light/dark control disappeared on Aviation, Books, and Mandarin detail pages. | The root portal owned its own theme button, while the shared standalone header applied a saved theme but rendered no control. | `site-header.js` creates exactly one shared theme button and `site-theme.js` owns the persisted toggle API; every standalone page loads the same versioned assets. | Open Aviation, Books, Mandarin notebook, and Mandarin Quiz at phone/tablet/desktop widths; toggle twice and confirm the button remains visible, the theme changes, and the choice survives navigation. |
+| 2026-08-05 | Mandarin speech existed only in Reading and Quiz. | Pronunciation was wired to two dedicated buttons instead of the notebook's shared Chinese-language elements and dynamic renderers. | Use delegated speech on every `zh-Hans` or explicit speech target, enhance dynamic nodes for keyboard access, and keep the dedicated long-reading control. | Tap and keyboard-activate a greeting, flashcard, word, sound drill, sentence, dialogue, reading, and character; confirm each sends its current text to a `zh-CN` system voice. |
 | 2026-08-05 | Mandarin and Aviation tests could not return to a prior question. | Each render reset one global selected/checked state, while results were appended rather than indexed by question. | Store responses by question index and render Previous/Next from that stable state; recompute the score from checked responses. | Answer question 1, open question 2, return to question 1, and confirm its selection, feedback, and single score point remain unchanged. |
 | 2026-08-05 | Incorrect questions were visible only in the just-finished result and could not be retested as a durable bank. | Attempt rows stored misses for history, but there was no deduplicated subject-level review document or removal workflow. | Store separate owner-only Mandarin and Aviation wrong banks in `site_content`; add misses by stable key and remove them only after a correct wrong-bank retry. | Miss the same question twice and confirm one bank item; retry it correctly and confirm it disappears locally and on a second signed-in device. |
 | 2026-08-05 | Aviation history showed only an internal book abbreviation and did not show the tested chapter. | The renderer ignored the saved `section` and did not derive human-readable labels from the question source model. | Persist/derive both book and chapter labels for every attempt; Mandarin history likewise displays its subject and practice section. | Complete a chapter-specific PHAK test and confirm the score row names both the handbook and chapter after cloud reload. |

@@ -352,6 +352,7 @@ function renderSession() {
     number.className = "session-number";
     number.textContent = state.known.has(word[0]) ? "✓" : index + 1;
     const label = document.createElement("span");
+    label.lang = "zh-Hans";
     label.textContent = word[0];
     item.append(number, label);
     list.append(item);
@@ -522,6 +523,24 @@ function speakMandarin(text) {
   speechSynthesis.speak(utterance);
 }
 
+function enhanceMandarinSpeech(root = document) {
+  const selector = '[lang="zh-Hans"], [data-speak-mandarin]';
+  const elements = [...(root.matches?.(selector) ? [root] : []), ...root.querySelectorAll(selector)];
+  elements.forEach((element) => {
+    element.classList.add("speakable-mandarin");
+    element.title ||= "Tap to hear Mandarin";
+    if (!element.matches("button, a, input, select, textarea, [tabindex]")) {
+      element.tabIndex = 0;
+      element.setAttribute("role", "button");
+    }
+  });
+}
+
+function speakFromElement(element) {
+  const text = element.dataset.speakMandarin || element.textContent.trim();
+  if (text) speakMandarin(text);
+}
+
 function renderDialogue() {
   const list = $("#dialogue-list");
   planDialogue.forEach(([speaker, chinese, pinyin, english]) => {
@@ -537,6 +556,7 @@ function renderPronunciation() {
   pronunciationDrills.forEach(([number, syllable, initial, tone]) => {
     const card = document.createElement("article");
     card.className = "sound-card";
+    card.dataset.speakMandarin = syllable;
     card.innerHTML = `<span class="sound-number">${number}</span><strong>${syllable}</strong><small>${initial} · ${tone}</small>`;
     grid.append(card);
   });
@@ -595,6 +615,17 @@ $("#reading-controls").addEventListener("click", (event) => {
   renderReading();
 });
 $("#speak-reading").addEventListener("click", () => speakMandarin(conversationReadings.map((reading) => reading.chinese).join("。")));
+document.addEventListener("click", (event) => {
+  const target = event.target.closest('.speakable-mandarin, [lang="zh-Hans"], [data-speak-mandarin]');
+  if (target) speakFromElement(target);
+});
+document.addEventListener("keydown", (event) => {
+  if (!['Enter', ' '].includes(event.key)) return;
+  const target = event.target.closest('.speakable-mandarin, [lang="zh-Hans"], [data-speak-mandarin]');
+  if (!target) return;
+  event.preventDefault();
+  speakFromElement(target);
+});
 const requestedPage = new URLSearchParams(location.search).get("page");
 const mandarinPages = ["lesson", "cards", "sounds", "words", "sentences", "plans", "reading", "characters"];
 const activePage = mandarinPages.includes(requestedPage) ? requestedPage : "home";
@@ -614,3 +645,7 @@ renderReading();
 renderCharacters();
 makeSession();
 updateProgress();
+enhanceMandarinSpeech();
+new MutationObserver((records) => records.forEach((record) => record.addedNodes.forEach((node) => {
+  if (node.nodeType === Node.ELEMENT_NODE) enhanceMandarinSpeech(node);
+}))).observe($("main"), { childList: true, subtree: true });

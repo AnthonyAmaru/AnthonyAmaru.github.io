@@ -253,6 +253,8 @@ $("#start-wrong-bank").addEventListener("click", () => { const bank = getWrongBa
 $("#answer-options").addEventListener("click", (event) => { const option = event.target.closest(".answer-option"); const response = state.responses[state.index]; if (!option || response.checked) return; response.selected = Number(option.dataset.index); renderQuestion(); });
 $("#check-answer").addEventListener("click", checkAnswer); $("#next-question").addEventListener("click", nextQuestion); $("#previous-question").addEventListener("click", previousQuestion);
 $("#speak-question").addEventListener("click", () => speakMandarin(state.questions[state.index]?.chinese || ""));
+$("#question-chinese").addEventListener("click", () => speakMandarin(state.questions[state.index]?.chinese || ""));
+$("#question-chinese").addEventListener("keydown", (event) => { if (["Enter", " "].includes(event.key)) { event.preventDefault(); speakMandarin(state.questions[state.index]?.chinese || ""); } });
 $("#exit-quiz").addEventListener("click", () => showView("setup-view")); $("#new-quiz").addEventListener("click", () => showView("setup-view"));
 $("#review-wrong").addEventListener("click", () => $("#wrong-list").scrollIntoView({ behavior: "smooth" }));
 $("#clear-history").addEventListener("click", async () => { if (!ensureAdmin()) return; if (confirm("Clear Mandarin score history on every synced device?")) { localStorage.removeItem(HISTORY_KEY); if (musicCloud.isSignedIn()) await musicCloud.clearTestAttempts("mandarin").catch((error) => console.warn("Cloud clear failed", error)); renderHistory(); } });
