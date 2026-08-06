@@ -15,10 +15,12 @@
     <link rel="stylesheet" href="site-header.css?v=20260806-study2" />
     <link rel="stylesheet" href="site-music.css?v=20260806-study2" />
     <link rel="stylesheet" href="interest-detail.css?v=20260806-programs1" />
+    <link rel="stylesheet" href="bills.css?v=20260806-bills3" />
     <script src="music-cloud.js?v=20260804-titleclean1"></script>
     <script src="site-header.js?v=20260806-study2" defer></script>
     <script src="site-music.js?v=20260806-study2" defer></script>
     <script src="site-ai.js?v=20260806-study2" defer></script>
+    <script src="bills.js?v=20260806-bills3" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -39,9 +41,26 @@
       <button type="button" data-site-music-play aria-label="Play or pause">▶</button>
       <button type="button" data-site-music-next aria-label="Next song">›</button>
     </aside>
-    <main id="main-content" class="empty-interest-page">
-      <h1>Bills</h1>
-      <div class="interest-placeholder"><span aria-hidden="true">💳</span><strong>Bills</strong></div>
+    <main id="main-content" class="bills-page">
+      <header class="bills-heading">
+        <div>
+          <span class="bills-icon" aria-hidden="true">💳</span>
+          <h1>Bills</h1>
+        </div>
+        <time data-bills-as-of hidden></time>
+      </header>
+
+      <section class="bills-lock" data-bills-lock aria-labelledby="bills-lock-title">
+        <span aria-hidden="true">🔒</span>
+        <h2 id="bills-lock-title">Admin approval required</h2>
+        <form data-bills-auth>
+          <label for="bills-password">Admin password</label>
+          <div><input id="bills-password" type="password" autocomplete="current-password" required /><button type="submit">Unlock</button></div>
+        </form>
+        <p data-bills-message role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="bills-private-dashboard" data-bills-dashboard aria-label="Private bills dashboard" hidden></section>
     </main>
   </body>
 </html>
