@@ -69,6 +69,47 @@
 .health-system-meta { flex-wrap:wrap; justify-content:flex-end; gap:7px; color:var(--muted); }
 .health-system-meta span { border:1px solid var(--line); border-radius:2px; padding:6px 8px; }
 
+.health-filters {
+  display:grid;
+  grid-template-columns:minmax(180px,1.15fr) minmax(160px,.75fr) auto auto;
+  align-items:center;
+  gap:9px;
+  border:1px solid var(--line);
+  border-radius:4px;
+  background:color-mix(in srgb,var(--surface) 92%,#dce7d7);
+  padding:10px;
+  box-shadow:0 12px 36px rgba(22,37,26,.06);
+}
+.health-filter-search,.health-filter-category { min-width:0; }
+.health-filter-search input,.health-filter-category select {
+  width:100%;
+  min-height:42px;
+  border:1px solid var(--line);
+  border-radius:3px;
+  outline:0;
+  background:var(--bg);
+  color:var(--ink);
+  padding:0 12px;
+  font:700 .72rem/1 "DM Sans",system-ui,sans-serif;
+}
+.health-filter-search input:focus,.health-filter-category select:focus { border-color:#6a9772; box-shadow:0 0 0 3px rgba(90,140,99,.12); }
+.health-filter-status { display:flex; flex-wrap:wrap; gap:6px; }
+.health-filter-status button {
+  min-height:42px;
+  border:1px solid var(--line);
+  border-radius:3px;
+  background:var(--bg);
+  color:var(--muted);
+  padding:0 12px;
+  font:900 .61rem/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  cursor:pointer;
+}
+.health-filter-status button[aria-pressed="true"] { border-color:#5f8b67; background:#28462f; color:#eef8ef; box-shadow:0 0 15px rgba(77,139,88,.16); }
+.health-filter-count { min-width:58px; color:#66806c; font:900 .66rem/1 ui-monospace,SFMono-Regular,Menlo,monospace; text-align:center; }
+.health-result-row[hidden],.health-result-section[hidden] { display:none !important; }
+
 .health-result-stack { display:grid; gap:12px; }
 .health-result-section,.health-command-section,.health-sources { overflow:hidden; border:1px solid var(--line); border-radius:5px; background:color-mix(in srgb,var(--surface) 96%,#dce7d7); box-shadow:0 16px 50px rgba(23,37,27,.07); }
 .health-section-heading { justify-content:space-between; gap:14px; border-bottom:1px solid var(--line); background:color-mix(in srgb,var(--surface) 87%,#dce7d7); padding:14px 16px; }
@@ -150,6 +191,8 @@
 :root[data-theme="dark"] .health-heading > div > span { border-color:#5b8764; background:rgba(52,91,59,.28); color:#92c69b; box-shadow:inset 0 0 22px rgba(74,137,85,.2),0 0 18px rgba(74,137,85,.08); }
 :root[data-theme="dark"] .health-heading time,:root[data-theme="dark"] .health-system-identity small,:root[data-theme="dark"] .health-result-name small,:root[data-theme="dark"] .health-result-reference small { color:#82a089; }
 :root[data-theme="dark"] .health-system-bar,:root[data-theme="dark"] .health-result-section,:root[data-theme="dark"] .health-command-section,:root[data-theme="dark"] .health-sources { background:rgba(17,25,19,.88); box-shadow:0 18px 55px rgba(0,0,0,.2); }
+:root[data-theme="dark"] .health-filters { background:rgba(17,25,19,.88); box-shadow:0 18px 55px rgba(0,0,0,.2); }
+:root[data-theme="dark"] .health-filter-status button[aria-pressed="true"] { background:#3f7149; color:#f1f8f2; }
 :root[data-theme="dark"] .health-section-heading { background:rgba(35,50,39,.78); }
 :root[data-theme="dark"] .health-result-row:hover { background:rgba(91,156,102,.09); }
 :root[data-theme="dark"] .health-chip.high { color:#f0a47a; }
@@ -167,6 +210,9 @@
 }
 
 @media (max-width:820px) {
+  .health-filters { grid-template-columns:minmax(170px,1fr) minmax(155px,.7fr); }
+  .health-filter-status { grid-column:1/2; }
+  .health-filter-count { grid-column:2; grid-row:2; justify-self:end; }
   .health-result-row { grid-template-columns:42px minmax(140px,1fr) minmax(110px,.7fr) minmax(180px,1fr) auto 7px; gap:10px; padding-inline:13px; }
   .health-result-reference span { font-size:.67rem; }
   .health-urgent { grid-template-columns:auto 1fr; }
@@ -179,6 +225,12 @@
   .health-heading time { padding-top:8px; text-align:right; }
   .health-system-bar { align-items:flex-start; }
   .health-system-meta { display:none; }
+  .health-filters { grid-template-columns:1fr auto; }
+  .health-filter-search { grid-column:1/-1; }
+  .health-filter-category { grid-column:1/-1; }
+  .health-filter-status { grid-column:1; overflow-x:auto; flex-wrap:nowrap; padding-bottom:2px; }
+  .health-filter-status button { min-width:64px; }
+  .health-filter-count { grid-column:2; grid-row:3; }
   .health-result-row {
     grid-template-areas:
       "index name status"

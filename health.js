@@ -41,6 +41,8 @@
 
   function resultRow({ code, label, value, unit = "", reference, status, tone = "clear" }) {
     const row = element("article", `health-result-row signal-${tone}`);
+    row.dataset.healthTone = tone;
+    row.dataset.healthSearch = [code, label, value, unit, reference, status].join(" ").toLocaleLowerCase();
     const index = element("span", "health-row-index", code);
     const name = element("div", "health-result-name");
     name.append(element("small", "", "ANALYTE"), element("strong", "", label));
@@ -68,6 +70,7 @@
 
   function resultSection(code, title, status, tone, rows, extra = null) {
     const section = element("section", "health-result-section");
+    section.dataset.healthCategory = code;
     const heading = element("header", "health-section-heading");
     const titleBlock = element("div");
     titleBlock.append(element("span", "health-section-code", code), element("h2", "", title));
@@ -77,6 +80,93 @@
     section.append(heading, list);
     if (extra) section.append(extra);
     return section;
+  }
+
+  function renderFilters() {
+    const filters = element("section", "health-filters");
+    filters.setAttribute("aria-label", "Filter health results");
+
+    const searchLabel = element("label", "health-filter-search");
+    const search = element("input");
+    search.type = "search";
+    search.placeholder = "Search results";
+    search.setAttribute("aria-label", "Search health results");
+    search.autocomplete = "off";
+    search.dataset.healthSearchInput = "";
+    searchLabel.append(search);
+
+    const categoryLabel = element("label", "health-filter-category");
+    const category = element("select");
+    category.setAttribute("aria-label", "Filter by category");
+    category.dataset.healthCategorySelect = "";
+    [
+      ["all", "All categories"],
+      ["01", "Lipids"],
+      ["02", "Glucose"],
+      ["03", "Hepatitis C"],
+      ["04", "Resolved"],
+      ["05", "Stable systems"],
+    ].forEach(([value, label]) => {
+      const option = element("option", "", label);
+      option.value = value;
+      category.append(option);
+    });
+    categoryLabel.append(category);
+
+    const status = element("div", "health-filter-status");
+    status.setAttribute("role", "group");
+    status.setAttribute("aria-label", "Filter by status");
+    [["all", "All"], ["high", "High"], ["watch", "Watch"], ["clear", "Clear"]].forEach(([value, label], index) => {
+      const button = element("button", "", label);
+      button.type = "button";
+      button.dataset.healthStatus = value;
+      button.setAttribute("aria-pressed", index === 0 ? "true" : "false");
+      status.append(button);
+    });
+
+    const count = element("output", "health-filter-count", "");
+    count.dataset.healthFilterCount = "";
+    count.setAttribute("aria-live", "polite");
+    filters.append(searchLabel, categoryLabel, status, count);
+    return filters;
+  }
+
+  function enableFilters() {
+    const search = dashboard.querySelector("[data-health-search-input]");
+    const category = dashboard.querySelector("[data-health-category-select]");
+    const statusButtons = [...dashboard.querySelectorAll("[data-health-status]")];
+    const sections = [...dashboard.querySelectorAll("[data-health-category]")];
+    const rows = [...dashboard.querySelectorAll(".health-result-row")];
+    const count = dashboard.querySelector("[data-health-filter-count]");
+    let status = "all";
+
+    function applyFilters() {
+      const query = search.value.trim().toLocaleLowerCase();
+      let visible = 0;
+      rows.forEach((row) => {
+        const section = row.closest("[data-health-category]");
+        const categoryMatch = category.value === "all" || section?.dataset.healthCategory === category.value;
+        const statusMatch = status === "all" || row.dataset.healthTone === status;
+        const searchMatch = !query || row.dataset.healthSearch.includes(query);
+        row.hidden = !(categoryMatch && statusMatch && searchMatch);
+        if (!row.hidden) visible += 1;
+      });
+      sections.forEach((section) => {
+        section.hidden = !section.querySelector(".health-result-row:not([hidden])");
+      });
+      count.textContent = `${visible} / ${rows.length}`;
+    }
+
+    search.addEventListener("input", applyFilters);
+    category.addEventListener("change", applyFilters);
+    statusButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        status = button.dataset.healthStatus;
+        statusButtons.forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+        applyFilters();
+      });
+    });
+    applyFilters();
   }
 
   function renderSystemBar(data) {
@@ -226,7 +316,8 @@
     if (!data?.latest?.lipids || !data?.latest?.glucose || !data?.latest?.hcv || !Array.isArray(data.resolved)) throw new Error("Private health data is incomplete.");
     const stack = element("div", "health-result-stack");
     stack.append(renderLipids(data), renderGlucose(data), renderHcv(data), renderResolved(data), renderNormal(data), renderNextSteps(), renderUrgent(), renderSources());
-    dashboard.replaceChildren(renderSystemBar(data), stack);
+    dashboard.replaceChildren(renderSystemBar(data), renderFilters(), stack);
+    enableFilters();
     dashboard.hidden = false;
     lock.hidden = true;
     asOf.dateTime = data.asOf;
