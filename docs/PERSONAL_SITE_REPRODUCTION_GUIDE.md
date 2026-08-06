@@ -121,6 +121,7 @@ person-site/
 ├── ai-packages.css
 ├── blockchain.html                    # standalone blockchain/cryptocurrency interest
 ├── blockchain.css
+├── bills.html                         # standalone bills interest
 ├── fatherhood.html
 ├── books.html
 ├── books.css
