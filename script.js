@@ -51,6 +51,7 @@ let musicPlaylists = [];
 let musicCloudError = "";
 let tracks = [];
 let visibleTracks = [];
+let playerPlaylist = "all";
 let currentTrackId = null;
 let playerStateRestored = false;
 const selectedTrackIds = new Set();
@@ -718,9 +719,21 @@ function updateTrackSelectionControls() {
 }
 
 function renderDock() {
-  const select = $("#dock-track-select");
-  select.innerHTML = tracks.length ? '<option value="">Choose a song</option>' + tracks.map((track) => `<option value="${track.id}">${escapeHtml(track.title)}</option>`).join("") : '<option value="">No music added yet</option>';
-  if (currentTrackId) select.value = String(currentTrackId);
+  const playlistSelect = $("#dock-playlist-select");
+  const songSelect = $("#dock-track-select");
+  if (playerPlaylist !== "all" && !musicPlaylists.some((playlist) => String(playlist.id) === playerPlaylist)) playerPlaylist = "all";
+  playlistSelect.innerHTML = `<option value="all">All songs (${tracks.length})</option>${musicPlaylists.map((playlist) => {
+    const count = tracks.filter((track) => String(track.playlist_id) === String(playlist.id)).length;
+    return `<option value="${playlist.id}">${escapeHtml(playlist.name)} (${count})</option>`;
+  }).join("")}`;
+  playlistSelect.value = playerPlaylist;
+  const queue = playerQueue();
+  songSelect.innerHTML = queue.length ? '<option value="">Choose a song</option>' + queue.map((track) => `<option value="${track.id}">${escapeHtml(track.title)}</option>`).join("") : '<option value="">No songs in this playlist</option>';
+  if (currentTrackId && queue.some((track) => String(track.id) === String(currentTrackId))) songSelect.value = String(currentTrackId);
+}
+
+function playerQueue() {
+  return playerPlaylist === "all" ? tracks : tracks.filter((track) => String(track.playlist_id) === playerPlaylist);
 }
 
 function readMusicPlayerState() {
@@ -729,16 +742,19 @@ function readMusicPlayerState() {
 
 function saveMusicPlayerState() {
   const track = tracks.find((item) => String(item.id) === String(currentTrackId));
-  if (!track) return;
   const audio = $("#audio-player");
-  sessionStorage.setItem(MUSIC_PLAYER_STATE_KEY, JSON.stringify({ trackId: String(track.id), title: track.title, currentTime: Number(audio.currentTime || 0), playing: !audio.paused }));
+  sessionStorage.setItem(MUSIC_PLAYER_STATE_KEY, JSON.stringify({ playlistId: playerPlaylist, trackId: track ? String(track.id) : null, title: track?.title || $("#dock-title").textContent, currentTime: track ? Number(audio.currentTime || 0) : 0, playing: Boolean(track && !audio.paused) }));
 }
 
 function restoreMusicPlayerState() {
   if (playerStateRestored) return;
   playerStateRestored = true;
   const saved = readMusicPlayerState();
+  playerPlaylist = saved?.playlistId || "all";
+  if (playerPlaylist !== "all" && !musicPlaylists.some((playlist) => String(playlist.id) === playerPlaylist)) playerPlaylist = "all";
   const track = tracks.find((item) => String(item.id) === String(saved?.trackId));
+  if (track && !playerQueue().some((item) => String(item.id) === String(track.id))) playerPlaylist = "all";
+  renderDock();
   if (!track) return;
   currentTrackId = String(track.id);
   const audio = $("#audio-player");
@@ -753,14 +769,16 @@ function restoreMusicPlayerState() {
   updatePlayButton();
 }
 
-async function playTrack(id) {
+async function playTrack(id, options = {}) {
   const track = tracks.find((item) => item.id === String(id));
   if (!track) return;
+  if (options.playlistId && (options.playlistId === "all" || musicPlaylists.some((playlist) => String(playlist.id) === String(options.playlistId)))) playerPlaylist = String(options.playlistId);
+  if (!playerQueue().some((item) => String(item.id) === String(track.id))) playerPlaylist = "all";
   currentTrackId = track.id;
   const audio = $("#audio-player");
   audio.src = track.url;
   $("#dock-title").textContent = track.title;
-  $("#dock-track-select").value = String(track.id);
+  renderDock();
   try { await audio.play(); } catch { toast("Tap play to start this song."); }
   updatePlayButton();
   saveMusicPlayerState();
@@ -771,10 +789,26 @@ function updatePlayButton() {
 }
 
 function stepTrack(direction) {
-  const pool = visibleTracks.length ? visibleTracks : tracks;
+  const pool = playerQueue();
   if (!pool.length) return;
-  const index = Math.max(0, pool.findIndex((track) => track.id === currentTrackId));
-  playTrack(pool[(index + direction + pool.length) % pool.length].id);
+  const index = pool.findIndex((track) => track.id === currentTrackId);
+  playTrack(pool[index < 0 ? 0 : (index + direction + pool.length) % pool.length].id);
+}
+
+async function playDockPlaylist(id) {
+  playerPlaylist = id === "all" || musicPlaylists.some((playlist) => String(playlist.id) === String(id)) ? String(id) : "all";
+  currentTrackId = null;
+  renderDock();
+  const queue = playerQueue();
+  if (queue.length) return playTrack(queue[0].id);
+  const audio = $("#audio-player");
+  audio.pause();
+  audio.removeAttribute("src");
+  audio.load();
+  const playlist = musicPlaylists.find((item) => String(item.id) === playerPlaylist);
+  $("#dock-title").textContent = playlist ? `${playlist.name} is empty` : "No music added yet";
+  updatePlayButton();
+  saveMusicPlayerState();
 }
 
 async function addMusicFiles(files) {
@@ -1122,7 +1156,7 @@ $("#page-music").addEventListener("click", (event) => {
     musicLibraryOpen = true;
     applyMusicFilters();
   }
-  if (play) playTrack(play.dataset.playTrack);
+  if (play) playTrack(play.dataset.playTrack, { playlistId: currentPlaylist === "none" ? "all" : currentPlaylist });
   if (remove) deleteTrack(remove.dataset.deleteTrack);
 });
 $("#page-music").addEventListener("keydown", (event) => {
@@ -1142,9 +1176,10 @@ $("#page-music").addEventListener("change", (event) => {
   }
 });
 $("#dock-toggle").addEventListener("click", () => { const expanded = $("#dock-expanded"); expanded.hidden = !expanded.hidden; $("#dock-toggle").setAttribute("aria-expanded", String(!expanded.hidden)); });
-$("#dock-play").addEventListener("click", () => { const audio = $("#audio-player"); if (!audio.src && tracks.length) return playTrack(tracks[0].id); if (audio.paused) audio.play(); else audio.pause(); });
+$("#dock-play").addEventListener("click", () => { const audio = $("#audio-player"); if (!audio.src && playerQueue().length) return playTrack(playerQueue()[0].id); if (audio.paused) audio.play(); else audio.pause(); });
 $("#dock-previous").addEventListener("click", () => stepTrack(-1));
 $("#dock-next").addEventListener("click", () => stepTrack(1));
+$("#dock-playlist-select").addEventListener("change", (event) => playDockPlaylist(event.target.value));
 $("#dock-track-select").addEventListener("change", (event) => { if (event.target.value) playTrack(event.target.value); });
 $("#audio-player").addEventListener("play", () => { updatePlayButton(); saveMusicPlayerState(); });
 $("#audio-player").addEventListener("pause", () => { updatePlayButton(); saveMusicPlayerState(); });

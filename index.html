@@ -23,10 +23,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&amp;family=Noto+Serif+SC:wght@500;700&amp;display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=20260805-matrixrain1" />
+    <link rel="stylesheet" href="styles.css?v=20260805-playlistqueue1" />
     <script src="music-cloud.js?v=20260804-titleclean1" defer></script>
     <script src="book-data.js?v=20260805-bookrestore1" defer></script>
-    <script src="script.js?v=20260805-bookrestore1" defer></script>
+    <script src="script.js?v=20260805-playlistqueue1" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -74,8 +74,8 @@
         <button id="dock-next" class="dock-control" type="button" aria-label="Next song">›</button>
         <button id="quick-ai-toggle" class="quick-ai-toggle" type="button" aria-label="Ask AI" aria-expanded="false" aria-controls="quick-ai-popover">AI</button>
         <div id="dock-expanded" class="dock-expanded" hidden>
-          <label for="dock-track-select">Choose a song</label>
-          <select id="dock-track-select"><option value="">No music added yet</option></select>
+          <div class="dock-field"><label for="dock-playlist-select">Play a playlist</label><select id="dock-playlist-select"><option value="all">All songs</option></select></div>
+          <div class="dock-field"><label for="dock-track-select">Choose a song</label><select id="dock-track-select"><option value="">No music added yet</option></select></div>
           <audio id="audio-player" preload="metadata"></audio>
         </div>
         <div id="quick-ai-popover" class="quick-ai-popover" hidden>

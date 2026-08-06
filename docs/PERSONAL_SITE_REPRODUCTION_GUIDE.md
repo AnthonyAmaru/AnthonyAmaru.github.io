@@ -247,7 +247,9 @@ This defensive cleanup does not replace correct standalone navigation. Fix any d
 - Run the theme script in the document head to avoid a light-mode flash.
 - Every page must use the same theme tokens and support dark mode.
 - Include one shared music player on every standalone page.
-- Save track identity and playback position before page unload, then restore on the destination page.
+- Give the top player one playlist selector and one song selector on every route; both controls must remain reachable on phones and tablets.
+- Choosing All Songs or a named playlist immediately starts its first track. Previous, next, and automatic advance must stay inside that active queue until another playlist is chosen.
+- Save active playlist, track identity, and playback position before page unload, then restore the same queue on the destination page.
 - Browsers may briefly pause HTML Audio during a full document navigation; do not reintroduce an iframe overlay to hide that platform behavior.
 
 ## Music library rules
@@ -284,7 +286,8 @@ The music page should support:
 - filtering and sorting Song, Artist, and Playlist columns A–Z or Z–A;
 - editing and saving song and artist names;
 - a compact multi-select artist filter that can show any combination of artists and reset to all artists;
-- previous, play/pause, and next controls on phones.
+- previous, play/pause, and next controls on phones;
+- a top-player menu that can start All Songs or any named playlist and then choose an individual song from that queue.
 
 ## Quiz and editable-content rules
 
@@ -501,6 +504,8 @@ Then verify:
 - Upload the same file again and confirm duplicate prevention.
 - Confirm title normalization removes source identifiers without deleting the song.
 - Select several songs and move them to one playlist.
+- From the top player, choose that playlist and confirm its first song starts; use next through the final song and confirm playback wraps within the same playlist.
+- Navigate to another route and confirm the top player restores the selected playlist, current song, and playback position.
 - Save one quiz and confirm its score and wrong answers on a second device.
 - Answer a question incorrectly, confirm it appears once in the subject's wrong bank on a second device, retest it correctly, and confirm it disappears on both devices.
 - Move forward, back, and forward in a quiz; confirm the answer and feedback are restored and the score is counted once.
