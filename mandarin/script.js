@@ -313,6 +313,11 @@ const characters = [
   ["小", "xiǎo", "small"], ["热", "rè", "hot"], ["好", "hǎo", "good"], ["朋", "péng", "friend"],
 ];
 
+const WRITING_WORDS_KEY = "anthony_mandarin_written_words_v1";
+const WRITING_WORDS_CLOUD_KEY = "mandarin_written_words_v1";
+const KNOWN_WORDS_KEY = "mandarin-known";
+const KNOWN_WORDS_CLOUD_KEY = "mandarin_known_words_v1";
+
 const state = {
   activeCategory: "All",
   query: "",
@@ -321,12 +326,11 @@ const state = {
   readingLayer: "chinese",
   session: [],
   sessionIndex: 0,
-  known: new Set(JSON.parse(localStorage.getItem("mandarin-known") || "[]")),
+  known: new Set(readKnownWords()),
 };
 
-const WRITING_WORDS_KEY = "anthony_mandarin_written_words_v1";
-const WRITING_WORDS_CLOUD_KEY = "mandarin_written_words_v1";
 let writingWords = readWritingWords();
+let mandarinCloudSyncPromise = null;
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => document.querySelectorAll(selector);
@@ -345,6 +349,28 @@ function writeWritingWords(value) {
   writingWords = normalizeWritingWords(value);
   localStorage.setItem(WRITING_WORDS_KEY, JSON.stringify(writingWords));
   renderWritingWords();
+}
+
+function readKnownWords() {
+  try { return normalizeWritingWords(JSON.parse(localStorage.getItem(KNOWN_WORDS_KEY) || "[]")); }
+  catch { return []; }
+}
+
+function writeKnownWords(value) {
+  state.known = new Set(normalizeWritingWords(value));
+  localStorage.setItem(KNOWN_WORDS_KEY, JSON.stringify([...state.known]));
+  updateProgress();
+  renderSession();
+}
+
+async function saveKnownWords() {
+  writeKnownWords([...state.known]);
+  if (!window.musicCloud?.isSignedIn()) return;
+  try {
+    await musicCloud.saveContent("anthony", KNOWN_WORDS_CLOUD_KEY, [...state.known]);
+  } catch (error) {
+    console.warn("Mandarin known-word save failed", error);
+  }
 }
 
 async function saveWritingWords() {
@@ -379,6 +405,26 @@ async function syncWritingWordsFromCloud() {
     status.textContent = "Saved on device · cloud unavailable";
     console.warn("Mandarin writing list sync failed", error);
   }
+}
+
+async function syncKnownWordsFromCloud() {
+  if (!window.musicCloud?.isSignedIn()) return;
+  try {
+    const row = await musicCloud.getContent("anthony", KNOWN_WORDS_CLOUD_KEY);
+    const cloudWords = normalizeWritingWords(row?.value);
+    const merged = normalizeWritingWords([...cloudWords, ...state.known]);
+    writeKnownWords(merged);
+    if (!row?.value || merged.length !== cloudWords.length) await musicCloud.saveContent("anthony", KNOWN_WORDS_CLOUD_KEY, merged);
+  } catch (error) {
+    console.warn("Mandarin known-word sync failed", error);
+  }
+}
+
+function syncMandarinProgressFromCloud() {
+  if (mandarinCloudSyncPromise) return mandarinCloudSyncPromise;
+  mandarinCloudSyncPromise = Promise.all([syncWritingWordsFromCloud(), syncKnownWordsFromCloud()])
+    .finally(() => { mandarinCloudSyncPromise = null; });
+  return mandarinCloudSyncPromise;
 }
 
 function renderWritingWords() {
@@ -445,9 +491,10 @@ function revealCard() {
 
 function advanceCard(markKnown) {
   const word = state.session[state.sessionIndex];
-  if (markKnown) state.known.add(word[0]);
-  localStorage.setItem("mandarin-known", JSON.stringify([...state.known]));
-  updateProgress();
+  if (markKnown) {
+    state.known.add(word[0]);
+    void saveKnownWords();
+  }
   state.sessionIndex = (state.sessionIndex + 1) % state.session.length;
   renderFlashcard();
 }
@@ -729,7 +776,8 @@ renderWritingWords();
 makeSession();
 updateProgress();
 enhanceMandarinSpeech();
-syncWritingWordsFromCloud();
+syncMandarinProgressFromCloud();
+window.addEventListener("site-cloud-change", () => { void syncMandarinProgressFromCloud(); });
 const mandarinMain = $("main");
 if (mandarinMain) {
   new MutationObserver((records) => records.forEach((record) => record.addedNodes.forEach((node) => {

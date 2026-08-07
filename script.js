@@ -5,7 +5,9 @@ const BOOK_CHAPTER_SIDEBAR_KEY = "anthony_book_chapter_sidebar_hidden";
 const BOOK_SPLIT_PAGES_KEY = "anthony_book_split_pages";
 const MANDARIN_WRITING_KEY = "anthony_mandarin_written_words_v1";
 const MANDARIN_WRITING_CLOUD_KEY = "mandarin_written_words_v1";
-const DETAIL_SHELL_VERSION = "20260807-flightplan1";
+const MANDARIN_KNOWN_KEY = "mandarin-known";
+const MANDARIN_KNOWN_CLOUD_KEY = "mandarin_known_words_v1";
+const DETAIL_SHELL_VERSION = "20260807-cloudprogress1";
 const DETAIL_PAGES = {
   aviation: "aviation/index.html",
   mandarin: "mandarin/index.html",
@@ -132,6 +134,10 @@ function readJson(key, fallback) {
 
 function writeJson(key, value) {
   localStorage.setItem(key, JSON.stringify(value));
+}
+
+function normalizeWordList(value) {
+  return [...new Set((Array.isArray(value) ? value : []).map((word) => String(word || "").trim()).filter(Boolean))];
 }
 
 function escapeHtml(value) {
@@ -1405,14 +1411,24 @@ function refreshDashboard() {
 async function syncStudyHistoryFromCloud() {
   if (!window.musicCloud?.isSignedIn()) return;
   try {
-    const [aviationRows, mandarinRows, writingRow] = await Promise.all([
+    const [aviationRows, mandarinRows, writingRow, knownRow] = await Promise.all([
       musicCloud.listTestAttempts("aviation"),
       musicCloud.listTestAttempts("mandarin"),
       musicCloud.getContent("anthony", MANDARIN_WRITING_CLOUD_KEY),
+      musicCloud.getContent("anthony", MANDARIN_KNOWN_CLOUD_KEY),
     ]);
     writeJson("anthony_aviation_history_v1", aviationRows.map((row) => ({ id: row.id, date: row.completed_at, book: row.mode || "aviation", chapter: row.section || "all", correct: row.correct, total: row.total, percent: row.percent, wrong: row.wrong_answers || [] })));
     writeJson("anthony_mandarin_history_v1", mandarinRows.map((row) => ({ id: row.id, date: row.completed_at, type: row.mode || "mixed", section: row.section || null, correct: row.correct, total: row.total, percent: row.percent, wrong: row.wrong_answers || [] })));
-    if (Array.isArray(writingRow?.value)) writeJson(MANDARIN_WRITING_KEY, writingRow.value);
+    const cloudWriting = normalizeWordList(writingRow?.value);
+    const mergedWriting = normalizeWordList([...cloudWriting, ...normalizeWordList(readJson(MANDARIN_WRITING_KEY, []))]);
+    const cloudKnown = normalizeWordList(knownRow?.value);
+    const mergedKnown = normalizeWordList([...cloudKnown, ...normalizeWordList(readJson(MANDARIN_KNOWN_KEY, []))]);
+    writeJson(MANDARIN_WRITING_KEY, mergedWriting);
+    writeJson(MANDARIN_KNOWN_KEY, mergedKnown);
+    const cloudUpdates = [];
+    if (!writingRow?.value || mergedWriting.length !== cloudWriting.length) cloudUpdates.push(musicCloud.saveContent("anthony", MANDARIN_WRITING_CLOUD_KEY, mergedWriting));
+    if (!knownRow?.value || mergedKnown.length !== cloudKnown.length) cloudUpdates.push(musicCloud.saveContent("anthony", MANDARIN_KNOWN_CLOUD_KEY, mergedKnown));
+    if (cloudUpdates.length) await Promise.all(cloudUpdates);
     refreshDashboard();
   } catch (error) { console.warn("Study history sync failed", error); }
 }

@@ -116,7 +116,6 @@
     section.setAttribute("aria-label", "Bills and income summary");
     [
       ["Fixed monthly bills", money(fixedMonthlyTotal(data.schedule))],
-      ["Daily costs", `${money(dailyTotal(data.daily))}/day`],
       ["Total monthly income", money(monthlyIncome(data.income))],
       ["Potential monthly savings", money(monthlySavings(data))],
     ].forEach(([label, value]) => {
