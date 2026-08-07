@@ -143,7 +143,7 @@ select:focus, input:focus { border-color: var(--mint-strong); box-shadow: 0 0 0 
 .pricing-panel[open] > summary::after { content: "−"; }
 .pricing-content { display: grid; gap: 18px; border-top: 1px solid var(--line); padding: 0 26px 26px; }
 .pricing-table-wrap { overflow-x: auto; margin: 0 -26px; }
-.pricing-table-wrap table { width: 100%; min-width: 850px; border-collapse: collapse; }
+.pricing-table-wrap table { width: 100%; min-width: 1080px; border-collapse: collapse; }
 .pricing-table-wrap th, .pricing-table-wrap td { border-bottom: 1px solid var(--line); padding: 14px 16px; text-align: left; vertical-align: top; }
 .pricing-table-wrap thead th { background: rgba(220,235,245,.55); color: var(--muted); font-size: .73rem; letter-spacing: .06em; text-transform: uppercase; }
 .pricing-table-wrap tbody td { font-size: .88rem; line-height: 1.4; }

@@ -5,7 +5,7 @@ const BOOK_CHAPTER_SIDEBAR_KEY = "anthony_book_chapter_sidebar_hidden";
 const BOOK_SPLIT_PAGES_KEY = "anthony_book_split_pages";
 const MANDARIN_WRITING_KEY = "anthony_mandarin_written_words_v1";
 const MANDARIN_WRITING_CLOUD_KEY = "mandarin_written_words_v1";
-const DETAIL_SHELL_VERSION = "20260806-dailycosts1";
+const DETAIL_SHELL_VERSION = "20260806-financeflight1";
 const DETAIL_PAGES = {
   aviation: "aviation/index.html",
   mandarin: "mandarin/index.html",

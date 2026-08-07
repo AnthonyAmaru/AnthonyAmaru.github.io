@@ -52,6 +52,11 @@
 .bill-totals span { color: var(--muted); font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
 .bill-totals strong { font: 600 clamp(1.65rem, 4vw, 2.35rem)/1 "Newsreader", serif; }
 
+.income-facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 9px; }
+.income-facts article { display: grid; gap: 4px; min-width: 0; border: 1px solid var(--line); border-radius: 13px; padding: 13px; }
+.income-facts span { color: var(--muted); font-size: .68rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+.income-facts strong { font-size: 1rem; font-variant-numeric: tabular-nums; }
+
 .bill-panel { overflow: hidden; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); padding: clamp(17px, 3vw, 24px); }
 .bill-section-heading { justify-content: space-between; gap: 12px; margin-bottom: 15px; }
 .bill-section-heading h2 { margin: 0; font-size: clamp(1.03rem, 2vw, 1.3rem); }
@@ -82,20 +87,36 @@ tfoot tr + tr td { border-top: 1px solid var(--line); }
 .savings-facts article { display: grid; gap: 4px; min-width: 0; border: 1px solid var(--line); border-radius: 13px; padding: 13px; }
 .savings-facts span { color: var(--muted); font-size: .68rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
 .savings-facts strong { overflow: hidden; font-size: .95rem; text-overflow: ellipsis; }
-.savings-update { display: grid; grid-template-columns: auto minmax(190px, 320px) minmax(0, 1fr); align-items: end; gap: 10px; }
-.savings-update label { align-self: center; color: var(--muted); font-size: .75rem; font-weight: 800; }
-.savings-update > div { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 7px; }
-.savings-update input,
-.savings-update button { min-height: 44px; border: 1px solid var(--line); border-radius: 11px; color: inherit; font: inherit; }
-.savings-update input { min-width: 0; padding: 0 12px; background: var(--bg); }
-.savings-update button { padding: 0 17px; background: var(--ink); color: var(--bg); font-weight: 850; cursor: pointer; }
-.savings-update > span { align-self: center; min-height: 1em; color: var(--muted); font-size: .75rem; }
 .savings-note { margin: -2px 0 0; color: var(--muted); font-size: .72rem; }
+
+.bill-editor { padding: 0; }
+.bill-editor > summary { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 19px 22px; cursor: pointer; list-style: none; }
+.bill-editor > summary::-webkit-details-marker { display: none; }
+.bill-editor > summary::after { content: "+"; font-size: 1.25rem; font-weight: 900; }
+.bill-editor[open] > summary::after { content: "−"; }
+.bill-editor > summary span { margin-left: auto; color: var(--muted); font-size: .72rem; font-weight: 800; }
+.bill-editor-form { display: grid; gap: 18px; border-top: 1px solid var(--line); padding: 20px 22px 22px; }
+.bill-editor-group { display: grid; min-width: 0; gap: 10px; margin: 0; border: 0; padding: 0; }
+.bill-editor-group legend { margin-bottom: 9px; padding: 0; font-size: .78rem; font-weight: 900; text-transform: uppercase; letter-spacing: .07em; }
+.bill-editor-grid,
+.bill-editor-rows { display: grid; min-width: 0; gap: 8px; }
+.bill-editor-grid.two-columns { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.bill-editor-row { display: grid; min-width: 0; gap: 8px; }
+.bill-editor-row.monthly-row { grid-template-columns: minmax(80px, .45fr) minmax(170px, 1.5fr) minmax(120px, .55fr); }
+.bill-editor-row.daily-row { grid-template-columns: minmax(0, 1fr) minmax(150px, .5fr); }
+.bill-editor-field { display: grid; min-width: 0; gap: 5px; color: var(--muted); font-size: .68rem; font-weight: 800; }
+.bill-editor-field input { width: 100%; min-width: 0; min-height: 43px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--ink); padding: 0 11px; font: 700 .85rem "DM Sans", sans-serif; }
+.bill-editor-field input:focus { outline: 2px solid color-mix(in srgb, #d4ad55 70%, transparent); outline-offset: 1px; }
+.bill-editor-actions { display: flex; align-items: center; gap: 12px; }
+.bill-editor-actions button { min-height: 44px; border: 1px solid var(--ink); border-radius: 11px; background: var(--ink); color: var(--bg); padding: 0 18px; font: 850 .82rem "DM Sans", sans-serif; cursor: pointer; }
+.bill-editor-actions button:disabled { cursor: wait; opacity: .6; }
+.bill-editor-actions span { color: var(--muted); font-size: .75rem; font-weight: 800; }
 
 :root[data-theme="dark"] .bills-icon { background: #62542c; color: #f4e6ab; }
 
 @media (max-width: 900px) {
   .bill-totals { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .income-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 700px) {
@@ -112,6 +133,10 @@ tfoot tr + tr td { border-top: 1px solid var(--line); }
   .bill-schedule-panel { padding-inline: 12px; }
   table { min-width: 440px; }
   .savings-facts,
-  .savings-update { grid-template-columns: 1fr; }
-  .savings-update > span { min-height: 0; }
+  .income-facts,
+  .bill-editor-grid.two-columns,
+  .bill-editor-row.monthly-row,
+  .bill-editor-row.daily-row { grid-template-columns: 1fr; }
+  .bill-editor > summary span { display: none; }
+  .bill-editor-form { padding-inline: 14px; }
 }

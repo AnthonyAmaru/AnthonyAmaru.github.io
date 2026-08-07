@@ -40,8 +40,16 @@
     return section;
   }
 
-  function monthlyIncome(income) {
+  function fixedMonthlyTotal(schedule = []) {
+    return schedule.reduce((total, item) => total + Number(item?.amount || 0), 0);
+  }
+
+  function primaryMonthlyIncome(income) {
     return Number(income?.biweeklyNet || 0) * Number(income?.paychecksPerYear || 26) / 12;
+  }
+
+  function monthlyIncome(income) {
+    return primaryMonthlyIncome(income) + Number(income?.secondaryMonthly || 0);
   }
 
   function dailyTotal(dailyCosts = []) {
@@ -53,7 +61,7 @@
   }
 
   function monthlyExpenses(data) {
-    return Number(data.summary?.monthlyFixed || 0) + monthlyDailyCosts(data);
+    return fixedMonthlyTotal(data.schedule) + monthlyDailyCosts(data);
   }
 
   function monthlySavings(data) {
@@ -71,13 +79,45 @@
     return anchor.toISOString().slice(0, 10);
   }
 
+  function normalizeData(data) {
+    const schedule = Array.isArray(data?.schedule) ? data.schedule.map((item) => ({
+      due: String(item?.due || "").trim(),
+      name: String(item?.name || "").trim(),
+      amount: Math.max(0, Number(item?.amount || 0)),
+    })) : [];
+    const daily = Array.isArray(data?.daily) ? data.daily.map((item) => ({
+      name: String(item?.name || "").trim(),
+      amount: Math.max(0, Number(item?.amount || 0)),
+    })) : [];
+    const income = {
+      ...data.income,
+      biweeklyNet: Math.max(0, Number(data.income?.biweeklyNet || 0)),
+      secondaryMonthly: Math.max(0, Number(data.income?.secondaryMonthly || 0)),
+      paychecksPerYear: Math.max(1, Number(data.income?.paychecksPerYear || 26)),
+    };
+    const savings = {
+      ...data.savings,
+      current: Math.max(0, Number(data.savings?.current || 0)),
+      goal: Math.max(1, Number(data.savings?.goal || 1)),
+    };
+    return {
+      ...data,
+      version: Math.max(4, Number(data.version || 0)),
+      schedule,
+      daily,
+      income,
+      savings,
+      summary: { ...data.summary, monthlyFixed: fixedMonthlyTotal(schedule) },
+    };
+  }
+
   function renderTotals(data) {
     const section = element("section", "bill-totals");
     section.setAttribute("aria-label", "Bills and income summary");
     [
-      ["Fixed monthly bills", money(data.summary.monthlyFixed)],
+      ["Fixed monthly bills", money(fixedMonthlyTotal(data.schedule))],
       ["Daily costs", `${money(dailyTotal(data.daily))}/day`],
-      ["Average monthly expenses", money(monthlyExpenses(data))],
+      ["Total monthly income", money(monthlyIncome(data.income))],
       ["Potential monthly savings", money(monthlySavings(data))],
     ].forEach(([label, value]) => {
       const card = element("article");
@@ -121,7 +161,7 @@
 
     const tfoot = document.createElement("tfoot");
     [
-      ["Fixed monthly total", data.summary.monthlyFixed],
+      ["Fixed monthly total", fixedMonthlyTotal(data.schedule)],
       ["Average monthly total", monthlyExpenses(data)],
     ].forEach(([label, value]) => {
       const row = document.createElement("tr");
@@ -135,6 +175,109 @@
     scroll.append(table);
     section.append(scroll);
     return section;
+  }
+
+  function renderIncome(data) {
+    const section = panel("Income");
+    section.classList.add("income-panel");
+    const facts = element("div", "income-facts");
+    [
+      ["Primary biweekly", data.income.biweeklyNet],
+      ["Primary monthly average", primaryMonthlyIncome(data.income)],
+      ["Secondary monthly", data.income.secondaryMonthly],
+      ["Total monthly income", monthlyIncome(data.income)],
+    ].forEach(([label, value]) => {
+      const card = element("article");
+      card.append(element("span", "", label), element("strong", "", money(value)));
+      facts.append(card);
+    });
+    section.append(facts);
+    return section;
+  }
+
+  function editorField(labelText, name, value, type = "number") {
+    const label = element("label", "bill-editor-field");
+    const caption = element("span", "", labelText);
+    const input = document.createElement("input");
+    input.name = name;
+    input.type = type;
+    input.value = String(value ?? "");
+    input.required = true;
+    if (type === "number") {
+      input.min = "0";
+      input.step = "0.01";
+      input.inputMode = "decimal";
+    }
+    label.append(caption, input);
+    return label;
+  }
+
+  function editorGroup(title) {
+    const group = document.createElement("fieldset");
+    group.className = "bill-editor-group";
+    group.append(element("legend", "", title));
+    return group;
+  }
+
+  function renderEditor(data) {
+    const details = document.createElement("details");
+    details.className = "bill-panel bill-editor";
+    const summary = document.createElement("summary");
+    summary.append(element("strong", "", "Edit values"), element("span", "", "Bills · income · savings"));
+    const form = element("form", "bill-editor-form");
+    form.dataset.billsEditor = "";
+
+    const income = editorGroup("Income");
+    const incomeGrid = element("div", "bill-editor-grid two-columns");
+    incomeGrid.append(
+      editorField("Primary biweekly pay", "primaryIncome", data.income.biweeklyNet),
+      editorField("Secondary monthly income", "secondaryIncome", data.income.secondaryMonthly),
+    );
+    income.append(incomeGrid);
+
+    const bills = editorGroup("Monthly bills");
+    const billRows = element("div", "bill-editor-rows");
+    data.schedule.forEach((bill, index) => {
+      const row = element("div", "bill-editor-row monthly-row");
+      row.append(
+        editorField("Due", `scheduleDue${index}`, bill.due, "text"),
+        editorField("Bill", `scheduleName${index}`, bill.name, "text"),
+        editorField("Amount", `scheduleAmount${index}`, bill.amount),
+      );
+      billRows.append(row);
+    });
+    bills.append(billRows);
+
+    const daily = editorGroup("Daily costs");
+    const dailyRows = element("div", "bill-editor-rows");
+    data.daily.forEach((cost, index) => {
+      const row = element("div", "bill-editor-row daily-row");
+      row.append(
+        editorField("Cost", `dailyName${index}`, cost.name, "text"),
+        editorField("Amount per day", `dailyAmount${index}`, cost.amount),
+      );
+      dailyRows.append(row);
+    });
+    daily.append(dailyRows);
+
+    const savings = editorGroup("Savings");
+    const savingsGrid = element("div", "bill-editor-grid two-columns");
+    savingsGrid.append(
+      editorField("Current saved", "currentSavings", data.savings.current),
+      editorField("Savings goal", "savingsGoal", data.savings.goal),
+    );
+    savings.append(savingsGrid);
+
+    const actions = element("div", "bill-editor-actions");
+    const save = element("button", "", "Save changes");
+    save.type = "submit";
+    const status = element("span");
+    status.dataset.billsEditorStatus = "";
+    status.setAttribute("role", "status");
+    actions.append(save, status);
+    form.append(income, bills, daily, savings, actions);
+    details.append(summary, form);
+    return details;
   }
 
   function renderSavings(data) {
@@ -158,9 +301,7 @@
     const facts = element("div", "savings-facts");
     [
       ["Next payday", dateLabel(nextPayday(data.income.anchorPayDate), { month: "long", day: "numeric", year: "numeric" }), false],
-      ["Paycheck", data.income.biweeklyNet, true],
-      ["Average monthly income", monthlyIncome(data.income), true],
-      ["Daily costs", `${money(dailyTotal(data.daily))}/day`, false],
+      ["Total monthly income", monthlyIncome(data.income), true],
       ["Average monthly expenses", monthlyExpenses(data), true],
       ["Potential monthly savings", available, true],
       ["Remaining", remaining, true],
@@ -171,29 +312,7 @@
       facts.append(card);
     });
 
-    const update = element("form", "savings-update");
-    update.dataset.savingsUpdate = "";
-    const label = document.createElement("label");
-    label.htmlFor = "current-savings";
-    label.textContent = "Current saved";
-    const controls = element("div");
-    const input = document.createElement("input");
-    input.id = "current-savings";
-    input.name = "currentSavings";
-    input.type = "number";
-    input.min = "0";
-    input.step = "1";
-    input.value = String(current);
-    input.inputMode = "decimal";
-    const button = element("button", "", "Save");
-    button.type = "submit";
-    const status = element("span");
-    status.dataset.savingsStatus = "";
-    status.setAttribute("role", "status");
-    controls.append(input, button);
-    update.append(label, controls, status);
-
-    section.append(progressCopy, progress, facts, update, element("p", "savings-note", "Estimate uses listed fixed bills plus daily costs averaged over 365 days."));
+    section.append(progressCopy, progress, facts, element("p", "savings-note", "Estimate uses listed fixed bills plus daily costs averaged over 365 days."));
     return section;
   }
 
@@ -201,8 +320,8 @@
     if (!data || !Array.isArray(data.schedule) || !data.summary || !data.income || !data.savings) {
       throw new Error("Private bill data is incomplete.");
     }
-    billData = { ...data, daily: Array.isArray(data.daily) ? data.daily : [] };
-    dashboard.replaceChildren(renderTotals(billData), renderSchedule(billData), renderSavings(billData));
+    billData = normalizeData(data);
+    dashboard.replaceChildren(renderTotals(billData), renderIncome(billData), renderSchedule(billData), renderSavings(billData), renderEditor(billData));
     dashboard.hidden = false;
     lock.hidden = true;
     asOf.dateTime = data.asOf;
@@ -235,24 +354,55 @@
   }
 
   dashboard.addEventListener("submit", async (event) => {
-    const savingsForm = event.target.closest("[data-savings-update]");
-    if (!savingsForm || !billData) return;
+    const editor = event.target.closest("[data-bills-editor]");
+    if (!editor || !billData) return;
     event.preventDefault();
-    const submit = savingsForm.querySelector("button");
-    const status = savingsForm.querySelector("[data-savings-status]");
-    const value = Math.max(0, Number(new FormData(savingsForm).get("currentSavings") || 0));
+    const submit = editor.querySelector("button[type='submit']");
+    const status = editor.querySelector("[data-bills-editor-status]");
+    const fields = new FormData(editor);
+    const numberValue = (name, fallback, minimum = 0) => {
+      const value = Number(fields.get(name));
+      return Number.isFinite(value) ? Math.max(minimum, value) : fallback;
+    };
+    const textValue = (name, fallback) => String(fields.get(name) || "").trim() || fallback;
+    const schedule = billData.schedule.map((bill, index) => ({
+      due: textValue(`scheduleDue${index}`, bill.due),
+      name: textValue(`scheduleName${index}`, bill.name),
+      amount: numberValue(`scheduleAmount${index}`, bill.amount),
+    }));
+    const daily = billData.daily.map((cost, index) => ({
+      name: textValue(`dailyName${index}`, cost.name),
+      amount: numberValue(`dailyAmount${index}`, cost.amount),
+    }));
+    const nextData = normalizeData({
+      ...billData,
+      version: 4,
+      schedule,
+      daily,
+      income: {
+        ...billData.income,
+        biweeklyNet: numberValue("primaryIncome", billData.income.biweeklyNet),
+        secondaryMonthly: numberValue("secondaryIncome", billData.income.secondaryMonthly),
+      },
+      savings: {
+        ...billData.savings,
+        current: numberValue("currentSavings", billData.savings.current),
+        goal: numberValue("savingsGoal", billData.savings.goal, 1),
+        updatedAt: new Date().toISOString(),
+      },
+    });
     submit.disabled = true;
     status.textContent = "Saving…";
     try {
-      billData.savings = { ...billData.savings, current: value, updatedAt: new Date().toISOString() };
-      await musicCloud.saveContent("anthony", CONTENT_KEY, billData);
-      render(billData);
-      dashboard.querySelector("[data-savings-status]").textContent = "Saved";
+      await musicCloud.saveContent("anthony", CONTENT_KEY, nextData);
+      render(nextData);
+      const savedEditor = dashboard.querySelector(".bill-editor");
+      const savedStatus = dashboard.querySelector("[data-bills-editor-status]");
+      if (savedEditor) savedEditor.open = true;
+      if (savedStatus) savedStatus.textContent = "Saved";
     } catch (error) {
       status.textContent = error.message;
-    } finally {
-      const currentSubmit = dashboard.querySelector("[data-savings-update] button");
-      if (currentSubmit) currentSubmit.disabled = false;
+      submit.disabled = false;
     }
   });
 
