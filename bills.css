@@ -47,7 +47,7 @@
 .bills-lock p { min-height: 1.2em; margin: 0; color: var(--muted); font-size: .76rem; }
 .bills-private-dashboard { display: grid; gap: 16px; }
 
-.bill-totals { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.bill-totals { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
 .bill-totals article { display: grid; gap: 5px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); padding: 17px 18px; }
 .bill-totals span { color: var(--muted); font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
 .bill-totals strong { font: 600 clamp(1.65rem, 4vw, 2.35rem)/1 "Newsreader", serif; }
@@ -63,8 +63,12 @@ table { width: 100%; border-collapse: collapse; font-size: .84rem; }
 th, td { border-bottom: 1px solid var(--line); padding: 12px 10px; text-align: left; white-space: nowrap; }
 thead th { color: var(--muted); font-size: .68rem; text-transform: uppercase; letter-spacing: .07em; }
 tbody th { font-weight: 750; }
+.daily-cost-row td,
+.daily-cost-row th { background: color-mix(in srgb, var(--surface) 78%, #ead39a); }
 td:nth-child(3), thead th:nth-child(3), tfoot td { text-align: right; font-variant-numeric: tabular-nums; }
 tfoot th, tfoot td { border-bottom: 0; padding-top: 16px; font-weight: 900; }
+tfoot tr + tr th,
+tfoot tr + tr td { border-top: 1px solid var(--line); }
 
 .savings-panel { display: grid; gap: 15px; }
 .savings-panel .bill-section-heading { margin-bottom: 0; }
@@ -89,6 +93,10 @@ tfoot th, tfoot td { border-bottom: 0; padding-top: 16px; font-weight: 900; }
 .savings-note { margin: -2px 0 0; color: var(--muted); font-size: .72rem; }
 
 :root[data-theme="dark"] .bills-icon { background: #62542c; color: #f4e6ab; }
+
+@media (max-width: 900px) {
+  .bill-totals { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 
 @media (max-width: 700px) {
   .bill-totals { grid-template-columns: 1fr; }

@@ -523,8 +523,9 @@ Treat laboratory results and medical notes as private data, even when the page r
 Keep the public Bills HTML and JavaScript value-free. Load one owner-scoped `site_content` document only after Supabase Auth and administrator membership succeed.
 
 - Store a compact recurring `schedule` with due-day label, bill name, and amount; derive the monthly total from or validate it against that schedule.
+- Store daily recurring costs separately from fixed monthly bills. Show each daily rate directly, convert the combined daily rate to an average month with `dailyTotal * 365 / 12`, and include that average in total monthly expenses and potential-savings calculations without disguising it as a fixed bill.
 - Store income as the net biweekly paycheck, 26-paycheck annual cadence, and one verified pay-date anchor. Derive the next payday by advancing the anchor in 14-day periods instead of letting a hardcoded “next payday” become stale.
-- Derive average monthly income as `biweeklyNet * 26 / 12`. Label the difference between that value and listed fixed bills as potential savings, not guaranteed savings, because unlisted variable spending still exists.
+- Derive average monthly income as `biweeklyNet * 26 / 12`. Label the difference between that value and all listed monthly plus daily expenses as potential savings, not guaranteed savings, because unlisted variable spending still exists.
 - Store savings as an authenticated `current`, `goal`, and `updatedAt` record. Let the owner update the current amount, then derive percentage, remaining dollars, and estimated months in the browser.
 - Keep the dashboard focused. Do not add paid/upcoming snapshots, house-sale projections, payoff hypotheticals, or account-balance cards unless the owner explicitly requests them.
 - Version private JSON documents and deploy a renderer that accepts the new version before replacing the live Supabase value. Never leave the public site expecting an older object shape after the cloud record has changed; test the authenticated read and render against the exact production document before deployment.

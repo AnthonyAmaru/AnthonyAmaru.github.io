@@ -44,8 +44,20 @@
     return Number(income?.biweeklyNet || 0) * Number(income?.paychecksPerYear || 26) / 12;
   }
 
+  function dailyTotal(dailyCosts = []) {
+    return dailyCosts.reduce((total, item) => total + Number(item?.amount || 0), 0);
+  }
+
+  function monthlyDailyCosts(data) {
+    return dailyTotal(data.daily) * 365 / 12;
+  }
+
+  function monthlyExpenses(data) {
+    return Number(data.summary?.monthlyFixed || 0) + monthlyDailyCosts(data);
+  }
+
   function monthlySavings(data) {
-    return Math.max(0, monthlyIncome(data.income) - Number(data.summary?.monthlyFixed || 0));
+    return Math.max(0, monthlyIncome(data.income) - monthlyExpenses(data));
   }
 
   function nextPayday(anchorValue) {
@@ -63,12 +75,13 @@
     const section = element("section", "bill-totals");
     section.setAttribute("aria-label", "Bills and income summary");
     [
-      ["Monthly bills", data.summary.monthlyFixed],
-      ["Biweekly pay", data.income.biweeklyNet],
-      ["Potential monthly savings", monthlySavings(data)],
+      ["Fixed monthly bills", money(data.summary.monthlyFixed)],
+      ["Daily costs", `${money(dailyTotal(data.daily))}/day`],
+      ["Average monthly expenses", money(monthlyExpenses(data))],
+      ["Potential monthly savings", money(monthlySavings(data))],
     ].forEach(([label, value]) => {
       const card = element("article");
-      card.append(element("span", "", label), element("strong", "", money(value)));
+      card.append(element("span", "", label), element("strong", "", value));
       section.append(card);
     });
     return section;
@@ -76,13 +89,13 @@
 
   function renderSchedule(data) {
     const privateChip = element("span", "locked-chip", "Private");
-    const section = panel("Monthly schedule", privateChip);
+    const section = panel("Payment schedule", privateChip);
     section.classList.add("bill-schedule-panel");
     const scroll = element("div", "bill-table-scroll");
     const table = document.createElement("table");
     const thead = document.createElement("thead");
     const headRow = document.createElement("tr");
-    ["Due", "Bill", "Amount"].forEach((label) => {
+    ["Frequency", "Bill", "Amount"].forEach((label) => {
       const th = element("th", "", label);
       th.scope = "col";
       headRow.append(th);
@@ -97,14 +110,27 @@
       row.append(element("td", "", bill.due), name, element("td", "", money(bill.amount)));
       tbody.append(row);
     });
+    data.daily.forEach((cost) => {
+      const row = document.createElement("tr");
+      row.className = "daily-cost-row";
+      const name = element("th", "", cost.name);
+      name.scope = "row";
+      row.append(element("td", "", "Daily"), name, element("td", "", `${money(cost.amount)}/day`));
+      tbody.append(row);
+    });
 
     const tfoot = document.createElement("tfoot");
-    const footRow = document.createElement("tr");
-    const totalLabel = element("th", "", "Total fixed monthly");
-    totalLabel.colSpan = 2;
-    totalLabel.scope = "row";
-    footRow.append(totalLabel, element("td", "", money(data.summary.monthlyFixed)));
-    tfoot.append(footRow);
+    [
+      ["Fixed monthly total", data.summary.monthlyFixed],
+      ["Average monthly total", monthlyExpenses(data)],
+    ].forEach(([label, value]) => {
+      const row = document.createElement("tr");
+      const totalLabel = element("th", "", label);
+      totalLabel.colSpan = 2;
+      totalLabel.scope = "row";
+      row.append(totalLabel, element("td", "", money(value)));
+      tfoot.append(row);
+    });
     table.append(thead, tbody, tfoot);
     scroll.append(table);
     section.append(scroll);
@@ -134,6 +160,8 @@
       ["Next payday", dateLabel(nextPayday(data.income.anchorPayDate), { month: "long", day: "numeric", year: "numeric" }), false],
       ["Paycheck", data.income.biweeklyNet, true],
       ["Average monthly income", monthlyIncome(data.income), true],
+      ["Daily costs", `${money(dailyTotal(data.daily))}/day`, false],
+      ["Average monthly expenses", monthlyExpenses(data), true],
       ["Potential monthly savings", available, true],
       ["Remaining", remaining, true],
       ["Estimated time", remaining === 0 ? "Goal reached" : `${months} months`, false],
@@ -165,7 +193,7 @@
     controls.append(input, button);
     update.append(label, controls, status);
 
-    section.append(progressCopy, progress, facts, update, element("p", "savings-note", "Estimate uses listed bills only."));
+    section.append(progressCopy, progress, facts, update, element("p", "savings-note", "Estimate uses listed fixed bills plus daily costs averaged over 365 days."));
     return section;
   }
 
@@ -173,8 +201,8 @@
     if (!data || !Array.isArray(data.schedule) || !data.summary || !data.income || !data.savings) {
       throw new Error("Private bill data is incomplete.");
     }
-    billData = data;
-    dashboard.replaceChildren(renderTotals(data), renderSchedule(data), renderSavings(data));
+    billData = { ...data, daily: Array.isArray(data.daily) ? data.daily : [] };
+    dashboard.replaceChildren(renderTotals(billData), renderSchedule(billData), renderSavings(billData));
     dashboard.hidden = false;
     lock.hidden = true;
     asOf.dateTime = data.asOf;
