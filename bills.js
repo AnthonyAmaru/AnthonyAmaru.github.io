@@ -113,7 +113,7 @@
 
   function renderTotals(data) {
     const section = element("section", "bill-totals");
-    section.setAttribute("aria-label", "Bills and income summary");
+    section.setAttribute("aria-label", "Finances and income summary");
     [
       ["Fixed monthly bills", money(fixedMonthlyTotal(data.schedule))],
       ["Total monthly income", money(monthlyIncome(data.income))],

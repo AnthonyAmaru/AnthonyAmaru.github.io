@@ -121,9 +121,9 @@ person-site/
 ├── ai-packages.css
 ├── blockchain.html                    # standalone blockchain/cryptocurrency interest
 ├── blockchain.css
-├── bills.html                         # standalone bills interest
-├── bills.css                          # bills dashboard and responsive table styling
-├── bills.js                           # authenticated private bills loader and renderer
+├── bills.html                         # standalone Finances interest
+├── bills.css                          # finances dashboard and responsive table styling
+├── bills.js                           # authenticated private finances loader and renderer
 ├── health.html                        # value-free private health dashboard shell
 ├── health.css                         # responsive lab cards, trends and safety panels
 ├── health.js                          # authenticated lab loader and evidence-based renderer
@@ -518,9 +518,9 @@ Treat laboratory results and medical notes as private data, even when the page r
 - Never recommend self-starting medication or high-dose supplements from a single result. Provide the concrete question or repeat test to discuss with the clinician instead.
 - Verify that no private values occur in tracked files, unauthenticated reads return no row, authenticated reads work, and the dashboard has no horizontal overflow at 390px and 768px.
 
-### Private bills and savings workspace
+### Private finances and savings workspace
 
-Keep the public Bills HTML and JavaScript value-free. Load one owner-scoped `site_content` document only after Supabase Auth and administrator membership succeed.
+Keep the public Finances HTML and JavaScript value-free. Load one owner-scoped `site_content` document only after Supabase Auth and administrator membership succeed.
 
 - Store a compact recurring `schedule` with due-day label, bill name, and amount; derive the monthly total from or validate it against that schedule.
 - Store daily recurring costs separately from fixed monthly bills. Show each daily rate directly, convert the combined daily rate to an average month with `dailyTotal * 365 / 12`, and include that average in total monthly expenses and potential-savings calculations without disguising it as a fixed bill.
