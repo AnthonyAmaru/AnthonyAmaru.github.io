@@ -33,7 +33,7 @@ main { width: min(1120px, calc(100% - 32px)); margin: 0 auto; padding: clamp(32p
 .page-heading h1 { margin: 4px 0 0; font: 500 clamp(3rem, 8vw, 6rem)/0.9 "Newsreader", serif; letter-spacing: -0.05em; }
 .page-heading p { margin: 4px 0 0; color: var(--muted); font-size: 0.84rem; }
 
-.mushroom-filters { position: sticky; z-index: 5; top: 150px; display: grid; grid-template-columns: repeat(3, minmax(150px, 1fr)) auto auto; align-items: end; gap: 10px; border: 1px solid var(--line); border-radius: 16px; background: color-mix(in srgb, var(--surface) 94%, transparent); margin-bottom: 18px; padding: 14px; backdrop-filter: blur(18px); }
+.mushroom-filters { position: static; display: grid; grid-template-columns: repeat(3, minmax(150px, 1fr)) auto auto; align-items: end; gap: 10px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); margin-bottom: 18px; padding: 14px; }
 .mushroom-filters label { display: grid; gap: 5px; color: var(--muted); font-size: 0.66rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; }
 .mushroom-filters select { width: 100%; min-height: 42px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--ink); padding: 0 11px; font: inherit; font-size: 0.78rem; font-weight: 700; text-transform: none; }
 .mushroom-filters button { min-height: 42px; border: 1px solid var(--line); border-radius: 10px; background: transparent; color: var(--green); padding: 0 14px; cursor: pointer; font-weight: 800; }

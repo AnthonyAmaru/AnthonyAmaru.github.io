@@ -14,12 +14,12 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Newsreader:opsz,wght@6..72,500&amp;display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="site-header.css?v=20260806-study2" />
     <link rel="stylesheet" href="site-music.css?v=20260806-study2" />
-    <link rel="stylesheet" href="mycology.css?v=20260805-fullphotos1" />
+    <link rel="stylesheet" href="mycology.css?v=20260807-more1" />
     <script src="music-cloud.js?v=20260803-ai2"></script>
     <script src="site-header.js?v=20260806-study2" defer></script>
     <script src="site-music.js?v=20260806-study2" defer></script>
     <script src="site-ai.js?v=20260806-study2" defer></script>
-    <script src="mycology.js?v=20260805-noglobe1" defer></script>
+    <script src="mycology.js?v=20260807-more1" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -53,7 +53,7 @@
         <label><span>Location</span><select id="location-filter"><option value="all">All</option><option value="north-america">North America</option><option value="europe">Europe</option><option value="asia">Asia</option><option value="norway">Norway</option><option value="australia">Australia</option><option value="worldwide">Worldwide</option></select></label>
         <label><span>Season</span><select id="season-filter"><option value="all">All</option><option value="spring">Spring</option><option value="summer">Summer</option><option value="fall">Fall</option><option value="winter">Winter</option><option value="year-round">Year-round</option></select></label>
         <button id="clear-mushroom-filters" type="button">Clear</button>
-        <strong id="mushroom-count" aria-live="polite">19 mushrooms</strong>
+        <strong id="mushroom-count" aria-live="polite">25 mushrooms</strong>
       </section>
 
       <section class="mushroom-list" aria-label="Mushroom profiles">
@@ -379,6 +379,108 @@
             </ul>
           </div>
         </article>
+
+        <article class="mushroom-card" data-edibility="edible" data-locations="north-america europe asia" data-seasons="fall">
+          <figure>
+            <img src="assets/mushrooms/hen-of-the-woods.jpg" alt="Large layered hen of the woods mushroom at the base of a tree" loading="lazy" />
+            <figcaption>Hen of the woods</figcaption>
+          </figure>
+          <div class="mushroom-facts">
+            <header><span class="edible-tag">Edible</span><h2>Hen of the woods</h2><i>Grifola frondosa</i></header>
+            <ul>
+              <li><strong>Edible?</strong> Considered a choice edible after expert identification and cooking.</li>
+              <li><strong>Uses</strong> Culinary; also cultivated as maitake.</li>
+              <li><strong>Season</strong> Fall, commonly September through November.</li>
+              <li><strong>Range</strong> Temperate forests in eastern North America, Europe and Asia, usually near mature oaks.</li>
+              <li><strong>Characteristics</strong> A large branching cluster of overlapping gray-brown, spoon-shaped caps with white pores underneath.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="mushroom-card" data-edibility="poisonous" data-locations="north-america australia" data-seasons="summer fall">
+          <figure>
+            <img src="assets/mushrooms/green-spored-parasol.jpg" alt="Green-spored parasol mushrooms growing together in grass" loading="lazy" />
+            <figcaption>Green-spored parasol</figcaption>
+          </figure>
+          <div class="mushroom-facts">
+            <header><span class="danger-tag">Poisonous</span><h2>Green-spored parasol</h2><i>Chlorophyllum molybdites</i></header>
+            <ul>
+              <li><strong>Edible?</strong> No. A common cause of severe vomiting and diarrhea.</li>
+              <li><strong>Risk</strong> Frequently mistaken for edible parasol mushrooms.</li>
+              <li><strong>Season</strong> Summer through early fall, especially after rain.</li>
+              <li><strong>Range</strong> Warm regions of North America and Australia; often found in lawns, parks and pastures.</li>
+              <li><strong>Characteristics</strong> Broad pale cap with brown scales, a stem ring, gills that become gray-green and a green spore print.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="mushroom-card" data-edibility="edible" data-locations="europe asia norway" data-seasons="spring summer fall winter year-round">
+          <figure>
+            <img src="assets/mushrooms/wood-ear.jpg" alt="Brown ear-shaped wood ear mushrooms growing from a branch" loading="lazy" />
+            <figcaption>Wood ear</figcaption>
+          </figure>
+          <div class="mushroom-facts">
+            <header><span class="edible-tag">Edible</span><h2>Wood ear</h2><i>Auricularia auricula-judae</i></header>
+            <ul>
+              <li><strong>Edible?</strong> Edible after expert identification and cooking.</li>
+              <li><strong>Uses</strong> Culinary, especially in soups and stir-fries; related species are widely cultivated.</li>
+              <li><strong>Season</strong> Can appear year-round during damp, mild weather.</li>
+              <li><strong>Range</strong> Europe and parts of Asia, growing on dead or weakened hardwood, especially elder.</li>
+              <li><strong>Characteristics</strong> Flexible reddish-brown cups shaped like ears, with a smooth inner surface and finely hairy outer surface.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="mushroom-card" data-edibility="inedible research" data-locations="europe asia" data-seasons="summer fall">
+          <figure>
+            <img src="assets/mushrooms/reishi.jpg" alt="Glossy reddish-brown reishi brackets growing from wood" loading="lazy" />
+            <figcaption>Reishi</figcaption>
+          </figure>
+          <div class="mushroom-facts">
+            <header><span class="research-tag">Research</span><h2>Reishi</h2><i>Ganoderma lucidum</i></header>
+            <ul>
+              <li><strong>Edible?</strong> Not eaten as food because the fruiting body is tough and woody.</li>
+              <li><strong>Treatment research</strong> Long history of traditional use, but it is not an established substitute for medical treatment.</li>
+              <li><strong>Season</strong> Summer through fall.</li>
+              <li><strong>Range</strong> Europe and parts of Asia on hardwood; similar North American species are often called reishi.</li>
+              <li><strong>Characteristics</strong> Shelf-like fruiting body with a lacquered red-brown surface, pale growing margin and pores underneath.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="mushroom-card" data-edibility="inedible" data-locations="north-america europe asia" data-seasons="summer fall">
+          <figure>
+            <img src="assets/mushrooms/amethyst-deceiver.jpg" alt="Purple amethyst deceiver mushrooms among woodland leaves" loading="lazy" />
+            <figcaption>Amethyst deceiver</figcaption>
+          </figure>
+          <div class="mushroom-facts">
+            <header><span class="utility-tag">Field interest</span><h2>Amethyst deceiver</h2><i>Laccaria amethystina</i></header>
+            <ul>
+              <li><strong>Edible?</strong> Not recommended here; small purple mushrooms have difficult lookalikes and may accumulate contaminants.</li>
+              <li><strong>Uses</strong> Primarily appreciated for identification study and its vivid color.</li>
+              <li><strong>Season</strong> Late summer through fall.</li>
+              <li><strong>Range</strong> Woodlands across Europe, Asia and parts of North America.</li>
+              <li><strong>Characteristics</strong> Deep violet cap, widely spaced purple gills and a fibrous stem; older specimens fade and become harder to identify.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="mushroom-card" data-edibility="inedible dye" data-locations="north-america europe asia" data-seasons="summer fall">
+          <figure>
+            <img src="assets/mushrooms/bleeding-tooth.jpg" alt="Young bleeding tooth fungus covered with bright red droplets" loading="lazy" />
+            <figcaption>Bleeding tooth</figcaption>
+          </figure>
+          <div class="mushroom-facts">
+            <header><span class="utility-tag">Dye mushroom</span><h2>Bleeding tooth</h2><i>Hydnellum peckii</i></header>
+            <ul>
+              <li><strong>Edible?</strong> No. Extremely bitter, tough and considered inedible.</li>
+              <li><strong>Dyes</strong> Tooth fungi in this group can produce natural blue-green and earth-tone dyes.</li>
+              <li><strong>Season</strong> Summer through fall.</li>
+              <li><strong>Range</strong> Conifer forests in North America, Europe and parts of Asia.</li>
+              <li><strong>Characteristics</strong> Young pale caps exude red droplets; the underside has teeth rather than gills and the cap darkens with age.</li>
+            </ul>
+          </div>
+        </article>
       </section>
 
       <footer class="sources">
@@ -393,6 +495,8 @@
         <a href="https://www.poison.org/articles/wild-mushroom-warning">Poison Control</a>
         <a href="https://nida.nih.gov/research-topics/psychedelic-dissociative-drugs">NIDA psychedelics</a>
         <a href="https://www.dea.gov/factsheets/hallucinogens">DEA hallucinogens</a>
+        <a href="https://mdc.mo.gov/discover-nature/field-guide/hen-woods-maitake">MDC hen of the woods</a>
+        <a href="https://mdc.mo.gov/sites/default/files/mo_nature/downloads/page/MushroomGuide.pdf">MDC poisonous mushroom guide</a>
         <a href="https://commons.wikimedia.org/wiki/File:Psilocybe_cubensis,_2008.jpg">Cubensis photo: Zergboy, public domain</a>
         <a href="https://commons.wikimedia.org/wiki/File:Psilocybe_semilanceata_6514.jpg">Liberty cap photo: Alan Rockefeller, CC BY-SA 3.0</a>
         <a href="https://commons.wikimedia.org/wiki/File:Psilocybe_cyanescens_(31351541944).jpg">Wavy caps photo: Lukas, CC BY-SA 2.0</a>
@@ -409,6 +513,12 @@
         <a href="https://commons.wikimedia.org/wiki/File:Boletus_edulis_(penny_bun,_cep,_porcino_or_porcini)_(40828913842).jpg">Porcini photo: Bernard Spragg, CC0</a>
         <a href="https://commons.wikimedia.org/wiki/File:Lactarius_indigo_48609.jpg">Indigo milk cap photo: Dan Molter, CC BY-SA 3.0</a>
         <a href="https://commons.wikimedia.org/wiki/File:Amanita_bisporigera_destroying_angel_skirt.jpg">Destroying angel photo: Eli T., CC BY 4.0</a>
+        <a href="https://commons.wikimedia.org/wiki/File:Grifola_frondosa_2014_G1.jpg">Hen of the woods photo: George Chernilevsky, public domain</a>
+        <a href="https://commons.wikimedia.org/wiki/File:Chlorophyllum_molybdites.jpg">Green-spored parasol photo: Nathan Wilson, CC BY-SA 3.0</a>
+        <a href="https://commons.wikimedia.org/wiki/File:Auricularia_auricula-judae_MdE.jpg">Wood ear photo: MdE, CC BY-SA 3.0 DE</a>
+        <a href="https://commons.wikimedia.org/wiki/File:Ganoderma_lucidum_01.jpg">Reishi photo: Eric Steinert, CC BY-SA 2.5</a>
+        <a href="https://commons.wikimedia.org/wiki/File:Laccaria_amethystina,_Amethyst_Deceiver,_UK.jpg">Amethyst deceiver photo: Stu's Images, CC BY-SA 4.0</a>
+        <a href="https://commons.wikimedia.org/wiki/File:Hydnellum_peckii_98004336.jpg">Bleeding tooth photo: Randal, CC0</a>
       </footer>
     </main>
   </body>
