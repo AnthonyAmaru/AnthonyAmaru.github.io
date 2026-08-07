@@ -1,12 +1,11 @@
 const VISITOR_HASH = "5723360ef11043a879520412e9ad897e0ebcb99cc820ec363bfecc9d751a1a99";
-const ADMIN_HASH = "1e67aef3b01e797309c5588def71607f40a4facc6b8993af9a62306f727a2e5a";
 const CLOUD_ADMIN_EMAIL = "anthonyamaru93@gmail.com";
 const MUSIC_PLAYER_STATE_KEY = "anthony_music_player_state_v1";
 const BOOK_CHAPTER_SIDEBAR_KEY = "anthony_book_chapter_sidebar_hidden";
 const BOOK_SPLIT_PAGES_KEY = "anthony_book_split_pages";
 const MANDARIN_WRITING_KEY = "anthony_mandarin_written_words_v1";
 const MANDARIN_WRITING_CLOUD_KEY = "mandarin_written_words_v1";
-const DETAIL_SHELL_VERSION = "20260806-gymtiles1";
+const DETAIL_SHELL_VERSION = "20260806-interestslock1";
 const DETAIL_PAGES = {
   aviation: "aviation/index.html",
   mandarin: "mandarin/index.html",
@@ -155,6 +154,7 @@ function showPortal() {
   $("#entry-gate").hidden = true;
   $("#portal").hidden = false;
   refreshDashboard();
+  updateInterestAccess({ focus: portalRouteFromUrl() === "interests" });
   if (detailRouteFromUrl() === "author") syncPortalUrl();
 }
 
@@ -181,7 +181,10 @@ function routeTo(route) {
   $("#mobile-menu-button").setAttribute("aria-expanded", "false");
   if (route === "music") { musicLibraryOpen = false; renderMusic(); }
   if (route === "resume") renderResume();
-  if (route === "interests") refreshDashboard();
+  if (route === "interests") {
+    refreshDashboard();
+    updateInterestAccess({ focus: true });
+  }
 }
 
 function detailRouteFromUrl(url = new URL(location.href)) {
@@ -209,6 +212,10 @@ function closeDetailPage() {
 function showDetailPage(detail) {
   const path = DETAIL_PAGES[detail];
   if (!path) return false;
+  if (!interestSessionUnlocked()) {
+    routeTo("interests");
+    return false;
+  }
   if (!$("#book-modal").hidden) closeBookStudio();
   $$(".page-panel").forEach((panel) => panel.classList.remove("active"));
   $("#main-content").hidden = true;
@@ -231,6 +238,10 @@ function showDetailPage(detail) {
 
 function syncPortalUrl() {
   const detail = detailRouteFromUrl();
+  if (detail && !interestSessionUnlocked()) {
+    navigatePortal("interests", true);
+    return;
+  }
   if (detail === "author") {
     void openBookStudio().then((opened) => {
       if (!opened && detailRouteFromUrl() === "author") navigatePortal("interests", true);
@@ -277,7 +288,24 @@ async function navigateAuthor() {
 }
 
 function adminIsUnlocked() {
-  return sessionStorage.getItem("anthony_admin_unlocked") === "1";
+  const signedIn = Boolean(window.musicCloud?.isSignedIn());
+  if (!signedIn) sessionStorage.removeItem("anthony_admin_unlocked");
+  return signedIn;
+}
+
+function interestSessionUnlocked() {
+  return adminIsUnlocked();
+}
+
+function updateInterestAccess({ focus = false } = {}) {
+  const lock = $("#interests-lock");
+  const grid = $("#interest-grid");
+  if (!lock || !grid) return false;
+  const unlocked = interestSessionUnlocked();
+  lock.hidden = unlocked;
+  grid.hidden = !unlocked;
+  if (!unlocked && focus && !$("#portal").hidden) requestAnimationFrame(() => $("#interests-password")?.focus());
+  return unlocked;
 }
 
 function updateAdminStatus() {
@@ -285,6 +313,15 @@ function updateAdminStatus() {
   const connected = Boolean(window.musicCloud?.isSignedIn());
   chip.classList.toggle("unlocked", connected);
   $("span:last-child", chip).textContent = connected ? "Cloud synced" : "Cloud locked";
+}
+
+async function authenticateAdminSession(password) {
+  if (!musicCloud.isSignedIn()) await musicCloud.signIn(CLOUD_ADMIN_EMAIL, password);
+  adminPasswordForSession = password;
+  sessionStorage.setItem("anthony_admin_unlocked", "1");
+  await syncStudyHistoryFromCloud();
+  updateAdminStatus();
+  updateInterestAccess();
 }
 
 function ensureAdmin() {
@@ -798,6 +835,7 @@ async function invokeAnthonyAi(body) {
     adminPasswordForSession = null;
     sessionStorage.removeItem("anthony_admin_unlocked");
     updateAdminStatus();
+    updateInterestAccess();
     if (!(await ensureCloudMusicAdmin())) throw new Error("Administrator sign-in is required.");
     return musicCloud.invokeFunction("big-pickle", body);
   }
@@ -1436,22 +1474,33 @@ $("#admin-status").addEventListener("click", async () => {
     toast("Cloud synced.");
   }
 });
+$("#interests-auth-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const submit = $("button", form);
+  const password = $("#interests-password");
+  const message = $("#interests-auth-message");
+  submit.disabled = true;
+  message.textContent = "Unlocking…";
+  try {
+    await authenticateAdminSession(password.value);
+    password.value = "";
+    message.textContent = "";
+    toast("Interests unlocked for this session.");
+  } catch (error) {
+    message.textContent = error.message;
+  } finally {
+    submit.disabled = false;
+  }
+});
 $("#admin-form").addEventListener("submit", async (event) => {
   event.preventDefault();
   const password = $("#admin-password").value;
-  if (await digest(password) === ADMIN_HASH) {
-    try {
-      if (!musicCloud.isSignedIn()) await musicCloud.signIn(CLOUD_ADMIN_EMAIL, password);
-      adminPasswordForSession = password;
-      sessionStorage.setItem("anthony_admin_unlocked", "1");
-      await syncStudyHistoryFromCloud();
-      updateAdminStatus();
-      closeAdminModal(true);
-    } catch (error) {
-      $("#admin-error").textContent = `Cloud sign-in failed: ${error.message}`;
-    }
-  } else {
-    $("#admin-error").textContent = "That admin password did not match.";
+  try {
+    await authenticateAdminSession(password);
+    closeAdminModal(true);
+  } catch (error) {
+    $("#admin-error").textContent = error.message;
   }
 });
 
@@ -1630,8 +1679,10 @@ renderMusic();
 refreshDashboard();
 const initialRoute = portalRouteFromUrl();
 const initialDetail = detailRouteFromUrl();
-if (initialDetail === "author") routeTo("interests");
+if (initialDetail && !interestSessionUnlocked()) navigatePortal("interests", true);
+else if (initialDetail === "author") routeTo("interests");
 else if (!showDetailPage(initialDetail)) routeTo(initialRoute);
 installMediaSession();
 if (sessionStorage.getItem("anthony_visitor_unlocked") === "1") showPortal();
+updateInterestAccess();
 if (musicCloud.isSignedIn()) syncStudyHistoryFromCloud();

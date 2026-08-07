@@ -1,7 +1,6 @@
 (() => {
   "use strict";
 
-  const ADMIN_EMAIL = "anthonyamaru93@gmail.com";
   const CONTENT_KEY = "gym_tracker_v1";
   const PROGRAMS = {
     ppl: {
@@ -98,8 +97,6 @@
 
   const lock = document.querySelector("[data-gym-lock]");
   const tracker = document.querySelector("[data-gym-tracker]");
-  const authForm = document.querySelector("[data-gym-auth]");
-  const password = document.querySelector("#gym-password");
   const authMessage = document.querySelector("[data-gym-auth-message]");
   const saveStatus = document.querySelector("[data-gym-save-status]");
   const workoutForm = document.querySelector("[data-gym-workout-form]");
@@ -476,23 +473,6 @@
     }
   }
 
-  authForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const button = authForm.querySelector("button");
-    button.disabled = true;
-    authMessage.textContent = "Unlocking…";
-    try {
-      await musicCloud.signIn(ADMIN_EMAIL, password.value);
-      sessionStorage.setItem("anthony_admin_unlocked", "1");
-      password.value = "";
-      await loadTracker();
-    } catch (error) {
-      showLocked(`Could not unlock: ${error.message}`);
-    } finally {
-      button.disabled = false;
-    }
-  });
-
   workoutForm.elements.program.addEventListener("change", () => {
     data.selectedProgram = workoutForm.elements.program.value;
     updateWorkoutOptions();
@@ -559,5 +539,5 @@
   });
 
   if (musicCloud.isSignedIn()) loadTracker();
-  else showLocked();
+  else showLocked("Unlock once from Interests for this browser session.");
 })();

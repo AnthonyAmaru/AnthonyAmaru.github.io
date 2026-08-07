@@ -469,6 +469,16 @@ const PUBLISHABLE_KEY = "sb_publishable_REPLACE_ME";
 
 A publishable key is designed for public clients when RLS is correct. A secret key or legacy `service_role` key bypasses RLS and must never appear in HTML, JavaScript, GitHub, logs, URLs, or chat.
 
+### One Interests unlock per browser session
+
+Use one compact administrator gate on the root Interests route. Keep the complete tile grid hidden until Supabase Auth succeeds and the authenticated user passes the `site_admins` allowlist check. The valid Supabase session—not a standalone client-side flag—is the authority for revealing the grid.
+
+- Set the session-only UI flag only after Auth and administrator membership succeed.
+- Every protected interest reuses that session and loads its owner-scoped data without asking for the password again.
+- Do not put another email/password form in Bills, Health, Taxes, Gym Tracker, Aviation tests, Mandarin tests, Author, or another interest detail. When a protected detail is opened directly without a valid session, show only a link back to `index.html?page=interests`; use `target="_top"` so the link cannot nest the portal inside an embedded detail frame.
+- Keep RLS and private Storage policies as the actual data boundary. Hiding the tile grid is navigation control, not a replacement for server-side authorization.
+- If the JWT is absent or expired, hide the grid again, clear the session-only UI flag, and require the single Interests unlock.
+
 ### Storage
 
 - `site-music`: public downloads, authenticated administrator uploads/updates/deletes.
@@ -648,6 +658,7 @@ Append every future bug here. Update the relevant architecture section at the sa
 
 | Date | Symptom | Root cause | Corrected rule | Regression test |
 | --- | --- | --- | --- | --- |
+| 2026-08-06 | Bills, Health, Taxes, Gym Tracker, Aviation, and Mandarin repeated an administrator password form after the owner had already entered the site; the current Supabase password could also be rejected before Auth was called. | Each protected detail implemented its own authentication UI, and the root client duplicated password verification with an obsolete hard-coded hash instead of reusing one verified Supabase session. | Authenticate once on the root Interests route using Supabase Auth plus the `site_admins` allowlist, never duplicate the account password as a client-side hash, reveal all tiles only after that session succeeds, and let every protected detail reuse it. Signed-out direct detail URLs contain no password form and point back to the root gate. | Start with empty session storage, open Interests, confirm the grid is absent and exactly one password field is visible, authenticate with the current Supabase password, open every protected tile and confirm no second password field appears, then clear/expire the session and confirm the grid locks again. |
 | 2026-08-06 | A private tax document's View action could do nothing on iPad even though the authenticated download succeeded. | The code waited for the private fetch and then triggered a synthetic `_blank` link; by then the browser no longer considered it part of the user's click and could block it as a pop-up. | Show authenticated PDF blobs in a same-page modal iframe, keep the bucket private, clear the frame on close, and revoke every blob URL. Use a synchronous new window only as a feature-detected fallback. | Sign in, open History, click each saved PDF at desktop/tablet/mobile widths, confirm the in-page viewer opens with a `blob:` source, close it, and confirm there are no console errors or extra tabs. |
 | 2026-08-06 | The futuristic Health console was eight pixels wider than a 768px tablet viewport even though every result row fit. | Its decorative grid pseudo-element used negative horizontal insets, so the background itself expanded the document scroll width beyond the responsive content container. | Decorative backgrounds, glow layers, and pseudo-elements on responsive page shells stay inside the shell's border box unless an ancestor explicitly clips them; never use negative horizontal insets on a viewport-width container. | Open the authenticated Health dashboard at 390px, 768px, and desktop widths and confirm `documentElement.scrollWidth === innerWidth` while every diagnostic row, badge, and reference value remains visible. |
 | 2026-08-06 | Pages built the site artifact successfully but every branch-based deploy failed with “Ensure GITHUB_TOKEN has permission `id-token: write`.” | The generated Pages workflow could not mint the deployment identity under the repository's read-only default workflow token. | Keep the read-only default, add the official static Pages workflow with explicit `contents:read`, `pages:write`, and `id-token:write`, and select GitHub Actions as the Pages source. | Push a cache-versioned marker to `main`; confirm the custom workflow succeeds, the deployed commit SHA matches, and the marker is returned by the custom domain. |

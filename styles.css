@@ -245,6 +245,19 @@ h1, h2 { font-family: var(--sans); font-weight: 750; letter-spacing: -.035em; }
 .resume-note p { margin: 0; color: var(--muted); font-size: .82rem; line-height: 1.55; }
 
 /* Interests */
+.interests-lock { display: grid; width: min(520px, 100%); min-height: 360px; place-content: center; gap: 14px; margin: 0 auto; border: 1px solid var(--line); border-radius: 20px; background: var(--surface-solid); padding: clamp(28px, 6vw, 54px); text-align: center; }
+.interests-lock > span { display: grid; width: 52px; height: 52px; place-items: center; justify-self: center; border: 1px solid var(--line); border-radius: 14px; background: var(--canvas-soft); font-size: 1.25rem; }
+.interests-lock h1 { margin: 2px 0 8px; font-size: clamp(1.8rem, 5vw, 2.6rem); }
+.interests-lock form { display: grid; gap: 8px; text-align: left; }
+.interests-lock label { color: var(--muted); font-size: .72rem; font-weight: 800; }
+.interests-lock form > div { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+.interests-lock input,
+.interests-lock button { min-height: 48px; border: 1px solid var(--line); border-radius: 12px; color: inherit; font: inherit; }
+.interests-lock input { min-width: 0; background: var(--canvas); padding: 0 14px; }
+.interests-lock button { background: var(--ink); color: var(--canvas); padding: 0 20px; cursor: pointer; font-weight: 850; }
+.interests-lock p { min-height: 1.2em; margin: 2px 0 0; color: var(--danger); font-size: .75rem; }
+.interests-lock[hidden],
+.interest-grid[hidden] { display: none !important; }
 .interest-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
 .interest-card { position: relative; min-height: 480px; overflow: hidden; border: 1px solid var(--line); border-radius: 32px; background: var(--surface); box-shadow: var(--shadow-sm); padding: clamp(25px, 4vw, 42px); cursor: pointer; color: var(--ink); text-align: left; text-decoration: none; transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease; }
 .interest-card:hover { border-color: var(--line-strong); box-shadow: var(--shadow-md); transform: translateY(-2px); }
@@ -504,6 +517,7 @@ h1, h2 { font-family: var(--sans); font-weight: 750; letter-spacing: -.035em; }
   .timeline-copy { grid-column: 2 / -1; grid-row: auto; }
   .company-mark { width: 44px; height: 44px; }
   .interest-grid { grid-template-columns: 1fr; }
+  .interests-lock form > div { grid-template-columns: 1fr; }
   .interest-card, .interest-card.wide { min-height: 240px !important; border-radius: 14px; }
   .resume-highlights { grid-template-columns:1fr; }
 }

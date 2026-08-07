@@ -184,3 +184,4 @@ h1 { margin:0; font:500 clamp(3.7rem,11vw,8rem)/.86 "Newsreader",serif; letter-s
   .workout-day-grid { grid-template-columns: 1fr; }
   .workout-tabs { grid-template-columns: 1fr; }
 }
+.interest-unlock-link { display: inline-flex; min-height: 46px; align-items: center; justify-content: center; border: 1px solid var(--line); border-radius: 12px; background: var(--ink); color: var(--bg); padding: 0 18px; font-weight: 850; text-decoration: none; }

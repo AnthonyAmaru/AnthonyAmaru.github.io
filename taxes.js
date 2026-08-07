@@ -1,7 +1,6 @@
 (() => {
   "use strict";
 
-  const ADMIN_EMAIL = "anthonyamaru93@gmail.com";
   const CONTENT_KEY = "tax_workspace_v1";
   const TAX_BUCKET = "tax-documents";
   const CURRENT_TAX_YEAR = 2025;
@@ -31,8 +30,6 @@
 
   const lock = document.querySelector("[data-tax-lock]");
   const workspaceRoot = document.querySelector("[data-tax-workspace]");
-  const authForm = document.querySelector("[data-tax-auth]");
-  const passwordInput = document.querySelector("#tax-password");
   const authMessage = document.querySelector("[data-tax-message]");
   const yearLabel = document.querySelector("[data-tax-year-label]");
   const profileForm = document.querySelector("[data-tax-profile-form]");
@@ -62,7 +59,7 @@
   let loading = false;
   let processingFiles = false;
 
-  if (!lock || !workspaceRoot || !authForm || !window.musicCloud) return;
+  if (!lock || !workspaceRoot || !window.musicCloud) return;
 
   function blankWorkspace() {
     return {
@@ -694,23 +691,6 @@
     renderAll();
   }
 
-  authForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const submit = authForm.querySelector("button");
-    submit.disabled = true;
-    authMessage.textContent = "Unlocking…";
-    try {
-      await musicCloud.signIn(ADMIN_EMAIL, passwordInput.value);
-      sessionStorage.setItem("anthony_admin_unlocked", "1");
-      passwordInput.value = "";
-      await loadPrivateWorkspace();
-    } catch (error) {
-      showLocked(`Could not unlock: ${error.message}`);
-    } finally {
-      submit.disabled = false;
-    }
-  });
-
   document.querySelectorAll("[data-tax-panel-button]").forEach((button) => button.addEventListener("click", () => setPanel(button.dataset.taxPanelButton)));
   chooseFiles.addEventListener("click", () => fileInput.click());
   addW2.addEventListener("click", () => openW2Editor());
@@ -786,5 +766,5 @@
 
   renderForms();
   if (musicCloud.isSignedIn()) loadPrivateWorkspace();
-  else showLocked();
+  else showLocked("Unlock once from Interests for this browser session.");
 })();

@@ -1,18 +1,15 @@
 (() => {
   "use strict";
 
-  const ADMIN_EMAIL = "anthonyamaru93@gmail.com";
   const CONTENT_KEY = "bills_dashboard_v1";
   const lock = document.querySelector("[data-bills-lock]");
   const dashboard = document.querySelector("[data-bills-dashboard]");
-  const form = document.querySelector("[data-bills-auth]");
-  const password = document.querySelector("#bills-password");
   const message = document.querySelector("[data-bills-message]");
   const asOf = document.querySelector("[data-bills-as-of]");
   let loading = false;
   let billData = null;
 
-  if (!lock || !dashboard || !form || !window.musicCloud) return;
+  if (!lock || !dashboard || !window.musicCloud) return;
 
   function element(tag, className = "", text = "") {
     const node = document.createElement(tag);
@@ -209,23 +206,6 @@
     }
   }
 
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const submit = form.querySelector("button");
-    submit.disabled = true;
-    message.textContent = "Unlocking…";
-    try {
-      await musicCloud.signIn(ADMIN_EMAIL, password.value);
-      sessionStorage.setItem("anthony_admin_unlocked", "1");
-      password.value = "";
-      await loadPrivateBills();
-    } catch (error) {
-      showLocked(`Could not unlock: ${error.message}`);
-    } finally {
-      submit.disabled = false;
-    }
-  });
-
   dashboard.addEventListener("submit", async (event) => {
     const savingsForm = event.target.closest("[data-savings-update]");
     if (!savingsForm || !billData) return;
@@ -253,5 +233,5 @@
   });
 
   if (musicCloud.isSignedIn()) loadPrivateBills();
-  else showLocked();
+  else showLocked("Unlock once from Interests for this browser session.");
 })();

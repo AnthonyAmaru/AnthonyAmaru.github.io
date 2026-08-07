@@ -1,8 +1,6 @@
-const ADMIN_HASH = "1e67aef3b01e797309c5588def71607f40a4facc6b8993af9a62306f727a2e5a";
 const HISTORY_KEY = "anthony_aviation_history_v1";
 const WRONG_BANK_KEY = "anthony_aviation_wrong_bank_v1";
 const WRONG_BANK_CLOUD_KEY = "aviation_wrong_bank_v1";
-const CLOUD_ADMIN_EMAIL = "anthonyamaru93@gmail.com";
 
 const books = {
   phak: { label: "PHAK", title: "Pilot's Handbook of Aeronautical Knowledge", parts: window.PHAK_QUESTIONS || {} },
@@ -21,14 +19,9 @@ const appState = {
 
 const $ = (selector) => document.querySelector(selector);
 
-async function digest(value) {
-  const bytes = new TextEncoder().encode(value);
-  const hash = await crypto.subtle.digest("SHA-256", bytes);
-  return Array.from(new Uint8Array(hash)).map((byte) => byte.toString(16).padStart(2, "0")).join("");
-}
-
 function ensureAdmin() {
-  const unlocked = sessionStorage.getItem("anthony_admin_unlocked") === "1";
+  const unlocked = Boolean(window.musicCloud?.isSignedIn());
+  if (!unlocked) sessionStorage.removeItem("anthony_admin_unlocked");
   $("#admin-lock").hidden = unlocked;
   return unlocked;
 }
@@ -341,26 +334,6 @@ function renderSearchResults(query) {
 function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[character]);
 }
-
-$("#aviation-unlock-form").addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const password = $("#aviation-password").value;
-  const hash = await digest(password);
-  if (hash === ADMIN_HASH) {
-    try {
-      if (!musicCloud.isSignedIn()) await musicCloud.signIn(CLOUD_ADMIN_EMAIL, password);
-      sessionStorage.setItem("anthony_admin_unlocked", "1");
-      window.syncSiteCloudStatus?.();
-      $("#aviation-password-error").textContent = "";
-      $("#aviation-password").value = "";
-      ensureAdmin();
-      await loadHistoryFromCloud();
-      await loadWrongBank();
-    } catch (error) { $("#aviation-password-error").textContent = `Cloud sign-in failed: ${error.message}`; }
-  } else {
-    $("#aviation-password-error").textContent = "That admin password did not match.";
-  }
-});
 
 $("#book-select").addEventListener("change", populateChapters);
 $("#chapter-options").addEventListener("change", updateAvailability);

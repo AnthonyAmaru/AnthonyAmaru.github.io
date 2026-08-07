@@ -14,13 +14,13 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Newsreader:opsz,wght@6..72,500&amp;display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="site-header.css?v=20260806-study2" />
     <link rel="stylesheet" href="site-music.css?v=20260806-study2" />
-    <link rel="stylesheet" href="interest-detail.css?v=20260806-programs1" />
+    <link rel="stylesheet" href="interest-detail.css?v=20260806-interestslock1" />
     <link rel="stylesheet" href="bills.css?v=20260806-savings1" />
     <script src="music-cloud.js?v=20260804-titleclean1"></script>
     <script src="site-header.js?v=20260806-study2" defer></script>
     <script src="site-music.js?v=20260806-study2" defer></script>
     <script src="site-ai.js?v=20260806-study2" defer></script>
-    <script src="bills.js?v=20260806-savings1" defer></script>
+    <script src="bills.js?v=20260806-interestslock1" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -52,11 +52,8 @@
 
       <section class="bills-lock" data-bills-lock aria-labelledby="bills-lock-title">
         <span aria-hidden="true">🔒</span>
-        <h2 id="bills-lock-title">Admin approval required</h2>
-        <form data-bills-auth>
-          <label for="bills-password">Admin password</label>
-          <div><input id="bills-password" type="password" autocomplete="current-password" required /><button type="submit">Unlock</button></div>
-        </form>
+        <h2 id="bills-lock-title">Interests locked</h2>
+        <a class="interest-unlock-link" href="index.html?page=interests&amp;v=20260806-interestslock1" target="_top">Unlock Interests</a>
         <p data-bills-message role="status" aria-live="polite"></p>
       </section>
 

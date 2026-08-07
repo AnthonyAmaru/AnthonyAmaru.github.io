@@ -23,10 +23,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&amp;family=Noto+Serif+SC:wght@500;700&amp;display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=20260806-authorpage1" />
+    <link rel="stylesheet" href="styles.css?v=20260806-interestslock1" />
     <script src="music-cloud.js?v=20260804-titleclean1" defer></script>
     <script src="book-data.js?v=20260805-bookrestore1" defer></script>
-    <script src="script.js?v=20260806-gymtiles1" defer></script>
+    <script src="script.js?v=20260806-interestslock1" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -134,8 +134,18 @@
         </section>
 
         <section id="page-interests" class="page-panel section-shell" data-page="interests">
-          <div class="interest-grid">
-            <a class="interest-card aviation-card" href="aviation/index.html?v=20260806-pricing1" aria-label="Open Aviation">
+          <section id="interests-lock" class="interests-lock" aria-labelledby="interests-lock-title">
+            <span aria-hidden="true">🔒</span>
+            <h1 id="interests-lock-title">Unlock Interests</h1>
+            <form id="interests-auth-form">
+              <label for="interests-password">Admin password</label>
+              <div><input id="interests-password" type="password" autocomplete="current-password" required /><button type="submit">Unlock</button></div>
+            </form>
+            <p id="interests-auth-message" role="status" aria-live="polite"></p>
+          </section>
+
+          <div id="interest-grid" class="interest-grid" hidden>
+            <a class="interest-card aviation-card" href="aviation/index.html?v=20260806-interestslock1" aria-label="Open Aviation">
               <div class="interest-icon" aria-hidden="true">✈️</div>
               <h2>Aviation</h2>
               <div class="stat-strip"><div><strong id="aviation-last-score">—</strong><span>last score</span></div><div><strong id="aviation-test-count">0</strong><span>tests taken</span></div></div>
@@ -176,22 +186,22 @@
               <h2>Fatherhood</h2>
             </a>
 
-            <a class="interest-card gym-card" href="gym.html?v=20260806-gymtiles1" aria-label="Open Gym and Nutrition">
+            <a class="interest-card gym-card" href="gym.html?v=20260806-interestslock1" aria-label="Open Gym and Nutrition">
               <div class="interest-icon" aria-hidden="true">🏋️</div>
               <h2>Gym &amp; Nutrition</h2>
             </a>
 
-            <a class="interest-card taxes-card" href="taxes.html?v=20260806-interests1" aria-label="Open Taxes">
+            <a class="interest-card taxes-card" href="taxes.html?v=20260806-interestslock1" aria-label="Open Taxes">
               <div class="interest-icon" aria-hidden="true">🧾</div>
               <h2>Taxes</h2>
             </a>
 
-            <a class="interest-card health-card" href="health.html?v=20260806-interests1" aria-label="Open Health">
+            <a class="interest-card health-card" href="health.html?v=20260806-interestslock1" aria-label="Open Health">
               <div class="interest-icon" aria-hidden="true">🩺</div>
               <h2>Health</h2>
             </a>
 
-            <a class="interest-card bills-card" href="bills.html?v=20260806-savings1" aria-label="Open Bills">
+            <a class="interest-card bills-card" href="bills.html?v=20260806-interestslock1" aria-label="Open Bills">
               <div class="interest-icon" aria-hidden="true">💳</div>
               <h2>Bills</h2>
             </a>

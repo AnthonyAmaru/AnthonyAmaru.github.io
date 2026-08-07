@@ -1,17 +1,14 @@
 (() => {
   "use strict";
 
-  const ADMIN_EMAIL = "anthonyamaru93@gmail.com";
   const CONTENT_KEY = "health_bloodwork_v1";
   const lock = document.querySelector("[data-health-lock]");
   const dashboard = document.querySelector("[data-health-dashboard]");
-  const form = document.querySelector("[data-health-auth]");
-  const password = document.querySelector("#health-password");
   const message = document.querySelector("[data-health-message]");
   const asOf = document.querySelector("[data-health-as-of]");
   let loading = false;
 
-  if (!lock || !dashboard || !form || !window.musicCloud) return;
+  if (!lock || !dashboard || !window.musicCloud) return;
 
   const sources = [
     ["Triglyceride ranges · MedlinePlus", "https://medlineplus.gov/triglycerides.html"],
@@ -350,27 +347,10 @@
     }
   }
 
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const submit = form.querySelector("button");
-    submit.disabled = true;
-    message.textContent = "Authenticating…";
-    try {
-      await musicCloud.signIn(ADMIN_EMAIL, password.value);
-      sessionStorage.setItem("anthony_admin_unlocked", "1");
-      password.value = "";
-      await loadHealthData();
-    } catch (error) {
-      showLocked(`Could not unlock: ${error.message}`);
-    } finally {
-      submit.disabled = false;
-    }
-  });
-
   window.addEventListener("site-cloud-change", () => {
     if (musicCloud.isSignedIn() && dashboard.hidden) loadHealthData();
   });
 
   if (musicCloud.isSignedIn()) loadHealthData();
-  else showLocked();
+  else showLocked("Unlock once from Interests for this browser session.");
 })();

@@ -1,8 +1,6 @@
-const ADMIN_HASH = "1e67aef3b01e797309c5588def71607f40a4facc6b8993af9a62306f727a2e5a";
 const HISTORY_KEY = "anthony_mandarin_history_v1";
 const WRONG_BANK_KEY = "anthony_mandarin_wrong_bank_v1";
 const WRONG_BANK_CLOUD_KEY = "mandarin_wrong_bank_v1";
-const CLOUD_ADMIN_EMAIL = "anthonyamaru93@gmail.com";
 
 const wordBank = [
   ["你好", "nǐ hǎo", "hello"], ["很好", "hěn hǎo", "very good"], ["谢谢", "xièxie", "thank you"],
@@ -74,14 +72,9 @@ const sentenceBank = [
 const $ = (selector) => document.querySelector(selector);
 const state = { questions: [], index: 0, correct: 0, responses: [], mode: "mixed", section: "Mixed practice" };
 
-async function digest(value) {
-  const bytes = new TextEncoder().encode(value);
-  const hash = await crypto.subtle.digest("SHA-256", bytes);
-  return Array.from(new Uint8Array(hash)).map((byte) => byte.toString(16).padStart(2, "0")).join("");
-}
-
 function ensureAdmin() {
-  const unlocked = sessionStorage.getItem("anthony_admin_unlocked") === "1";
+  const unlocked = Boolean(window.musicCloud?.isSignedIn());
+  if (!unlocked) sessionStorage.removeItem("anthony_admin_unlocked");
   $("#admin-lock").hidden = unlocked;
   return unlocked;
 }
@@ -248,7 +241,6 @@ function speakMandarin(text) {
   speechSynthesis.speak(utterance);
 }
 
-$("#mandarin-unlock-form").addEventListener("submit", async (event) => { event.preventDefault(); const password = $("#mandarin-password").value; const hash = await digest(password); if (hash === ADMIN_HASH) { try { if (!musicCloud.isSignedIn()) await musicCloud.signIn(CLOUD_ADMIN_EMAIL, password); sessionStorage.setItem("anthony_admin_unlocked", "1"); window.syncSiteCloudStatus?.(); $("#mandarin-password-error").textContent = ""; $("#mandarin-password").value = ""; ensureAdmin(); await loadHistoryFromCloud(); await loadWrongBank(); } catch (error) { $("#mandarin-password-error").textContent = `Cloud sign-in failed: ${error.message}`; } } else $("#mandarin-password-error").textContent = "That admin password did not match."; });
 $("#start-quiz").addEventListener("click", () => startQuiz());
 $("#start-wrong-bank").addEventListener("click", () => { const bank = getWrongBank(); const count = Math.min(Number($("#question-count").value), bank.length); startQuiz(shuffle(bank).slice(0, count), "wrong"); });
 $("#answer-options").addEventListener("click", (event) => { const option = event.target.closest(".answer-option"); const response = state.responses[state.index]; if (!option || response.checked) return; response.selected = Number(option.dataset.index); renderQuestion(); });

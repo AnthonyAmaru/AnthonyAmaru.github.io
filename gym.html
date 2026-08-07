@@ -14,13 +14,13 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Newsreader:opsz,wght@6..72,500&amp;display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="site-header.css?v=20260806-study2" />
     <link rel="stylesheet" href="site-music.css?v=20260806-study2" />
-    <link rel="stylesheet" href="interest-detail.css?v=20260806-gymtiles1" />
+    <link rel="stylesheet" href="interest-detail.css?v=20260806-interestslock1" />
     <link rel="stylesheet" href="gym.css?v=20260806-gymtiles1" />
     <script src="music-cloud.js?v=20260806-tax2"></script>
     <script src="site-header.js?v=20260806-study2" defer></script>
     <script src="site-music.js?v=20260806-study2" defer></script>
     <script src="site-ai.js?v=20260806-study2" defer></script>
-    <script src="gym-programs.js?v=20260806-gymtiles1" defer></script>
+    <script src="gym-programs.js?v=20260806-interestslock1" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -83,11 +83,8 @@
 
         <section class="gym-lock" data-gym-lock>
           <span aria-hidden="true">🔒</span>
-          <h3>Admin approval required</h3>
-          <form data-gym-auth>
-            <label for="gym-password">Admin password</label>
-            <div><input id="gym-password" type="password" autocomplete="current-password" required /><button type="submit">Unlock</button></div>
-          </form>
+          <h3>Interests locked</h3>
+          <a class="interest-unlock-link" href="index.html?page=interests&amp;v=20260806-interestslock1" target="_top">Unlock Interests</a>
           <p data-gym-auth-message role="status" aria-live="polite"></p>
         </section>
 
