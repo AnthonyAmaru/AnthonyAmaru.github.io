@@ -47,11 +47,17 @@
   const runSummary = document.querySelector("[data-tax-run-summary]");
   const documentList = document.querySelector("[data-tax-document-list]");
   const draft = document.querySelector("[data-tax-draft]");
+  const history = document.querySelector("[data-tax-history]");
+  const historyYear = document.querySelector("[data-tax-history-year]");
   const formLinks = document.querySelector("[data-tax-form-links]");
   const w2Dialog = document.querySelector("[data-tax-w2-dialog]");
   const w2Form = document.querySelector("[data-tax-w2-form]");
   const w2Delete = document.querySelector("[data-tax-w2-delete]");
   const w2OcrNote = document.querySelector("[data-tax-w2-ocr-note]");
+  const documentViewer = document.querySelector("[data-tax-document-viewer]");
+  const documentViewerTitle = document.querySelector("[data-tax-document-viewer-title]");
+  const documentViewerFrame = document.querySelector("[data-tax-document-viewer-frame]");
+  let documentViewerUrl = "";
   let data = blankWorkspace();
   let loading = false;
   let processingFiles = false;
@@ -60,7 +66,7 @@
 
   function blankWorkspace() {
     return {
-      version: 1,
+      version: 2,
       taxYear: CURRENT_TAX_YEAR,
       profile: {
         legalName: "",
@@ -81,6 +87,7 @@
       },
       documents: [],
       w2s: [],
+      pastYears: [],
     };
   }
 
@@ -93,6 +100,7 @@
       profile: { ...base.profile, ...(value.profile || {}) },
       documents: Array.isArray(value.documents) ? value.documents : [],
       w2s: Array.isArray(value.w2s) ? value.w2s : [],
+      pastYears: Array.isArray(value.pastYears) ? value.pastYears : [],
     };
   }
 
@@ -290,11 +298,180 @@
     });
   }
 
+  function historyValue(label, value, options = {}) {
+    const row = element("div", options.emphasis ? "emphasis" : "");
+    row.append(element("dt", "", label), element("dd", "", options.raw ? value : money(value)));
+    return row;
+  }
+
+  function historyCard(title, values = []) {
+    const card = element("section", "tax-history-card");
+    card.append(element("h2", "", title));
+    const list = element("dl");
+    values.forEach((value) => list.append(historyValue(value[0], value[1], value[2])));
+    card.append(list);
+    return card;
+  }
+
+  function renderHistory() {
+    if (!history || !historyYear) return;
+    const years = [...data.pastYears].sort((a, b) => Number(b.taxYear) - Number(a.taxYear));
+    const selected = Number(historyYear.value || years[0]?.taxYear || 0);
+    historyYear.replaceChildren();
+    years.forEach((item) => {
+      const option = element("option", "", item.taxYear);
+      option.value = item.taxYear;
+      option.selected = Number(item.taxYear) === selected;
+      historyYear.append(option);
+    });
+    history.replaceChildren();
+    if (!years.length) {
+      historyYear.disabled = true;
+      history.append(element("div", "tax-empty", "No prior tax years saved."));
+      return;
+    }
+    historyYear.disabled = false;
+    const record = years.find((item) => Number(item.taxYear) === selected) || years[0];
+    historyYear.value = String(record.taxYear);
+    const federal = record.federal || {};
+    const nj = record.newJersey || {};
+    const business = record.business || {};
+    const itemized = record.itemized || {};
+    const qbi = record.qbi || {};
+
+    const masthead = element("header", "tax-history-masthead");
+    const mastheadCopy = element("div");
+    mastheadCopy.append(element("span", "", `Tax year ${record.taxYear}`), element("h2", "", record.status || "Return copy saved"), element("p", "", `${record.filingStatus || "—"} · ${Number(record.dependents || 0)} dependents`));
+    masthead.append(mastheadCopy);
+
+    const figures = element("div", "tax-history-figures");
+    [
+      ["Federal AGI", federal.agi],
+      ["Federal tax", federal.totalTax],
+      ["Federal owed", federal.amountOwed],
+      ["NJ owed", nj.amountOwed],
+    ].forEach(([label, value]) => {
+      const card = element("article");
+      card.append(element("span", "", label), element("strong", "", money(value)));
+      figures.append(card);
+    });
+
+    const details = element("div", "tax-history-grid");
+    details.append(
+      historyCard("Federal", [
+        ["W-2 wages", federal.w2Wages],
+        ["Schedule C income", federal.scheduleCIncome],
+        ["Total income", federal.totalIncome],
+        ["Adjustments", federal.adjustments],
+        ["Adjusted gross income", federal.agi, { emphasis: true }],
+        ["Itemized deductions", federal.itemizedDeductions],
+        ["Qualified tips deduction", federal.additionalDeductions],
+        ["QBI deduction", federal.qbiDeduction],
+        ["Taxable income", federal.taxableIncome],
+        ["Income tax", federal.incomeTax],
+        ["Self-employment tax", federal.selfEmploymentTax],
+        ["Total tax", federal.totalTax, { emphasis: true }],
+        ["Federal withholding", federal.withholding],
+        ["Amount owed", federal.amountOwed, { emphasis: true }],
+        ["Estimated-tax penalty", federal.estimatedTaxPenalty],
+      ]),
+      historyCard("New Jersey", [
+        ["NJ wages", nj.wages],
+        ["Business income", nj.businessIncome],
+        ["Gross income", nj.grossIncome],
+        ["Exemption", nj.exemptionAmount],
+        ["Property tax paid", nj.propertyTaxPaid],
+        ["Property tax deduction", nj.propertyTaxDeduction],
+        ["NJ taxable income", nj.taxableIncome],
+        ["Income tax", nj.incomeTax],
+        ["Shared responsibility payment", nj.sharedResponsibilityPayment],
+        ["Total tax due", nj.totalTaxDue, { emphasis: true }],
+        ["NJ withholding", nj.withholding],
+        ["Excess UI credit", nj.excessUiCredit],
+        ["Total payments + credits", nj.totalPayments],
+        ["Amount owed", nj.amountOwed, { emphasis: true }],
+      ]),
+      historyCard("Schedule C · Rideshare", [
+        ["Gross receipts", business.grossReceipts],
+        ["Car + truck expense", business.carTruckExpense],
+        ["Utilities", business.utilities],
+        ["Other expenses", business.otherExpenses],
+        ["Total expenses", business.totalExpenses],
+        ["Net profit", business.netProfit, { emphasis: true }],
+        ["Business miles", Number(business.businessMiles || 0).toLocaleString("en-US"), { raw: true }],
+        ["Vehicle in service", business.vehiclePlacedInService || "—", { raw: true }],
+      ]),
+      historyCard("Itemized + QBI", [
+        ["State + local income tax", itemized.stateLocalIncomeTax],
+        ["Real-estate tax", itemized.realEstateTax],
+        ["Mortgage interest", itemized.mortgageInterest],
+        ["Itemized total", itemized.total, { emphasis: true }],
+        ["Qualified business income", qbi.qualifiedBusinessIncome],
+        ["QBI deduction", qbi.deduction],
+        ["QBI loss carryforward", qbi.lossCarryforward],
+      ]),
+    );
+
+    const employers = element("section", "tax-history-card tax-history-wide");
+    employers.append(element("h2", "", "W-2s"));
+    const employerList = element("div", "tax-history-employers");
+    data.w2s.filter((item) => Number(item.taxYear) === Number(record.taxYear)).forEach((item) => {
+      const row = element("article");
+      const name = element("strong", "", item.employerName || "Employer");
+      const values = element("span", "", `${money(item.box1)} wages · ${money(item.box2)} federal · ${money(item.box17)} NJ withheld`);
+      row.append(name, values);
+      employerList.append(row);
+    });
+    if (!employerList.childElementCount) employerList.append(element("div", "tax-empty compact", "No W-2 summaries saved for this year."));
+    employers.append(employerList);
+
+    const nextYear = element("section", "tax-history-next");
+    nextYear.append(element("h2", "", `${Number(record.taxYear) + 1} file`));
+    const carry = element("div", "tax-history-carry");
+    const agi = element("article");
+    agi.append(element("span", "", "Prior-year AGI"), element("strong", "", money(federal.agi)), element("small", "", "E-file identity check"));
+    carry.append(agi);
+    (record.carryForward || []).forEach((item) => {
+      const card = element("article");
+      card.append(element("span", "", item.label), element("strong", "", item.value), element("small", "", item.note || ""));
+      carry.append(card);
+    });
+    nextYear.append(carry);
+
+    const estimates = element("div", "tax-estimates");
+    estimates.append(element("h3", "", "Estimated tax vouchers"));
+    const estimateRows = element("div");
+    (record.estimatedTax || []).forEach((payment) => {
+      const row = element("article");
+      row.append(element("span", "", payment.dueDate), element("strong", "", money(payment.amount)), element("small", "", payment.status || "Verify payment"));
+      estimateRows.append(row);
+    });
+    estimates.append(estimateRows, element("p", "", "Voucher amounts are planned payments, not proof that a payment was made."));
+    nextYear.append(estimates);
+
+    const documentSection = element("section", "tax-history-card tax-history-wide");
+    documentSection.append(element("h2", "", "Saved files"));
+    const documentRows = element("div", "tax-history-documents");
+    data.documents.filter((item) => Number(item.taxYear) === Number(record.taxYear)).forEach((item) => {
+      const row = element("article");
+      const view = element("button", "", "View");
+      view.type = "button";
+      view.dataset.taxDocumentView = item.id;
+      row.append(element("span", "", item.displayName || "Tax document"), element("small", "", item.typeLabel || "Document"), view);
+      documentRows.append(row);
+    });
+    if (!documentRows.childElementCount) documentRows.append(element("div", "tax-empty compact", "No files saved for this year."));
+    documentSection.append(documentRows);
+
+    history.append(masthead, figures, details, employers, nextYear, documentSection);
+  }
+
   function renderAll() {
     fillProfile();
     renderRunSummary();
     renderDocuments();
     renderDraft();
+    renderHistory();
     renderForms();
   }
 
@@ -489,12 +666,17 @@
     try {
       const blob = await musicCloud.downloadPrivateFile(TAX_BUCKET, item.storagePath);
       const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
-      link.click();
-      setTimeout(() => URL.revokeObjectURL(url), 60_000);
+      if (documentViewer && documentViewerFrame) {
+        if (documentViewerUrl) URL.revokeObjectURL(documentViewerUrl);
+        documentViewerUrl = url;
+        documentViewerTitle.textContent = item.displayName || "Tax document";
+        documentViewerFrame.src = url;
+        if (typeof documentViewer.showModal === "function") documentViewer.showModal();
+        else window.open(url, "_blank", "noopener,noreferrer");
+      } else {
+        window.open(url, "_blank", "noopener,noreferrer");
+        setTimeout(() => URL.revokeObjectURL(url), 60_000);
+      }
     } catch (error) {
       window.alert(`Could not open the document: ${error.message}`);
     } finally {
@@ -576,6 +758,12 @@
 
   w2Delete.addEventListener("click", () => deleteW2(w2Delete.dataset.taxW2Delete));
   document.querySelector("[data-tax-w2-close]").addEventListener("click", () => w2Dialog.close());
+  document.querySelector("[data-tax-document-viewer-close]")?.addEventListener("click", () => documentViewer.close());
+  documentViewer?.addEventListener("close", () => {
+    if (documentViewerFrame) documentViewerFrame.removeAttribute("src");
+    if (documentViewerUrl) URL.revokeObjectURL(documentViewerUrl);
+    documentViewerUrl = "";
+  });
   draft.addEventListener("click", (event) => {
     const edit = event.target.closest("[data-tax-w2-edit]");
     if (edit) openW2Editor(edit.dataset.taxW2Edit);
@@ -586,6 +774,11 @@
     if (view) viewDocument(view.dataset.taxDocumentView);
     if (remove) deleteDocument(remove.dataset.taxDocumentDelete);
   });
+  history?.addEventListener("click", (event) => {
+    const view = event.target.closest("[data-tax-document-view]");
+    if (view) viewDocument(view.dataset.taxDocumentView);
+  });
+  historyYear?.addEventListener("change", renderHistory);
 
   window.addEventListener("site-cloud-change", () => {
     if (musicCloud.isSignedIn() && workspaceRoot.hidden) loadPrivateWorkspace();

@@ -15,12 +15,12 @@
     <link rel="stylesheet" href="site-header.css?v=20260806-study2" />
     <link rel="stylesheet" href="site-music.css?v=20260806-study2" />
     <link rel="stylesheet" href="interest-detail.css?v=20260806-programs1" />
-    <link rel="stylesheet" href="taxes.css?v=20260806-tax3" />
+    <link rel="stylesheet" href="taxes.css?v=20260806-history1" />
     <script src="music-cloud.js?v=20260806-tax2"></script>
     <script src="site-header.js?v=20260806-study2" defer></script>
     <script src="site-music.js?v=20260806-study2" defer></script>
     <script src="site-ai.js?v=20260806-study2" defer></script>
-    <script src="taxes.js?v=20260806-tax2" defer></script>
+    <script src="taxes.js?v=20260806-history1" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -65,6 +65,7 @@
           <button type="button" data-tax-panel-button="profile" aria-pressed="false">Profile</button>
           <button type="button" data-tax-panel-button="documents" aria-pressed="false">Documents</button>
           <button type="button" data-tax-panel-button="draft" aria-pressed="false">Draft</button>
+          <button type="button" data-tax-panel-button="history" aria-pressed="false">History</button>
           <button type="button" data-tax-panel-button="forms" aria-pressed="false">Forms</button>
         </nav>
 
@@ -104,7 +105,7 @@
             <div class="tax-field"><label for="tax-ssn-last-four">SSN last 4 only</label><input id="tax-ssn-last-four" name="ssnLastFour" inputmode="numeric" maxlength="4" pattern="[0-9]{0,4}" autocomplete="off" /></div>
             <div class="tax-profile-actions"><button type="submit">Save profile</button><span data-tax-profile-status role="status"></span></div>
           </form>
-          <p class="tax-security-note">Full SSN, bank numbers, prior-year AGI, and IRS IP PIN are never stored here.</p>
+          <p class="tax-security-note">Full SSN, employer IDs, bank numbers, and IRS IP PIN are never stored here. Prior-year AGI is kept only in your private tax history.</p>
         </section>
 
         <section class="tax-panel" data-tax-panel="documents" hidden>
@@ -113,6 +114,14 @@
 
         <section class="tax-panel" data-tax-panel="draft" hidden>
           <div class="tax-draft" data-tax-draft></div>
+        </section>
+
+        <section class="tax-panel" data-tax-panel="history" hidden>
+          <div class="tax-history-toolbar">
+            <label for="tax-history-year">Tax year</label>
+            <select id="tax-history-year" data-tax-history-year></select>
+          </div>
+          <div class="tax-history" data-tax-history></div>
         </section>
 
         <section class="tax-panel" data-tax-panel="forms" hidden>
@@ -143,6 +152,11 @@
         <p data-tax-w2-ocr-note></p>
         <div class="tax-w2-actions"><button type="button" class="danger" data-tax-w2-delete hidden>Delete W-2</button><button type="submit" value="save">Save W-2</button></div>
       </form>
+    </dialog>
+
+    <dialog class="tax-document-viewer" data-tax-document-viewer>
+      <header><strong data-tax-document-viewer-title>Tax document</strong><button type="button" data-tax-document-viewer-close aria-label="Close document">×</button></header>
+      <iframe data-tax-document-viewer-frame title="Private tax document"></iframe>
     </dialog>
   </body>
 </html>
