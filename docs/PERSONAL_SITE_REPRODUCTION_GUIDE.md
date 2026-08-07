@@ -517,6 +517,7 @@ Keep the public Bills HTML and JavaScript value-free. Load one owner-scoped `sit
 - Derive average monthly income as `biweeklyNet * 26 / 12`. Label the difference between that value and listed fixed bills as potential savings, not guaranteed savings, because unlisted variable spending still exists.
 - Store savings as an authenticated `current`, `goal`, and `updatedAt` record. Let the owner update the current amount, then derive percentage, remaining dollars, and estimated months in the browser.
 - Keep the dashboard focused. Do not add paid/upcoming snapshots, house-sale projections, payoff hypotheticals, or account-balance cards unless the owner explicitly requests them.
+- Version private JSON documents and deploy a renderer that accepts the new version before replacing the live Supabase value. Never leave the public site expecting an older object shape after the cloud record has changed; test the authenticated read and render against the exact production document before deployment.
 - Render values with DOM text APIs, keep the bill table inside its own phone-width horizontal scroller, and require zero document-level horizontal overflow at 390px and 768px.
 
 ## Phase 5 — protected AI gateway
