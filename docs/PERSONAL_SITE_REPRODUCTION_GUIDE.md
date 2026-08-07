@@ -508,6 +508,17 @@ Treat laboratory results and medical notes as private data, even when the page r
 - Never recommend self-starting medication or high-dose supplements from a single result. Provide the concrete question or repeat test to discuss with the clinician instead.
 - Verify that no private values occur in tracked files, unauthenticated reads return no row, authenticated reads work, and the dashboard has no horizontal overflow at 390px and 768px.
 
+### Private bills and savings workspace
+
+Keep the public Bills HTML and JavaScript value-free. Load one owner-scoped `site_content` document only after Supabase Auth and administrator membership succeed.
+
+- Store a compact recurring `schedule` with due-day label, bill name, and amount; derive the monthly total from or validate it against that schedule.
+- Store income as the net biweekly paycheck, 26-paycheck annual cadence, and one verified pay-date anchor. Derive the next payday by advancing the anchor in 14-day periods instead of letting a hardcoded “next payday” become stale.
+- Derive average monthly income as `biweeklyNet * 26 / 12`. Label the difference between that value and listed fixed bills as potential savings, not guaranteed savings, because unlisted variable spending still exists.
+- Store savings as an authenticated `current`, `goal`, and `updatedAt` record. Let the owner update the current amount, then derive percentage, remaining dollars, and estimated months in the browser.
+- Keep the dashboard focused. Do not add paid/upcoming snapshots, house-sale projections, payoff hypotheticals, or account-balance cards unless the owner explicitly requests them.
+- Render values with DOM text APIs, keep the bill table inside its own phone-width horizontal scroller, and require zero document-level horizontal overflow at 390px and 768px.
+
 ## Phase 5 — protected AI gateway
 
 Never call the LLM provider directly from static browser code. Use a Supabase Edge Function.

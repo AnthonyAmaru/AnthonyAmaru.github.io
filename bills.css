@@ -66,51 +66,35 @@ tbody th { font-weight: 750; }
 td:nth-child(3), thead th:nth-child(3), tfoot td { text-align: right; font-variant-numeric: tabular-nums; }
 tfoot th, tfoot td { border-bottom: 0; padding-top: 16px; font-weight: 900; }
 
-.bill-status { display: inline-flex; border-radius: 999px; padding: 5px 8px; font-size: .65rem; font-weight: 850; }
-.bill-status.paid { background: #dce8d9; color: #315336; }
-.bill-status.due { background: #ead39a; color: #51420f; }
-.bill-status.upcoming { background: #e3e7e1; color: #59615b; }
+.savings-panel { display: grid; gap: 15px; }
+.savings-panel .bill-section-heading { margin-bottom: 0; }
+.savings-progress-copy { display: flex; align-items: baseline; gap: 8px; }
+.savings-progress-copy strong { font: 600 clamp(2rem, 6vw, 3.3rem)/1 "Newsreader", serif; }
+.savings-progress-copy span { color: var(--muted); font-weight: 800; }
+.savings-panel progress { width: 100%; height: 16px; border: 0; border-radius: 999px; overflow: hidden; accent-color: #7f9e75; }
+.savings-panel progress::-webkit-progress-bar { border-radius: 999px; background: color-mix(in srgb, var(--surface) 70%, #d9dfd5); }
+.savings-panel progress::-webkit-progress-value { border-radius: 999px; background: linear-gradient(90deg, #d4ad55, #6f946b); }
+.savings-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
+.savings-facts article { display: grid; gap: 4px; min-width: 0; border: 1px solid var(--line); border-radius: 13px; padding: 13px; }
+.savings-facts span { color: var(--muted); font-size: .68rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+.savings-facts strong { overflow: hidden; font-size: .95rem; text-overflow: ellipsis; }
+.savings-update { display: grid; grid-template-columns: auto minmax(190px, 320px) minmax(0, 1fr); align-items: end; gap: 10px; }
+.savings-update label { align-self: center; color: var(--muted); font-size: .75rem; font-weight: 800; }
+.savings-update > div { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 7px; }
+.savings-update input,
+.savings-update button { min-height: 44px; border: 1px solid var(--line); border-radius: 11px; color: inherit; font: inherit; }
+.savings-update input { min-width: 0; padding: 0 12px; background: var(--bg); }
+.savings-update button { padding: 0 17px; background: var(--ink); color: var(--bg); font-weight: 850; cursor: pointer; }
+.savings-update > span { align-self: center; min-height: 1em; color: var(--muted); font-size: .75rem; }
+.savings-note { margin: -2px 0 0; color: var(--muted); font-size: .72rem; }
 
-.bill-detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.money-list { display: grid; gap: 0; margin: 0; }
-.money-list div { display: flex; justify-content: space-between; gap: 20px; border-bottom: 1px solid var(--line); padding: 10px 0; }
-.money-list div:last-child { border-bottom: 0; padding-bottom: 0; }
-.money-list dt { color: var(--muted); }
-.money-list dd { margin: 0; font-weight: 850; font-variant-numeric: tabular-nums; }
-
-.house-panel { background: color-mix(in srgb, var(--surface) 82%, #dce8d9); }
-.house-sale-total { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 4px 16px; border-bottom: 1px solid var(--line); padding-bottom: 14px; }
-.house-sale-total span { color: var(--muted); font-size: .75rem; }
-.house-sale-total strong { grid-row: span 2; font: 600 clamp(1.8rem, 4vw, 2.4rem)/1 "Newsreader", serif; }
-.house-sale-total small { color: var(--muted); }
-.house-plan { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 14px 0 0; padding: 0; list-style: none; }
-.house-plan li { position: relative; border-radius: 10px; background: var(--surface); padding: 10px 10px 10px 30px; font-size: .76rem; font-weight: 750; }
-.house-plan li::before { position: absolute; left: 11px; color: #4c704f; content: "✓"; }
-.house-plan li.keep::before { color: #9b513b; content: "×"; }
-
-.paid-total { color: var(--muted); font-size: .72rem; font-weight: 750; }
-.payment-checks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
-.payment-checks li { position: relative; border-radius: 10px; background: #dce8d9; padding: 11px 12px 11px 36px; font-size: .8rem; font-weight: 800; }
-.payment-checks li::before { position: absolute; left: 13px; color: #315336; content: "✓"; }
-
-.upcoming-list { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
-.upcoming-list li { display: grid; grid-template-columns: 58px 1fr auto; gap: 10px; border-bottom: 1px solid var(--line); padding: 8px 0; font-size: .8rem; }
-.upcoming-list li:last-child { border-bottom: 0; padding-bottom: 0; }
-.upcoming-list time { color: var(--muted); font-weight: 750; }
-.upcoming-list strong { font-variant-numeric: tabular-nums; }
-
-:root[data-theme="dark"] .bills-icon,
-:root[data-theme="dark"] .bill-status.due { background: #62542c; color: #f4e6ab; }
-:root[data-theme="dark"] .bill-status.paid,
-:root[data-theme="dark"] .payment-checks li { background: #29432e; color: #e4f0e2; }
-:root[data-theme="dark"] .bill-status.upcoming { background: #303833; color: #cad2cc; }
-:root[data-theme="dark"] .house-panel { background: #1c2b20; }
+:root[data-theme="dark"] .bills-icon { background: #62542c; color: #f4e6ab; }
 
 @media (max-width: 700px) {
   .bill-totals { grid-template-columns: 1fr; }
   .bill-totals article { grid-template-columns: 1fr auto; align-items: center; }
   .bill-totals article strong { font-size: 1.75rem; }
-  .bill-detail-grid { grid-template-columns: 1fr; }
+  .savings-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 480px) {
@@ -118,6 +102,8 @@ tfoot th, tfoot td { border-bottom: 0; padding-top: 16px; font-weight: 900; }
   .bills-heading { align-items: flex-start; }
   .bills-heading time { padding-top: 8px; text-align: right; }
   .bill-schedule-panel { padding-inline: 12px; }
-  table { min-width: 570px; }
-  .house-plan, .payment-checks { grid-template-columns: 1fr; }
+  table { min-width: 440px; }
+  .savings-facts,
+  .savings-update { grid-template-columns: 1fr; }
+  .savings-update > span { min-height: 0; }
 }
