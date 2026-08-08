@@ -33,15 +33,15 @@
     />
     <link rel="stylesheet" href="../site-header.css?v=20260806-study2" />
     <link rel="stylesheet" href="../site-music.css?v=20260806-study2" />
-    <link rel="stylesheet" href="styles.css?v=20260808-mastery1" />
+    <link rel="stylesheet" href="styles.css?v=20260808-lesson2" />
     <link rel="stylesheet" href="speech-settings.css?v=20260808-lessons1" />
     <script src="../music-cloud.js"></script>
     <script src="../site-header.js?v=20260806-study2" defer></script>
     <script src="../site-music.js?v=20260808-sharedmusic1" defer></script>
     <script src="../site-ai.js?v=20260806-study2" defer></script>
-    <script src="lesson-data.js?v=20260808-mastery1" defer></script>
+    <script src="lesson-data.js?v=20260808-lesson2" defer></script>
     <script src="speech-settings.js?v=20260808-lessons1" defer></script>
-    <script src="script.js?v=20260808-mastery1" defer></script>
+    <script src="script.js?v=20260808-lesson2" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to the notebook</a>
@@ -70,13 +70,14 @@
 
     <main id="main">
       <nav class="section-menu mandarin-section-menu" aria-label="Mandarin study sections">
-        <a data-page-link="lesson" data-lesson-link="lesson-1" href="index.html?page=lesson&amp;lesson=lesson-1&amp;v=20260808-mastery1">Lesson 1</a>
-        <a data-page-link="cards" data-preserve-lesson href="index.html?page=cards&amp;lesson=lesson-1&amp;v=20260808-mastery1">Cards</a>
-        <a data-page-link="sounds" data-preserve-lesson href="index.html?page=sounds&amp;lesson=lesson-1&amp;v=20260808-mastery1">Sounds</a>
-        <a data-page-link="words" data-preserve-lesson href="index.html?page=words&amp;lesson=lesson-1&amp;v=20260808-mastery1"><span id="word-count">166</span>&nbsp;Words</a>
-        <a data-page-link="writing" data-preserve-lesson href="index.html?page=writing&amp;lesson=lesson-1&amp;v=20260808-mastery1">Writing</a>
-        <a data-page-link="practice" data-preserve-lesson href="index.html?page=practice&amp;lesson=lesson-1&amp;v=20260808-mastery1">Practice</a>
-        <a data-preserve-lesson data-quiz-link href="quiz.html?lesson=lesson-1&amp;v=20260808-mastery1">Quiz</a>
+        <a data-page-link="lesson" data-lesson-link="lesson-1" href="index.html?page=lesson&amp;lesson=lesson-1&amp;v=20260808-lesson2">Lesson 1</a>
+        <a data-page-link="lesson" data-lesson-link="lesson-2" href="index.html?page=lesson&amp;lesson=lesson-2&amp;v=20260808-lesson2">Lesson 2</a>
+        <a data-page-link="cards" data-preserve-lesson href="index.html?page=cards&amp;lesson=lesson-1&amp;v=20260808-lesson2">Cards</a>
+        <a data-page-link="sounds" data-preserve-lesson href="index.html?page=sounds&amp;lesson=lesson-1&amp;v=20260808-lesson2">Sounds</a>
+        <a data-page-link="words" data-preserve-lesson href="index.html?page=words&amp;lesson=lesson-1&amp;v=20260808-lesson2"><span id="word-count">0</span>&nbsp;Words</a>
+        <a data-page-link="writing" data-preserve-lesson href="index.html?page=writing&amp;lesson=lesson-1&amp;v=20260808-lesson2">Writing</a>
+        <a data-page-link="practice" data-preserve-lesson href="index.html?page=practice&amp;lesson=lesson-1&amp;v=20260808-lesson2">Practice</a>
+        <a data-preserve-lesson data-quiz-link href="quiz.html?lesson=lesson-1&amp;v=20260808-lesson2">Quiz</a>
       </nav>
 
       <section id="top" class="mandarin-page hero section-shell" data-page="home" hidden>
@@ -99,23 +100,13 @@
 
       <section id="lesson-one" class="mandarin-page lesson-section section-shell" data-page="lesson" hidden>
         <div class="section-heading compact-heading">
-          <h2>Lesson 1</h2>
+          <h2 id="lesson-overview-title">Lesson</h2>
         </div>
-
-        <div class="greeting-grid" aria-label="Mandarin greetings by time of day">
-          <article class="greeting-card"><span>Early morning</span><strong lang="zh-Hans">早上好</strong><small>zǎoshang hǎo</small></article>
-          <article class="greeting-card"><span>Before noon</span><strong lang="zh-Hans">上午好</strong><small>shàngwǔ hǎo</small></article>
-          <article class="greeting-card"><span>Afternoon</span><strong lang="zh-Hans">下午好</strong><small>xiàwǔ hǎo</small></article>
-          <article class="greeting-card"><span>Evening</span><strong lang="zh-Hans">晚上好</strong><small>wǎnshang hǎo</small></article>
-          <article class="greeting-card"><span>Bedtime</span><strong lang="zh-Hans">晚安</strong><small>wǎn'ān</small></article>
-        </div>
-
-        <div class="lesson-feature-grid">
-          <article class="lesson-feature">
-            <span>小李</span>
-            <strong lang="zh-Hans">这是小李。他是中国人，他是我们的朋友。他喜欢鸡肉。</strong>
-            <p>Zhè shì Xiǎo Lǐ. Tā shì Zhōngguó rén, tā shì wǒmen de péngyou. Tā xǐhuan jīròu.</p>
-          </article>
+        <div id="lesson-overview-cards" class="greeting-grid" aria-label="Lesson vocabulary"></div>
+        <div id="lesson-overview-feature" class="lesson-feature-grid"></div>
+        <div class="lesson-sound-focus">
+          <strong>Sound focus</strong>
+          <div id="lesson-sound-chips" class="lesson-sound-chips"></div>
         </div>
       </section>
 

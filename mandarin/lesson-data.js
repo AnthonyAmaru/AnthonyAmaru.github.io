@@ -375,6 +375,17 @@
       newWords: [["儿子", "érzi", "son"], ["公园", "gōngyuán", "park"], ["走路", "zǒulù", "walk"], ["回家", "huíjiā", "go home"], ["以前", "yǐqián", "before"]],
     },
   ];
+
+  const lessonOneOverview = {
+    cards: [
+      ["Early morning", "早上好", "zǎoshang hǎo", "good morning"],
+      ["Before noon", "上午好", "shàngwǔ hǎo", "good morning"],
+      ["Afternoon", "下午好", "xiàwǔ hǎo", "good afternoon"],
+      ["Evening", "晚上好", "wǎnshang hǎo", "good evening"],
+      ["Bedtime", "晚安", "wǎn'ān", "good night"],
+    ],
+    feature: ["小李", "这是小李。他是中国人，他是我们的朋友。他喜欢鸡肉。", "Zhè shì Xiǎo Lǐ. Tā shì Zhōngguó rén, tā shì wǒmen de péngyou. Tā xǐhuan jīròu.", "This is Xiao Li. He is Chinese, he is our friend, and he likes chicken."],
+  };
   
   const characters = [
     ["我", "wǒ", "I; me"], ["你", "nǐ", "you"], ["他", "tā", "he"], ["们", "men", "plural marker"],
@@ -389,6 +400,188 @@
     ["小", "xiǎo", "small"], ["热", "rè", "hot"], ["好", "hǎo", "good"], ["朋", "péng", "friend"],
   ];
 
+  const lessonTwoVocabulary = [
+    // Likes, health, and people
+    ["喜欢", "xǐhuan", "to like", "Daily life"],
+    ["最", "zuì", "most", "Descriptions"],
+    ["最喜欢", "zuì xǐhuan", "favorite; like the most", "Descriptions"],
+    ["健康", "jiànkāng", "healthy", "Health"],
+    ["病", "bìng", "illness; sick", "Health"],
+    ["生病", "shēngbìng", "to be sick; become ill", "Health"],
+    ["生病了", "shēngbìng le", "became sick; am sick now", "Health"],
+    ["医生", "yīshēng", "doctor", "People"],
+    ["老师", "lǎoshī", "teacher", "People"],
+    ["朋友", "péngyou", "friend", "People"],
+
+    // Work and places
+    ["医院", "yīyuàn", "hospital", "Places"],
+    ["学校", "xuéxiào", "school", "Places"],
+    ["家", "jiā", "home; family", "Places"],
+    ["工作", "gōngzuò", "to work; job", "Daily life"],
+    ["做", "zuò", "to do; to make", "Daily life"],
+    ["忙", "máng", "busy", "Descriptions"],
+    ["起床", "qǐchuáng", "to get up", "Daily life"],
+
+    // Time, age, and numbers
+    ["今天", "jīntiān", "today", "Time"],
+    ["今年", "jīnnián", "this year", "Time"],
+    ["年", "nián", "year", "Time"],
+    ["昨天", "zuótiān", "yesterday", "Time"],
+    ["星期二", "xīngqī'èr", "Tuesday", "Time"],
+    ["星期五见", "xīngqīwǔ jiàn", "see you Friday", "Greetings"],
+    ["三十", "sānshí", "thirty", "Numbers"],
+    ["三十九", "sānshíjiǔ", "thirty-nine", "Numbers"],
+    ["五十五", "wǔshíwǔ", "fifty-five", "Numbers"],
+    ["岁", "suì", "years old", "People"],
+
+    // Questions and choices
+    ["谁", "shéi / shuí", "who", "Grammar"],
+    ["多大", "duō dà", "how old", "Grammar"],
+    ["还是", "háishi", "or; used in a choice question", "Grammar"],
+
+    // Food and pronunciation words
+    ["牛肉面", "niúròu miàn", "beef noodles", "Food & drink"],
+    ["美国菜", "měiguó cài", "American food", "Food & drink"],
+    ["白酒", "báijiǔ", "strong Chinese white liquor", "Food & drink"],
+    ["茄子", "qiézi", "eggplant", "Food & drink"],
+    ["排球", "páiqiú", "volleyball", "Daily life"],
+    ["约", "yuē", "to arrange; appointment or date", "Daily life"],
+  ];
+
+  const lessonTwoSentenceGroups = {
+    "Favorites & health": [
+      ["我最喜欢的中国菜是牛肉面。", "Wǒ zuì xǐhuan de Zhōngguó cài shì niúròu miàn.", "My favorite Chinese food is beef noodles."],
+      ["我喜欢中国菜。", "Wǒ xǐhuan Zhōngguó cài.", "I like Chinese food."],
+      ["你健康吗？", "Nǐ jiànkāng ma?", "Are you healthy?"],
+      ["我生病了。", "Wǒ shēngbìng le.", "I am sick."],
+      ["我生病了，我要去医院。", "Wǒ shēngbìng le, wǒ yào qù yīyuàn.", "I am sick, so I need to go to the hospital."],
+      ["医生很健康。", "Yīshēng hěn jiànkāng.", "The doctor is healthy."],
+    ],
+    "Work & places": [
+      ["我在家工作。", "Wǒ zài jiā gōngzuò.", "I work from home."],
+      ["老师在学校工作。", "Lǎoshī zài xuéxiào gōngzuò.", "The teacher works at school."],
+      ["医生在医院工作。", "Yīshēng zài yīyuàn gōngzuò.", "The doctor works at the hospital."],
+      ["你在学校工作吗？", "Nǐ zài xuéxiào gōngzuò ma?", "Do you work at a school?"],
+      ["我不在学校工作，我在医院工作。", "Wǒ bú zài xuéxiào gōngzuò, wǒ zài yīyuàn gōngzuò.", "I do not work at a school; I work at a hospital."],
+      ["小李是医生，小王是老师。", "Xiǎo Lǐ shì yīshēng, Xiǎo Wáng shì lǎoshī.", "Xiao Li is a doctor, and Xiao Wang is a teacher."],
+    ],
+    "Questions": [
+      ["他是谁？", "Tā shì shéi?", "Who is he?"],
+      ["他几岁？", "Tā jǐ suì?", "How old is he?"],
+      ["他多大？", "Tā duō dà?", "How old is he?"],
+      ["你在哪里工作？", "Nǐ zài nǎlǐ gōngzuò?", "Where do you work?"],
+      ["你做什么工作？", "Nǐ zuò shénme gōngzuò?", "What do you do for work?"],
+      ["你昨天几点睡觉？", "Nǐ zuótiān jǐ diǎn shuìjiào?", "What time did you go to sleep yesterday?"],
+    ],
+    "还是 choices": [
+      ["妈妈喜欢茶还是咖啡？", "Māma xǐhuan chá háishi kāfēi?", "Does Mom like tea or coffee?"],
+      ["今天是星期一还是星期二？", "Jīntiān shì xīngqīyī háishi xīngqī'èr?", "Is today Monday or Tuesday?"],
+      ["你在Shama饭店还是在Starbucks？", "Nǐ zài Shama Fàndiàn háishi zài Starbucks?", "Are you at Shama Restaurant or Starbucks?"],
+      ["你是老师还是医生？", "Nǐ shì lǎoshī háishi yīshēng?", "Are you a teacher or a doctor?"],
+      ["你喜欢中国菜还是美国菜？", "Nǐ xǐhuan Zhōngguó cài háishi Měiguó cài?", "Do you like Chinese food or American food?"],
+    ],
+    "Daily review": [
+      ["我七点起床。", "Wǒ qī diǎn qǐchuáng.", "I get up at seven."],
+      ["我吃了美国菜。", "Wǒ chī le Měiguó cài.", "I ate American food."],
+      ["一共五十五块钱。", "Yígòng wǔshíwǔ kuài qián.", "It was 55 yuan altogether."],
+      ["我见了朋友。", "Wǒ jiàn le péngyou.", "I met a friend."],
+      ["我的朋友三十九岁。", "Wǒ de péngyou sānshíjiǔ suì.", "My friend is 39 years old."],
+      ["我太忙了。", "Wǒ tài máng le.", "I became too busy."],
+      ["他三十岁了。", "Tā sānshí suì le.", "He is 30 years old now."],
+      ["他今年三十岁。", "Tā jīnnián sānshí suì.", "He is 30 this year."],
+      ["星期五见。", "Xīngqīwǔ jiàn.", "See you Friday."],
+    ],
+  };
+
+  const lessonTwoDialogue = [
+    ["安", "小李，你好！", "Xiǎo Lǐ, nǐ hǎo!", "Hello, Xiao Li!"],
+    ["李", "你好，Anthony。你今天怎么样？", "Nǐ hǎo, Anthony. Nǐ jīntiān zěnmeyàng?", "Hello, Anthony. How are you today?"],
+    ["安", "我很好。你呢？", "Wǒ hěn hǎo. Nǐ ne?", "I am very well. And you?"],
+    ["李", "我不太好，我生病了。", "Wǒ bú tài hǎo, wǒ shēngbìng le.", "I am not very well; I am sick."],
+    ["安", "你要去医院吗？", "Nǐ yào qù yīyuàn ma?", "Do you need to go to the hospital?"],
+    ["李", "要，我下午去医院。", "Yào, wǒ xiàwǔ qù yīyuàn.", "Yes, I am going to the hospital this afternoon."],
+    ["安", "医生在医院工作吗？", "Yīshēng zài yīyuàn gōngzuò ma?", "Does the doctor work at the hospital?"],
+    ["李", "是，医生在医院工作。", "Shì, yīshēng zài yīyuàn gōngzuò.", "Yes, the doctor works at the hospital."],
+    ["安", "你做什么工作？", "Nǐ zuò shénme gōngzuò?", "What do you do for work?"],
+    ["李", "我是老师。", "Wǒ shì lǎoshī.", "I am a teacher."],
+    ["安", "你在哪里工作？", "Nǐ zài nǎlǐ gōngzuò?", "Where do you work?"],
+    ["李", "我在学校工作。你呢？", "Wǒ zài xuéxiào gōngzuò. Nǐ ne?", "I work at a school. And you?"],
+    ["安", "我在家工作。", "Wǒ zài jiā gōngzuò.", "I work from home."],
+    ["李", "你今天忙吗？", "Nǐ jīntiān máng ma?", "Are you busy today?"],
+    ["安", "我太忙了。", "Wǒ tài máng le.", "I am too busy."],
+    ["李", "你几点起床？", "Nǐ jǐ diǎn qǐchuáng?", "What time do you get up?"],
+    ["安", "我七点起床。", "Wǒ qī diǎn qǐchuáng.", "I get up at seven."],
+    ["李", "你今天吃什么？", "Nǐ jīntiān chī shénme?", "What are you eating today?"],
+    ["安", "我吃了美国菜。", "Wǒ chī le Měiguó cài.", "I ate American food."],
+    ["李", "你喜欢美国菜还是中国菜？", "Nǐ xǐhuan Měiguó cài háishi Zhōngguó cài?", "Do you like American food or Chinese food?"],
+    ["安", "我最喜欢中国菜。", "Wǒ zuì xǐhuan Zhōngguó cài.", "I like Chinese food the most."],
+    ["李", "你最喜欢的中国菜是什么？", "Nǐ zuì xǐhuan de Zhōngguó cài shì shénme?", "What is your favorite Chinese food?"],
+    ["安", "我最喜欢的中国菜是牛肉面。", "Wǒ zuì xǐhuan de Zhōngguó cài shì niúròu miàn.", "My favorite Chinese food is beef noodles."],
+    ["李", "你喜欢喝茶还是咖啡？", "Nǐ xǐhuan hē chá háishi kāfēi?", "Do you like drinking tea or coffee?"],
+    ["安", "我喜欢咖啡。你呢？", "Wǒ xǐhuan kāfēi. Nǐ ne?", "I like coffee. And you?"],
+    ["李", "我喜欢茶。", "Wǒ xǐhuan chá.", "I like tea."],
+    ["安", "你星期五有时间吗？", "Nǐ xīngqīwǔ yǒu shíjiān ma?", "Do you have time Friday?"],
+    ["李", "有。我们星期五去吃饭吧。", "Yǒu. Wǒmen xīngqīwǔ qù chīfàn ba.", "Yes. Let's go eat Friday."],
+    ["安", "好的，星期五见！", "Hǎo de, xīngqīwǔ jiàn!", "Okay, see you Friday!"],
+    ["李", "星期五见！", "Xīngqīwǔ jiàn!", "See you Friday!"],
+  ];
+
+  const lessonTwoPronunciationDrills = [
+    [1, "xiè", "ie", "谢谢 · thank you"],
+    [2, "xué", "üe", "学校 · school"],
+    [3, "zuò", "uo", "工作 · work"],
+    [4, "ròu", "ou", "牛肉 · beef"],
+    [5, "shuǐ", "ui", "水 · water"],
+    [6, "jiǔ", "iu", "白酒 · white liquor"],
+    [7, "kàn", "an", "看 · look"],
+    [8, "rén", "en", "人 · person"],
+    [9, "máng", "ang", "忙 · busy"],
+    [10, "shēng", "eng", "生病 · be sick"],
+    [11, "èr", "er", "二 · two; tone changes by word"],
+  ];
+
+  const lessonTwoReadings = [
+    {
+      chinese: "今天我七点起床。我吃了美国菜，一共五十五块钱。下午我见了朋友。我的朋友三十九岁。今天我太忙了。",
+      pinyin: "Jīntiān wǒ qī diǎn qǐchuáng. Wǒ chī le Měiguó cài, yígòng wǔshíwǔ kuài qián. Xiàwǔ wǒ jiàn le péngyou. Wǒ de péngyou sānshíjiǔ suì. Jīntiān wǒ tài máng le.",
+      english: "Today I got up at seven. I ate American food, which cost 55 yuan altogether. In the afternoon I met a friend. My friend is 39 years old. I was too busy today.",
+      newWords: [],
+    },
+    {
+      chinese: "这是小李。他是医生。他今年三十岁。他在医院工作。老师问：“他是谁？他几岁？”我说：“他是小李，他三十岁了。”",
+      pinyin: "Zhè shì Xiǎo Lǐ. Tā shì yīshēng. Tā jīnnián sānshí suì. Tā zài yīyuàn gōngzuò. Lǎoshī wèn: “Tā shì shéi? Tā jǐ suì?” Wǒ shuō: “Tā shì Xiǎo Lǐ, tā sānshí suì le.”",
+      english: "This is Xiao Li. He is a doctor. He is 30 this year. He works at a hospital. The teacher asks, “Who is he? How old is he?” I say, “He is Xiao Li, and he is now 30.”",
+      newWords: [],
+    },
+    {
+      chinese: "妈妈喜欢茶还是咖啡？妈妈喜欢茶。我喜欢咖啡。我最喜欢的中国菜是牛肉面。星期五我们去饭店吃饭。星期五见！",
+      pinyin: "Māma xǐhuan chá háishi kāfēi? Māma xǐhuan chá. Wǒ xǐhuan kāfēi. Wǒ zuì xǐhuan de Zhōngguó cài shì niúròu miàn. Xīngqīwǔ wǒmen qù fàndiàn chīfàn. Xīngqīwǔ jiàn!",
+      english: "Does Mom like tea or coffee? Mom likes tea. I like coffee. My favorite Chinese food is beef noodles. On Friday we will go eat at a restaurant. See you Friday!",
+      newWords: [],
+    },
+  ];
+
+  const lessonTwoCharacters = [
+    ["最", "zuì", "most"], ["健", "jiàn", "healthy; strong"], ["康", "kāng", "healthy"],
+    ["病", "bìng", "illness"], ["生", "shēng", "life; become"], ["医", "yī", "medicine"],
+    ["院", "yuàn", "institution; courtyard"], ["学", "xué", "study"], ["校", "xiào", "school"],
+    ["工", "gōng", "work"], ["作", "zuò", "do; make"], ["家", "jiā", "home; family"],
+    ["今", "jīn", "current; today"], ["年", "nián", "year"], ["忙", "máng", "busy"],
+    ["白", "bái", "white"], ["酒", "jiǔ", "alcohol"], ["茄", "qié", "eggplant"],
+    ["排", "pái", "row; arrange"], ["球", "qiú", "ball"], ["约", "yuē", "arrange; appointment"],
+  ];
+
+  const lessonTwoOverview = {
+    cards: [
+      ["Favorite", "最喜欢", "zuì xǐhuan", "like the most"],
+      ["Healthy", "健康", "jiànkāng", "healthy"],
+      ["Hospital", "医院", "yīyuàn", "hospital"],
+      ["Work", "工作", "gōngzuò", "work"],
+      ["This year", "今年", "jīnnián", "this year"],
+    ],
+    feature: ["还是 · A or B", "妈妈喜欢茶还是咖啡？", "Māma xǐhuan chá háishi kāfēi?", "Use 还是 for an A-or-B question. Do not add 吗."],
+  };
+
   const pinyinSoundGroups = Object.freeze({
     Initials: [
       ["b", "八", "bā"], ["p", "怕", "pà"], ["m", "妈", "mā"], ["f", "发", "fā"],
@@ -399,7 +592,7 @@
       ["s", "三", "sān"], ["y", "一", "yī"], ["w", "我", "wǒ"],
     ],
     Finals: [
-      ["a", "八", "bā"], ["o", "我", "wǒ"], ["e", "饿", "è"], ["i", "你", "nǐ"],
+      ["a", "八", "bā"], ["o", "我", "wǒ"], ["uo", "做", "zuò"], ["e", "饿", "è"], ["i", "你", "nǐ"],
       ["u", "路", "lù"], ["ü", "鱼", "yú"], ["ai", "爱", "ài"], ["ei", "杯", "bēi"],
       ["ui", "水", "shuǐ"], ["ao", "好", "hǎo"], ["ou", "肉", "ròu"], ["iu", "六", "liù"],
       ["ie", "谢", "xiè"], ["üe", "月", "yuè"], ["er", "二", "èr"], ["an", "三", "sān"],
@@ -424,12 +617,25 @@
       id: "lesson-1",
       title: "Lesson 1",
       status: "learned",
+      overview: lessonOneOverview,
       vocabulary,
       sentenceGroups: patternGroups,
       dialogue: planDialogue,
       pronunciationDrills,
       readings: conversationReadings,
       characters,
+    },
+    {
+      id: "lesson-2",
+      title: "Lesson 2",
+      status: "learned",
+      overview: lessonTwoOverview,
+      vocabulary: lessonTwoVocabulary,
+      sentenceGroups: lessonTwoSentenceGroups,
+      dialogue: lessonTwoDialogue,
+      pronunciationDrills: lessonTwoPronunciationDrills,
+      readings: lessonTwoReadings,
+      characters: lessonTwoCharacters,
     },
   ];
 

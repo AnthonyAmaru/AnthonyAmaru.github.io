@@ -136,10 +136,17 @@ a { color: inherit; }
 .greeting-card span, .lesson-feature span { color: var(--red); font-size: .68rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
 .greeting-card strong { margin-top: 14px; font-family: var(--serif-sc); font-size: clamp(2rem, 3vw, 3.1rem); font-weight: 600; line-height: 1.15; }
 .greeting-card small { margin-top: 8px; color: var(--teal); }
-.lesson-feature-grid { display: grid; grid-template-columns: 1.5fr .5fr; gap: 14px; margin-top: 14px; }
+.greeting-card em { margin-top: 5px; color: var(--ink-soft); font-size: .76rem; font-style: normal; }
+.lesson-feature-grid { display: grid; grid-template-columns: 1fr; gap: 14px; margin-top: 14px; }
 .lesson-feature { min-height: 190px; padding: 28px; border-radius: 5px 22px 22px 22px; background: #e4ebe9; }
 .lesson-feature strong { display: block; margin-top: 24px; font-family: var(--serif-sc); font-size: clamp(1.6rem, 2.6vw, 2.45rem); line-height: 1.45; }
 .lesson-feature p { margin: 18px 0 0; color: var(--ink-soft); }
+.lesson-feature small { display: block; margin-top: 8px; color: var(--ink-soft); }
+.lesson-sound-focus { display: flex; gap: 18px; align-items: center; margin-top: 18px; padding: 18px; border: 1px solid var(--line); border-radius: 14px; }
+.lesson-sound-focus > strong { flex: 0 0 auto; font-size: .76rem; letter-spacing: .08em; text-transform: uppercase; }
+.lesson-sound-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.lesson-sound-chips button { display: inline-flex; gap: 7px; align-items: center; min-height: 38px; padding: 7px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--paper-light); color: var(--ink); cursor: pointer; }
+.lesson-sound-chips button strong { color: var(--red); }
 .listening-card { background: #e9e1cf; }
 .listening-card strong { font-family: var(--sans); font-size: 1.55rem; line-height: 1.3; }
 
@@ -196,6 +203,7 @@ a { color: inherit; }
 .sound-grid { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
 .sound-card { position: relative; display: grid; min-height: 135px; place-content: center; border: 0; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: transparent; color: var(--ink); text-align: center; cursor: pointer; }
 .sound-card:hover,.sound-card:focus-visible { background: var(--paper-light); outline: 2px solid var(--gold); outline-offset: -2px; }
+.sound-card.lesson-practiced { box-shadow: inset 0 -4px 0 rgba(215, 75, 56, .45); }
 .sound-card strong { font-size: 2.25rem; font-weight: 500; }
 .sound-card > span:not(.sound-number) { margin-top: 4px; font: 600 1.3rem var(--serif-sc); }
 .sound-card small { margin-top: 5px; color: var(--ink-soft); font-size: .7rem; }
@@ -336,6 +344,7 @@ a { color: inherit; }
   .greeting-grid { grid-template-columns: repeat(2, 1fr); }
   .greeting-card { min-height: 170px; padding: 18px; }
   .lesson-feature { padding: 24px; }
+  .lesson-sound-focus { align-items: flex-start; flex-direction: column; }
   .sound-grid { grid-template-columns: repeat(2, 1fr); }
   .sound-card { min-height: 125px; }
   .sound-notes { grid-template-columns: 1fr; }

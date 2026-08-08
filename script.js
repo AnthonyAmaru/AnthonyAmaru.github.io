@@ -8,7 +8,7 @@ const MANDARIN_WRITING_KEY = "anthony_mandarin_written_words_v1";
 const MANDARIN_WRITING_CLOUD_KEY = "mandarin_written_words_v1";
 const MANDARIN_KNOWN_KEY = "mandarin-known";
 const MANDARIN_KNOWN_CLOUD_KEY = "mandarin_known_words_v1";
-const DETAIL_SHELL_VERSION = "20260808-mastery1";
+const DETAIL_SHELL_VERSION = "20260808-lesson2";
 const DETAIL_PAGES = {
   aviation: "aviation/index.html",
   mandarin: "mandarin/index.html",

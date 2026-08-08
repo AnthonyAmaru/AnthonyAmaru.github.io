@@ -1,6 +1,13 @@
 # Mandarin lesson pipeline
 
-This is the repeatable intake process for Lesson 2 and every lesson after it. Lesson 1 is the complete Mandarin knowledge collected before August 8, 2026.
+This is the repeatable intake process for every new lesson. Lesson 1 is the complete Mandarin knowledge collected before August 8, 2026. Lesson 2 contains the August 8 Granola summary and the three supplied lesson screenshots.
+
+## Implemented lessons
+
+- **Lesson 1:** greetings, introductions, food, restaurant language, scheduling, time, and early daily-life vocabulary.
+- **Lesson 2:** health, workplaces, age, favorites, `还是` choice questions, daily review, and the `ie / üe / uo / ou / ui / iu / an / en / ang / eng / er` final review.
+- Lesson 2 normalizes speech-to-text spellings into study-safe Mandarin: `shiwan` becomes `xǐhuan / 喜欢`, `zui shiwan` becomes `zuì xǐhuan / 最喜欢`, and `paiqu` becomes `páiqiú / 排球`.
+- Lesson 2 contains 36 source-supported vocabulary rows, 32 sentence patterns, a 30-turn conversation with 15 turns per speaker, three readings, 11 pronunciation drills, and 21 character entries. The cumulative bank deduplicates repeated Lesson 1 terms.
 
 ## Accepted lesson sources
 
@@ -30,6 +37,10 @@ Keep raw transcripts, private notes, and source images outside the public GitHub
   id: "lesson-2",
   title: "Lesson 2",
   status: "learned",
+  overview: {
+    cards: [["Label", "汉字", "pinyin", "meaning"]],
+    feature: ["Label", "中文句子。", "Pinyin.", "English or grammar note."]
+  },
   vocabulary: [["汉字", "pinyin", "meaning", "category"]],
   sentenceGroups: {
     "Topic": [["中文句子。", "Pinyin.", "English."]]
@@ -56,20 +67,21 @@ Keep raw transcripts, private notes, and source images outside the public GitHub
 - Words and Characters share one cumulative grid. A type filter can show Words, Characters, or both.
 - Flashcard-known words use yellow, writing-known words use orange, and words present in both lists use purple. These colors and their filters must derive from the existing cloud-synced lists, never a second mastery store.
 - Practice offers Sentences, Conversation, and Reading without separate routes. Mandarin mode reveals pinyin; Pinyin mode reveals English. Every later lesson may become more complex without changing that interaction contract.
-- The global Sounds chart contains the complete beginner Pinyin component inventory: 23 initials, 24 finals, 16 whole syllables, and four tones plus neutral tone. It is not reset or duplicated for each lesson.
+- The global Sounds chart contains the complete beginner Pinyin component inventory plus source-taught combinations: 23 initials, the 24 base finals plus Lesson 2's explicit `uo` combination, 16 whole syllables, and four tones plus neutral tone. It is not reset or duplicated for each lesson.
 
 The Pinyin inventory follows the [Mandarin.ac.cn Hanyu Pinyin reference](https://www.mandarin.ac.cn/resources/pinyin.html). Keep the counts and valid spellings stable when adding lesson-specific pronunciation notes.
 
 ## Regression checklist
 
 - Confirm each new lesson contains only source-supported learned vocabulary.
+- Confirm raw romanization and OCR are normalized to standard Hanzi plus tone-marked Pinyin before publishing; do not preserve a transcription error as the study answer.
 - Confirm the cumulative quiz count increases by the number of unique new words and sentences.
 - Start the same quiz type twice and confirm its order changes.
 - Confirm every answer has three distinct distractors and no duplicate answer buttons.
 - Open Lesson, Cards, Sounds, Words, Writing, Practice, and Quiz from both notebook and Quiz menus.
 - Mark one Flashcard word, add one Writing word, and add one word to both lists; verify yellow, orange, and purple cards plus their exact filters.
 - Confirm Words shows the cumulative lesson vocabulary, Characters is a filter inside Words, and the known-word panel lists all Flashcard-known words.
-- Confirm Sounds exposes 23 initials, 24 finals, 16 whole syllables, and 5 tone examples.
+- Confirm Sounds exposes 23 initials, 25 displayed finals including `uo`, 16 whole syllables, and 5 tone examples.
 - In every lesson, verify Sentences, Conversation, and Reading in both Mandarin → Pinyin and Pinyin → English modes.
 - Confirm Voice Settings is one top-corner button, opens one compact panel, closes with its close button, outside click, and Escape, and never becomes a study-menu tile.
 - Confirm every Chinese target remains keyboard- and touch-speakable.

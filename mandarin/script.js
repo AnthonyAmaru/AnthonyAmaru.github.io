@@ -307,6 +307,33 @@ function renderVocabulary() {
   enhanceMandarinSpeech(grid);
 }
 
+function renderLessonOverview() {
+  const overview = currentLesson?.overview || {};
+  const cards = overview.cards || [];
+  const feature = overview.feature || [];
+  const drills = currentLesson?.pronunciationDrills || [];
+  $("#lesson-overview-title").textContent = currentLesson?.title || "Lesson";
+  $("#lesson-overview-cards").innerHTML = cards.map(([label, chinese, pinyin, meaning]) => `
+    <article class="greeting-card">
+      <span>${escapeHtml(label)}</span>
+      <strong lang="zh-Hans">${escapeHtml(chinese)}</strong>
+      <small>${escapeHtml(pinyin)}</small>
+      <em>${escapeHtml(meaning)}</em>
+    </article>`).join("");
+  $("#lesson-overview-feature").innerHTML = feature.length ? `
+    <article class="lesson-feature">
+      <span>${escapeHtml(feature[0])}</span>
+      <strong lang="zh-Hans">${escapeHtml(feature[1])}</strong>
+      <p>${escapeHtml(feature[2])}</p>
+      <small>${escapeHtml(feature[3])}</small>
+    </article>` : "";
+  $("#lesson-sound-chips").innerHTML = drills.map(([, syllable, focus, note]) => {
+    const example = String(note || "").split("·")[0].trim();
+    return `<button type="button" data-speak-mandarin="${escapeHtml(example)}"><strong>${escapeHtml(focus)}</strong><span>${escapeHtml(syllable)}</span></button>`;
+  }).join("");
+  enhanceMandarinSpeech($("#lesson-one"));
+}
+
 function practiceRows() {
   if (state.practiceType === "conversation") {
     return planDialogue.map(([speaker, chinese, pinyin, english], index) => ({
@@ -426,8 +453,10 @@ function renderPronunciation() {
     const card = document.createElement("button");
     card.type = "button";
     card.className = "sound-card";
+    const practicedHere = (currentLesson?.pronunciationDrills || []).some(([, , focus]) => focus === sound);
+    card.classList.toggle("lesson-practiced", practicedHere);
     card.dataset.speakMandarin = hanzi;
-    card.setAttribute("aria-label", `${sound}, example ${hanzi}, ${example}`);
+    card.setAttribute("aria-label", `${sound}, example ${hanzi}, ${example}${practicedHere ? `, practiced in ${currentLesson.title}` : ""}`);
     card.innerHTML = `<span class="sound-number">${index + 1}</span><strong>${escapeHtml(sound)}</strong><span lang="zh-Hans">${escapeHtml(hanzi)}</span><small>${escapeHtml(example)}</small>`;
     grid.append(card);
   });
@@ -525,6 +554,7 @@ $$('[data-page-link]').forEach((link) => {
 
 renderFilters();
 renderVocabulary();
+renderLessonOverview();
 renderSoundTabs();
 renderPronunciation();
 renderWritingWords();
