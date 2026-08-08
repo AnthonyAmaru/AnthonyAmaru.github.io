@@ -1,5 +1,17 @@
 begin;
 
+alter table public.music_playlists
+  drop constraint music_playlists_site_check;
+alter table public.music_playlists
+  add constraint music_playlists_site_check
+  check (site = any (array['anthony'::text, 'rauny'::text, 'shared'::text]));
+
+alter table public.music_tracks
+  drop constraint music_tracks_site_check;
+alter table public.music_tracks
+  add constraint music_tracks_site_check
+  check (site = any (array['anthony'::text, 'rauny'::text, 'shared'::text]));
+
 do $$
 declare
   owner_count integer;
