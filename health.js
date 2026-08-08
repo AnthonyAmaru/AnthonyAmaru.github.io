@@ -18,7 +18,30 @@
     ["Hepatitis C test interpretation · CDC", "https://www.cdc.gov/hepatitis-c/hcp/diagnosis-testing/index.html"],
     ["Anemia diagnosis · NHLBI", "https://www.nhlbi.nih.gov/health/anemia/diagnosis"],
     ["Cirrhosis nutrition · NIDDK", "https://www.niddk.nih.gov/health-information/liver-disease/cirrhosis/eating-diet-nutrition"],
+    ["Omega-3 fact sheet · NIH Office of Dietary Supplements", "https://ods.od.nih.gov/factsheets/Omega3FattyAcids-HealthProfessional/"],
+    ["High cholesterol and supplements · NCCIH", "https://www.nccih.nih.gov/health/tips/high-cholesterol-and-dietary-supplements"],
+    ["Red yeast rice safety · NCCIH", "https://www.nccih.nih.gov/health/red-yeast-rice"],
+    ["Diabetes and supplement evidence · NIDDK", "https://www.niddk.nih.gov/health-information/diabetes/overview/healthy-living-with-diabetes"],
   ];
+
+  const supplementGuidance = Object.freeze({
+    triglycerides: {
+      label: "Clinician-directed only",
+      text: "Do not increase over-the-counter fish oil on your own. First confirm a fasting result and overall cardiovascular risk, then ask whether a prescription omega-3 is appropriate. This result is below the severe ≥500 mg/dL range, and cirrhosis makes clinician approval essential.",
+    },
+    cholesterol: {
+      label: "Possible adjunct · plant sterols / stanols",
+      text: "Plant sterols or stanols taken with meals may modestly lower cholesterol, but they do not replace clinician-directed treatment. Confirm with the liver clinician or pharmacist first. Avoid red yeast rice because it can cause statin-like liver, muscle, kidney, and drug-interaction risks.",
+    },
+    glucose: {
+      label: "No supplement recommended",
+      text: "Confirm whether the sample was fasting. Current NIH guidance favors food, activity, sleep, and weight management; vitamins, minerals, herbs, and other supplements have no clear proven benefit for glucose control unless a deficiency is diagnosed.",
+    },
+    hcv: {
+      label: "No supplement recommended",
+      text: "HCV RNA was not detected, so there is no supplement treatment for this antibody result. Avoid liver-detox and unreviewed herbal products; repeat testing only for new exposure, ongoing risk, symptoms, or clinician direction.",
+    },
+  });
 
   function element(tag, className = "", text = "") {
     const node = document.createElement(tag);
@@ -36,10 +59,10 @@
     return Number.isNaN(date.getTime()) ? String(value || "") : date.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" });
   }
 
-  function resultRow({ code, label, value, unit = "", reference, status, tone = "clear" }) {
+  function resultRow({ code, label, value, unit = "", reference, status, tone = "clear", supplement = null }) {
     const row = element("article", `health-result-row signal-${tone}`);
     row.dataset.healthTone = tone;
-    row.dataset.healthSearch = [code, label, value, unit, reference, status].join(" ").toLocaleLowerCase();
+    row.dataset.healthSearch = [code, label, value, unit, reference, status, supplement?.label, supplement?.text].filter(Boolean).join(" ").toLocaleLowerCase();
     const index = element("span", "health-row-index", code);
     const name = element("div", "health-result-name");
     name.append(element("small", "", "ANALYTE"), element("strong", "", label));
@@ -51,6 +74,14 @@
     const signal = element("span", "health-signal", "");
     signal.setAttribute("aria-hidden", "true");
     row.append(index, name, reading, range, chip(status, tone), signal);
+    if (supplement) {
+      const guidance = element("div", `health-supplement-guidance guidance-${tone}`);
+      const title = element("div");
+      title.append(element("small", "", "SUPPLEMENT GUIDANCE"), element("strong", "", supplement.label));
+      guidance.append(title, element("p", "", supplement.text));
+      row.append(guidance);
+      row.classList.add("has-supplement-guidance");
+    }
     return row;
   }
 
@@ -197,19 +228,19 @@
     const extra = element("div", "health-section-extra");
     extra.append(warning, steps);
     return resultSection("01", "Lipid Matrix", "Priority", "high", [
-      { code: "L-01", label: "Triglycerides", value: values.triglycerides, unit: "mg/dL", reference: "High 200–499 · Severe ≥500", status: "High", tone: "high" },
-      { code: "L-02", label: "LDL cholesterol", value: values.ldl, unit: "mg/dL", reference: "Borderline high 130–159", status: "Above goal", tone: "watch" },
-      { code: "L-03", label: "Non-HDL cholesterol", value: values.nonHdl, unit: "mg/dL", reference: "Healthy adult level <130", status: "High", tone: "high" },
-      { code: "L-04", label: "Total cholesterol", value: values.total, unit: "mg/dL", reference: "Borderline high 200–239", status: "Above goal", tone: "watch" },
+      { code: "L-01", label: "Triglycerides", value: values.triglycerides, unit: "mg/dL", reference: "High 200–499 · Severe ≥500", status: "High", tone: "high", supplement: supplementGuidance.triglycerides },
+      { code: "L-02", label: "LDL cholesterol", value: values.ldl, unit: "mg/dL", reference: "Borderline high 130–159", status: "Above goal", tone: "watch", supplement: supplementGuidance.cholesterol },
+      { code: "L-03", label: "Non-HDL cholesterol", value: values.nonHdl, unit: "mg/dL", reference: "Healthy adult level <130", status: "High", tone: "high", supplement: supplementGuidance.cholesterol },
+      { code: "L-04", label: "Total cholesterol", value: values.total, unit: "mg/dL", reference: "Borderline high 200–239", status: "Above goal", tone: "watch", supplement: supplementGuidance.cholesterol },
       { code: "L-05", label: "HDL cholesterol", value: values.hdl, unit: "mg/dL", reference: "Acceptable ≥40", status: "In range", tone: "clear" },
-      { code: "L-06", label: "Total / HDL ratio", value: values.ratio, reference: "Report goal <5.0", status: "High", tone: "high" },
+      { code: "L-06", label: "Total / HDL ratio", value: values.ratio, reference: "Report goal <5.0", status: "High", tone: "high", supplement: supplementGuidance.cholesterol },
     ], extra);
   }
 
   function renderGlucose(data) {
     const values = data.latest.glucose;
     return resultSection("02", "Glucose Control", "Monitor", "watch", [
-      { code: "G-01", label: "Fasting glucose", value: values.july14, unit: "mg/dL", reference: "Normal 70–99 if truly fasting", status: "Watch", tone: "watch" },
+      { code: "G-01", label: "Fasting glucose", value: values.july14, unit: "mg/dL", reference: "Normal 70–99 if truly fasting", status: "Watch", tone: "watch", supplement: supplementGuidance.glucose },
       { code: "G-02", label: "Hemoglobin A1C", value: values.a1c, unit: "%", reference: "Normal <5.7", status: "In range", tone: "clear" },
       { code: "G-03", label: "Later glucose", value: values.july27, unit: "mg/dL", reference: "Non-fasting sample", status: "In range", tone: "clear" },
     ], protocol("Follow-up protocol", [
@@ -221,7 +252,7 @@
   function renderHcv(data) {
     const values = data.latest.hcv;
     return resultSection("03", "Hepatitis C Sequence", "No current infection", "clear", [
-      { code: "H-01", label: "HCV antibody", value: values.antibody, reference: "Screening result · past exposure or false positive", status: "Reactive", tone: "watch" },
+      { code: "H-01", label: "HCV antibody", value: values.antibody, reference: "Screening result · past exposure or false positive", status: "Reactive", tone: "watch", supplement: supplementGuidance.hcv },
       { code: "H-02", label: "HCV RNA", value: values.rna, reference: "PCR confirmation", status: "Clear", tone: "clear" },
     ], protocol("Record protocol", [
       "Keep this result in the medical record; antibodies can remain reactive after a cleared infection.",
@@ -271,6 +302,7 @@
       "Bring the full reports and confirm whether the lipid panel and July 14 glucose test were fasting.",
       "Request a clinician-timed repeat fasting lipid panel and discuss overall cardiovascular risk.",
       "Review every prescription and supplement for possible effects on triglycerides and liver care.",
+      "Ask the liver clinician or pharmacist to approve any plant sterol, prescription omega-3, vitamin, mineral, or herbal product before starting or increasing it.",
       "Ask about repeat CBC/CMP, iron, ferritin, or other testing only if anemia or electrolyte abnormalities return.",
       "Coordinate diet changes with a registered dietitian or liver clinician.",
     ].forEach((item) => list.append(element("li", "", item)));
