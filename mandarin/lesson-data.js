@@ -388,6 +388,35 @@
     ["鱼", "yú", "fish"], ["茶", "chá", "tea"], ["钱", "qián", "money"], ["大", "dà", "big"],
     ["小", "xiǎo", "small"], ["热", "rè", "hot"], ["好", "hǎo", "good"], ["朋", "péng", "friend"],
   ];
+
+  const pinyinSoundGroups = Object.freeze({
+    Initials: [
+      ["b", "八", "bā"], ["p", "怕", "pà"], ["m", "妈", "mā"], ["f", "发", "fā"],
+      ["d", "大", "dà"], ["t", "他", "tā"], ["n", "你", "nǐ"], ["l", "来", "lái"],
+      ["g", "哥", "gē"], ["k", "看", "kàn"], ["h", "好", "hǎo"], ["j", "家", "jiā"],
+      ["q", "去", "qù"], ["x", "小", "xiǎo"], ["zh", "中", "zhōng"], ["ch", "吃", "chī"],
+      ["sh", "是", "shì"], ["r", "人", "rén"], ["z", "早", "zǎo"], ["c", "菜", "cài"],
+      ["s", "三", "sān"], ["y", "一", "yī"], ["w", "我", "wǒ"],
+    ],
+    Finals: [
+      ["a", "八", "bā"], ["o", "我", "wǒ"], ["e", "饿", "è"], ["i", "你", "nǐ"],
+      ["u", "路", "lù"], ["ü", "鱼", "yú"], ["ai", "爱", "ài"], ["ei", "杯", "bēi"],
+      ["ui", "水", "shuǐ"], ["ao", "好", "hǎo"], ["ou", "肉", "ròu"], ["iu", "六", "liù"],
+      ["ie", "谢", "xiè"], ["üe", "月", "yuè"], ["er", "二", "èr"], ["an", "三", "sān"],
+      ["en", "人", "rén"], ["in", "您", "nín"], ["un", "问", "wèn"], ["ün", "云", "yún"],
+      ["ang", "忙", "máng"], ["eng", "冷", "lěng"], ["ing", "听", "tīng"], ["ong", "中", "zhōng"],
+    ],
+    "Whole syllables": [
+      ["zhi", "知", "zhī"], ["chi", "吃", "chī"], ["shi", "是", "shì"], ["ri", "日", "rì"],
+      ["zi", "字", "zì"], ["ci", "次", "cì"], ["si", "四", "sì"], ["yi", "一", "yī"],
+      ["wu", "五", "wǔ"], ["yu", "鱼", "yú"], ["ye", "也", "yě"], ["yue", "月", "yuè"],
+      ["yin", "音", "yīn"], ["yun", "云", "yún"], ["yuan", "元", "yuán"], ["ying", "英", "yīng"],
+    ],
+    Tones: [
+      ["mā", "妈", "first · level"], ["má", "麻", "second · rising"], ["mǎ", "马", "third · dipping"],
+      ["mà", "骂", "fourth · falling"], ["ma", "吗", "neutral · light"],
+    ],
+  });
   
 
   const lessons = [
@@ -420,5 +449,9 @@
     return uniqueRows(lessons.flatMap((lesson) => Object.values(lesson.sentenceGroups).flat()));
   }
 
-  window.MandarinLessons = Object.freeze({ lessons, get, allVocabulary, allSentences });
+  function allCharacters() {
+    return [...new Map(lessons.flatMap((lesson) => lesson.characters).map((row) => [row[0], row])).values()];
+  }
+
+  window.MandarinLessons = Object.freeze({ lessons, get, allVocabulary, allSentences, allCharacters, pinyinSoundGroups });
 })();

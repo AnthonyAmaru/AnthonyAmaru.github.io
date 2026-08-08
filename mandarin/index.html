@@ -33,15 +33,15 @@
     />
     <link rel="stylesheet" href="../site-header.css?v=20260806-study2" />
     <link rel="stylesheet" href="../site-music.css?v=20260806-study2" />
-    <link rel="stylesheet" href="styles.css?v=20260807-cloudprogress1" />
+    <link rel="stylesheet" href="styles.css?v=20260808-mastery1" />
     <link rel="stylesheet" href="speech-settings.css?v=20260808-lessons1" />
     <script src="../music-cloud.js"></script>
     <script src="../site-header.js?v=20260806-study2" defer></script>
     <script src="../site-music.js?v=20260808-sharedmusic1" defer></script>
     <script src="../site-ai.js?v=20260806-study2" defer></script>
-    <script src="lesson-data.js?v=20260808-lessons1" defer></script>
+    <script src="lesson-data.js?v=20260808-mastery1" defer></script>
     <script src="speech-settings.js?v=20260808-lessons1" defer></script>
-    <script src="script.js?v=20260808-lessons1" defer></script>
+    <script src="script.js?v=20260808-mastery1" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to the notebook</a>
@@ -70,16 +70,13 @@
 
     <main id="main">
       <nav class="section-menu mandarin-section-menu" aria-label="Mandarin study sections">
-        <a data-page-link="lesson" href="index.html?page=lesson&amp;v=20260808-lessons1">Lesson 1</a>
-        <a data-page-link="cards" href="index.html?page=cards&amp;v=20260808-lessons1">Cards</a>
-        <a data-page-link="sounds" href="index.html?page=sounds&amp;v=20260808-lessons1">Sounds</a>
-        <a data-page-link="words" href="index.html?page=words&amp;v=20260808-lessons1"><span id="word-count">166</span>&nbsp;Words</a>
-        <a data-page-link="writing" href="index.html?page=writing&amp;v=20260808-lessons1">Writing</a>
-        <a data-page-link="sentences" href="index.html?page=sentences&amp;v=20260808-lessons1">Sentences</a>
-        <a data-page-link="plans" href="index.html?page=plans&amp;v=20260808-lessons1">Conversation</a>
-        <a data-page-link="reading" href="index.html?page=reading&amp;v=20260808-lessons1">Reading</a>
-        <a data-page-link="characters" href="index.html?page=characters&amp;v=20260808-lessons1">Characters</a>
-        <a href="quiz.html?v=20260808-lessons1">Quiz</a>
+        <a data-page-link="lesson" data-lesson-link="lesson-1" href="index.html?page=lesson&amp;lesson=lesson-1&amp;v=20260808-mastery1">Lesson 1</a>
+        <a data-page-link="cards" data-preserve-lesson href="index.html?page=cards&amp;lesson=lesson-1&amp;v=20260808-mastery1">Cards</a>
+        <a data-page-link="sounds" data-preserve-lesson href="index.html?page=sounds&amp;lesson=lesson-1&amp;v=20260808-mastery1">Sounds</a>
+        <a data-page-link="words" data-preserve-lesson href="index.html?page=words&amp;lesson=lesson-1&amp;v=20260808-mastery1"><span id="word-count">166</span>&nbsp;Words</a>
+        <a data-page-link="writing" data-preserve-lesson href="index.html?page=writing&amp;lesson=lesson-1&amp;v=20260808-mastery1">Writing</a>
+        <a data-page-link="practice" data-preserve-lesson href="index.html?page=practice&amp;lesson=lesson-1&amp;v=20260808-mastery1">Practice</a>
+        <a data-preserve-lesson data-quiz-link href="quiz.html?lesson=lesson-1&amp;v=20260808-mastery1">Quiz</a>
       </nav>
 
       <section id="top" class="mandarin-page hero section-shell" data-page="home" hidden>
@@ -155,13 +152,19 @@
             <button id="new-session" class="text-button" type="button">Shuffle ↻</button>
           </aside>
         </div>
+        <section class="known-words-panel" aria-labelledby="known-words-title">
+          <div class="known-words-heading"><h3 id="known-words-title">Known words</h3><strong id="known-word-count">0</strong></div>
+          <div id="known-word-list" class="known-word-list" aria-live="polite"></div>
+          <p id="known-word-empty" class="empty-state">No words marked yet.</p>
+        </section>
       </section>
 
       <section id="sounds" class="mandarin-page pronunciation-section section-shell" data-page="sounds" hidden>
         <div class="section-heading compact-heading">
           <h2>Sounds</h2>
         </div>
-        <div id="sound-grid" class="sound-grid" aria-label="Twelve Mandarin pronunciation drills"></div>
+        <div id="sound-group-tabs" class="sound-group-tabs" role="tablist" aria-label="Pinyin sound groups"></div>
+        <div id="sound-grid" class="sound-grid" aria-label="Complete Mandarin pinyin sound practice"></div>
         <div class="sound-notes">
           <aside class="spelling-rule">
             <strong>ui = uei</strong>
@@ -202,6 +205,8 @@
             <input id="vocab-search" type="search" placeholder="Search" autocomplete="off" />
           </label>
           <div id="category-filters" class="filter-row" aria-label="Vocabulary categories"></div>
+          <div id="word-type-filters" class="filter-row" aria-label="Word and character filters"></div>
+          <div id="mastery-filters" class="filter-row mastery-filters" aria-label="Learning status colors"></div>
         </div>
 
         <div class="vocab-meta">
@@ -229,49 +234,23 @@
         <p id="writing-word-empty" class="empty-state">No writing words added yet.</p>
       </section>
 
-      <section id="patterns" class="mandarin-page pattern-section section-shell" data-page="sentences" hidden>
+      <section id="practice" class="mandarin-page practice-section section-shell" data-page="practice" hidden>
         <div class="section-heading compact-heading">
-          <h2>Sentences</h2>
+          <h2><span id="practice-lesson-title">Lesson 1</span> Practice</h2>
         </div>
-        <div id="pattern-tabs" class="pattern-tabs" role="tablist" aria-label="Sentence pattern topics"></div>
-        <div id="pattern-list" class="pattern-list"></div>
-      </section>
-
-      <section id="dialogue" class="mandarin-page dialogue-section section-shell" data-page="plans" hidden>
-        <div class="section-heading compact-heading">
-          <h2>Conversation</h2>
-        </div>
-        <div id="dialogue-list" class="dialogue-list" aria-label="Mandarin dialogue about making plans"></div>
-      </section>
-
-      <section id="reading" class="mandarin-page reading-section" data-page="reading" hidden>
-        <div class="reading-inner section-shell">
-          <div class="reading-intro">
-            <h2>Reading</h2>
-            <div id="reading-controls" class="reading-controls" role="group" aria-label="Reading display">
-              <button class="reading-toggle active" type="button" data-layer="chinese" aria-pressed="true">Chinese</button>
-              <button class="reading-toggle" type="button" data-layer="pinyin" aria-pressed="false">Pinyin</button>
-              <button class="reading-toggle" type="button" data-layer="english" aria-pressed="false">English</button>
-              <button id="speak-reading" class="reading-toggle speech-toggle" type="button" aria-label="Speak the Mandarin conversation" title="Speak Mandarin">🔊</button>
-            </div>
+        <div class="practice-controls">
+          <div id="practice-type-tabs" class="practice-toggle-row" role="tablist" aria-label="Practice type">
+            <button type="button" role="tab" data-practice-type="sentences" aria-selected="true">Sentences</button>
+            <button type="button" role="tab" data-practice-type="conversation" aria-selected="false">Conversation</button>
+            <button type="button" role="tab" data-practice-type="reading" aria-selected="false">Reading</button>
           </div>
-          <article id="reading-copy" class="reading-copy" aria-live="polite"></article>
+          <div id="practice-mode-tabs" class="practice-toggle-row" role="group" aria-label="Practice reveal direction">
+            <button type="button" data-practice-mode="mandarin" aria-pressed="true">Mandarin → Pinyin</button>
+            <button type="button" data-practice-mode="pinyin" aria-pressed="false">Pinyin → English</button>
+          </div>
         </div>
-      </section>
-
-      <section id="characters" class="mandarin-page character-section section-shell" data-page="characters" hidden>
-        <div class="section-heading compact-heading">
-          <h2>Characters</h2>
-        </div>
-        <div class="character-layout">
-          <div id="character-grid" class="character-grid"></div>
-          <aside class="character-focus" aria-live="polite">
-            <span class="focus-label">Selected</span>
-            <p id="focus-character" lang="zh-Hans">我</p>
-            <p id="focus-pinyin">wǒ</p>
-            <strong id="focus-meaning">I; me</strong>
-          </aside>
-        </div>
+        <div id="practice-topic-tabs" class="practice-topic-tabs" aria-label="Sentence topics"></div>
+        <div id="practice-list" class="practice-list" aria-live="polite"></div>
       </section>
     </main>
 

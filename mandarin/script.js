@@ -1,11 +1,11 @@
 const requestedLessonId = new URLSearchParams(location.search).get("lesson") || "lesson-1";
 const currentLesson = window.MandarinLessons?.get(requestedLessonId);
-const vocabulary = currentLesson?.vocabulary || [];
+const vocabulary = window.MandarinLessons?.allVocabulary() || currentLesson?.vocabulary || [];
 const patternGroups = currentLesson?.sentenceGroups || {};
 const planDialogue = currentLesson?.dialogue || [];
-const pronunciationDrills = currentLesson?.pronunciationDrills || [];
 const conversationReadings = currentLesson?.readings || [];
-const characters = currentLesson?.characters || [];
+const characters = window.MandarinLessons?.allCharacters() || currentLesson?.characters || [];
+const pinyinSoundGroups = window.MandarinLessons?.pinyinSoundGroups || {};
 const WRITING_WORDS_KEY = "anthony_mandarin_written_words_v1";
 const WRITING_WORDS_CLOUD_KEY = "mandarin_written_words_v1";
 const KNOWN_WORDS_KEY = "mandarin-known";
@@ -13,10 +13,15 @@ const KNOWN_WORDS_CLOUD_KEY = "mandarin_known_words_v1";
 
 const state = {
   activeCategory: "All",
+  wordType: "all",
+  mastery: "all",
   query: "",
   showPinyin: true,
   patternGroup: Object.keys(patternGroups)[0],
-  readingLayer: "chinese",
+  soundGroup: Object.keys(pinyinSoundGroups)[0],
+  practiceType: "sentences",
+  practiceMode: "mandarin",
+  practiceRevealed: new Set(),
   session: [],
   sessionIndex: 0,
   known: new Set(readKnownWords()),
@@ -42,6 +47,7 @@ function writeWritingWords(value) {
   writingWords = normalizeWritingWords(value);
   localStorage.setItem(WRITING_WORDS_KEY, JSON.stringify(writingWords));
   renderWritingWords();
+  renderVocabulary();
 }
 
 function readKnownWords() {
@@ -54,6 +60,8 @@ function writeKnownWords(value) {
   localStorage.setItem(KNOWN_WORDS_KEY, JSON.stringify([...state.known]));
   updateProgress();
   renderSession();
+  renderKnownWords();
+  renderVocabulary();
 }
 
 async function saveKnownWords() {
@@ -163,6 +171,19 @@ function renderSession() {
   });
 }
 
+function renderKnownWords() {
+  const knownRows = vocabulary.filter(([hanzi]) => state.known.has(hanzi));
+  $("#known-word-count").textContent = String(knownRows.length);
+  $("#known-word-empty").hidden = knownRows.length > 0;
+  $("#known-word-list").innerHTML = knownRows.map(([hanzi, pinyin, meaning]) => `
+    <article class="known-word-chip">
+      <strong lang="zh-Hans">${escapeHtml(hanzi)}</strong>
+      <span>${escapeHtml(pinyin)}</span>
+      <small>${escapeHtml(meaning)}</small>
+    </article>`).join("");
+  enhanceMandarinSpeech($("#known-word-list"));
+}
+
 function renderFlashcard() {
   const word = state.session[state.sessionIndex];
   if (!word) return;
@@ -192,130 +213,162 @@ function advanceCard(markKnown) {
   renderFlashcard();
 }
 
-function renderFilters() {
-  const categories = ["All", ...new Set(vocabulary.map((word) => word[3]))];
-  const row = $("#category-filters");
-  categories.forEach((category) => {
+function lexiconEntries() {
+  const characterMap = new Map(characters.map(([hanzi, pinyin, meaning]) => [hanzi, { pinyin, meaning }]));
+  const entries = vocabulary.map(([hanzi, pinyin, meaning, category]) => ({
+    hanzi, pinyin, meaning, category, isWord: true, isCharacter: characterMap.has(hanzi),
+  }));
+  const wordHanzi = new Set(entries.map((entry) => entry.hanzi));
+  characters.forEach(([hanzi, pinyin, meaning]) => {
+    if (!wordHanzi.has(hanzi)) entries.push({ hanzi, pinyin, meaning, category: "Character", isWord: false, isCharacter: true });
+  });
+  return entries;
+}
+
+function masteryState(hanzi) {
+  const known = state.known.has(hanzi);
+  const writing = writingWords.includes(hanzi);
+  if (known && writing) return "both";
+  if (known) return "known";
+  if (writing) return "writing";
+  return "unmarked";
+}
+
+function renderChoiceFilters(container, choices, selected, onSelect) {
+  container.replaceChildren();
+  choices.forEach(({ value, label, color }) => {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "filter-chip";
-    button.textContent = category;
-    if (category === state.activeCategory) button.classList.add("active");
-    button.addEventListener("click", () => {
-      state.activeCategory = category;
-      row.querySelectorAll("button").forEach((chip) => chip.classList.toggle("active", chip === button));
-      renderVocabulary();
-    });
-    row.append(button);
+    button.dataset.value = value;
+    button.classList.toggle("active", value === selected);
+    button.setAttribute("aria-pressed", String(value === selected));
+    if (color) button.innerHTML = `<span class="mastery-dot ${color}" aria-hidden="true"></span>${escapeHtml(label)}`;
+    else button.textContent = label;
+    button.addEventListener("click", () => onSelect(value));
+    container.append(button);
+  });
+}
+
+function renderFilters() {
+  const categories = ["All", ...new Set(lexiconEntries().map((entry) => entry.category))];
+  renderChoiceFilters($("#category-filters"), categories.map((value) => ({ value, label: value })), state.activeCategory, (value) => {
+    state.activeCategory = value;
+    renderFilters();
+    renderVocabulary();
+  });
+  renderChoiceFilters($("#word-type-filters"), [
+    { value: "all", label: "Words + characters" }, { value: "words", label: "Words" }, { value: "characters", label: "Characters" },
+  ], state.wordType, (value) => {
+    state.wordType = value;
+    renderFilters();
+    renderVocabulary();
+  });
+  renderChoiceFilters($("#mastery-filters"), [
+    { value: "all", label: "All" }, { value: "known", label: "Flashcard", color: "yellow" },
+    { value: "writing", label: "Writing", color: "orange" }, { value: "both", label: "Both", color: "purple" },
+    { value: "unmarked", label: "Unmarked" },
+  ], state.mastery, (value) => {
+    state.mastery = value;
+    renderFilters();
+    renderVocabulary();
   });
 }
 
 function renderVocabulary() {
   const query = state.query.trim().toLocaleLowerCase();
-  const filtered = vocabulary.filter((word) => {
-    const inCategory = state.activeCategory === "All" || word[3] === state.activeCategory;
-    const matches = !query || word.slice(0, 3).some((value) => value.toLocaleLowerCase().includes(query));
-    return inCategory && matches;
+  const filtered = lexiconEntries().filter((entry) => {
+    const inCategory = state.activeCategory === "All" || entry.category === state.activeCategory;
+    const inType = state.wordType === "all" || (state.wordType === "words" ? entry.isWord : entry.isCharacter);
+    const mastery = masteryState(entry.hanzi);
+    const inMastery = state.mastery === "all" || mastery === state.mastery;
+    const matches = !query || [entry.hanzi, entry.pinyin, entry.meaning].some((value) => value.toLocaleLowerCase().includes(query));
+    return inCategory && inType && inMastery && matches;
   });
 
   const grid = $("#vocab-grid");
   grid.replaceChildren();
   grid.classList.toggle("hide-pinyin", !state.showPinyin);
-  filtered.forEach(([hanzi, pinyin, meaning, category]) => {
+  filtered.forEach(({ hanzi, pinyin, meaning, category, isWord, isCharacter }) => {
+    const mastery = masteryState(hanzi);
     const article = document.createElement("article");
-    article.className = "word-card";
-    const h3 = document.createElement("h3");
-    h3.className = "word-hanzi";
-    h3.lang = "zh-Hans";
-    h3.textContent = hanzi;
-    const py = document.createElement("p");
-    py.className = "word-pinyin";
-    py.textContent = pinyin;
-    const en = document.createElement("p");
-    en.className = "word-meaning";
-    en.textContent = meaning;
-    const tag = document.createElement("span");
-    tag.className = "word-category";
-    tag.textContent = category;
-    article.append(h3, py, en, tag);
+    article.className = `word-card mastery-${mastery}`;
+    const typeLabel = isWord && isCharacter ? "Word · Character" : isCharacter ? "Character" : category;
+    article.innerHTML = `
+      <h3 class="word-hanzi" lang="zh-Hans">${escapeHtml(hanzi)}</h3>
+      <p class="word-pinyin">${escapeHtml(pinyin)}</p>
+      <p class="word-meaning">${escapeHtml(meaning)}</p>
+      <span class="word-category">${escapeHtml(typeLabel)}</span>
+      ${mastery === "unmarked" ? "" : `<span class="mastery-label">${mastery === "known" ? "Flashcard" : mastery === "writing" ? "Writing" : "Flashcard + writing"}</span>`}`;
     grid.append(article);
   });
-  $("#visible-count").textContent = filtered.length;
+  $("#visible-count").textContent = String(filtered.length);
   $("#vocab-empty").hidden = filtered.length !== 0;
+  enhanceMandarinSpeech(grid);
 }
 
-function renderPatternTabs() {
-  const tabs = $("#pattern-tabs");
+function practiceRows() {
+  if (state.practiceType === "conversation") {
+    return planDialogue.map(([speaker, chinese, pinyin, english], index) => ({
+      label: speaker === "安" ? "Anthony" : "Xiao Li", chinese, pinyin, english, key: `conversation-${index}`,
+    }));
+  }
+  if (state.practiceType === "reading") {
+    return conversationReadings.map((reading, index) => ({
+      label: `Reading ${index + 1}`, chinese: reading.chinese, pinyin: reading.pinyin, english: reading.english,
+      newWords: reading.newWords || [], key: `reading-${index}`,
+    }));
+  }
+  return (patternGroups[state.patternGroup] || []).map(([chinese, pinyin, english], index) => ({
+    label: state.patternGroup, chinese, pinyin, english, key: `sentence-${state.patternGroup}-${index}`,
+  }));
+}
+
+function renderPracticeTopics() {
+  const tabs = $("#practice-topic-tabs");
+  tabs.hidden = state.practiceType !== "sentences";
+  tabs.replaceChildren();
+  if (tabs.hidden) return;
   Object.keys(patternGroups).forEach((group) => {
     const button = document.createElement("button");
     button.type = "button";
-    button.className = "pattern-tab";
-    button.setAttribute("role", "tab");
-    button.setAttribute("aria-selected", String(group === state.patternGroup));
+    button.className = "filter-chip";
     button.textContent = group;
+    button.classList.toggle("active", group === state.patternGroup);
+    button.setAttribute("aria-pressed", String(group === state.patternGroup));
     button.addEventListener("click", () => {
       state.patternGroup = group;
-      tabs.querySelectorAll("button").forEach((tab) => tab.setAttribute("aria-selected", String(tab === button)));
-      renderPatterns();
+      state.practiceRevealed.clear();
+      renderPracticeTopics();
+      renderPractice();
     });
     tabs.append(button);
   });
 }
 
-function renderPatterns() {
-  const list = $("#pattern-list");
-  list.replaceChildren();
-  patternGroups[state.patternGroup].forEach(([chinese, pinyin, english]) => {
-    const row = document.createElement("article");
-    row.className = "pattern-item";
-    const zh = document.createElement("p");
-    zh.className = "pattern-chinese";
-    zh.lang = "zh-Hans";
-    zh.textContent = chinese;
-    const py = document.createElement("p");
-    py.className = "pattern-pinyin";
-    py.textContent = pinyin;
-    const en = document.createElement("p");
-    en.className = "pattern-english";
-    en.textContent = english;
-    row.append(zh, py, en);
-    list.append(row);
-  });
-}
-
-function renderReading() {
-  const article = $("#reading-copy");
-  article.replaceChildren();
-  conversationReadings.forEach((reading) => {
-    const paragraph = document.createElement("p");
-    paragraph.className = "reading-paragraph";
-    paragraph.dataset.layer = state.readingLayer;
-    const line = reading[state.readingLayer];
-    if (state.readingLayer === "chinese") {
-      paragraph.lang = "zh-Hans";
-      appendHighlightedWords(paragraph, line, reading.newWords.map(([word]) => word));
-    } else paragraph.textContent = line;
-    const wordList = document.createElement("div");
-    wordList.className = "new-word-list";
-    reading.newWords.slice(0, 5).forEach(([word, pinyin, meaning]) => {
-      const chip = document.createElement("span");
-      chip.textContent = `${word} · ${pinyin} · ${meaning}`;
-      wordList.append(chip);
-    });
-    article.append(paragraph, wordList);
-  });
-}
-
-function appendHighlightedWords(container, text, words) {
-  const pattern = new RegExp(`(${words.map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`, "g");
-  text.split(pattern).filter(Boolean).forEach((piece) => {
-    if (words.includes(piece)) {
-      const mark = document.createElement("mark");
-      mark.className = "new-word";
-      mark.textContent = piece;
-      container.append(mark);
-    } else container.append(document.createTextNode(piece));
-  });
+function renderPractice() {
+  $("#practice-lesson-title").textContent = currentLesson?.title || "Lesson";
+  const list = $("#practice-list");
+  const revealLayer = state.practiceMode === "mandarin" ? "pinyin" : "english";
+  list.innerHTML = practiceRows().map((row) => {
+    const revealKey = `${state.practiceType}:${state.practiceMode}:${row.key}`;
+    const revealed = state.practiceRevealed.has(revealKey);
+    const prompt = state.practiceMode === "mandarin" ? row.chinese : row.pinyin;
+    const newWords = state.practiceType === "reading" && row.newWords?.length
+      ? `<div class="practice-new-words">${row.newWords.slice(0, 5).map(([word, pinyin, meaning]) => `<span>${escapeHtml(word)} · ${escapeHtml(pinyin)} · ${escapeHtml(meaning)}</span>`).join("")}</div>`
+      : "";
+    return `<article class="practice-card">
+      <div class="practice-card-top"><span>${escapeHtml(row.label)}</span><button type="button" class="practice-speak" data-speak-mandarin="${escapeHtml(row.chinese)}" aria-label="Speak Mandarin">🔊</button></div>
+      <p class="practice-prompt ${state.practiceMode === "mandarin" ? "practice-chinese" : "practice-pinyin"}" ${state.practiceMode === "mandarin" ? 'lang="zh-Hans"' : ""}>${escapeHtml(prompt)}</p>
+      <button type="button" class="practice-reveal" data-reveal-practice="${escapeHtml(revealKey)}" aria-expanded="${revealed}">${revealed ? "Hide" : "Reveal"}</button>
+      <div class="practice-answer" ${revealed ? "" : "hidden"} data-practice-answer>
+        <strong>${revealLayer === "pinyin" ? "Pinyin" : "English"}</strong>
+        <p>${escapeHtml(row[revealLayer])}</p>
+        ${revealed ? newWords : ""}
+      </div>
+    </article>`;
+  }).join("");
+  enhanceMandarinSpeech(list);
 }
 
 function speakMandarin(text) {
@@ -347,46 +400,38 @@ function speakFromElement(element) {
   if (text) speakMandarin(text);
 }
 
-function renderDialogue() {
-  const list = $("#dialogue-list");
-  planDialogue.forEach(([speaker, chinese, pinyin, english]) => {
-    const row = document.createElement("article");
-    row.className = "dialogue-turn";
-    const speakerName = speaker === "安" ? "Anthony" : "Xiao Li";
-    row.innerHTML = `<span class="dialogue-speaker" aria-label="${speakerName}" title="${speakerName}">${speaker}</span><div><p class="dialogue-chinese" lang="zh-Hans">${chinese}</p><p class="dialogue-pinyin">${pinyin}</p></div><p class="dialogue-english">${english}</p>`;
-    list.append(row);
+function renderSoundTabs() {
+  const tabs = $("#sound-group-tabs");
+  tabs.replaceChildren();
+  Object.entries(pinyinSoundGroups).forEach(([group, rows]) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.setAttribute("role", "tab");
+    button.setAttribute("aria-selected", String(group === state.soundGroup));
+    button.textContent = `${group} ${rows.length}`;
+    button.addEventListener("click", () => {
+      state.soundGroup = group;
+      renderSoundTabs();
+      renderPronunciation();
+    });
+    tabs.append(button);
   });
 }
 
 function renderPronunciation() {
   const grid = $("#sound-grid");
-  pronunciationDrills.forEach(([number, syllable, initial, tone]) => {
-    const card = document.createElement("article");
+  const rows = pinyinSoundGroups[state.soundGroup] || [];
+  grid.replaceChildren();
+  rows.forEach(([sound, hanzi, example], index) => {
+    const card = document.createElement("button");
+    card.type = "button";
     card.className = "sound-card";
-    card.dataset.speakMandarin = syllable;
-    card.innerHTML = `<span class="sound-number">${number}</span><strong>${syllable}</strong><small>${initial} · ${tone}</small>`;
+    card.dataset.speakMandarin = hanzi;
+    card.setAttribute("aria-label", `${sound}, example ${hanzi}, ${example}`);
+    card.innerHTML = `<span class="sound-number">${index + 1}</span><strong>${escapeHtml(sound)}</strong><span lang="zh-Hans">${escapeHtml(hanzi)}</span><small>${escapeHtml(example)}</small>`;
     grid.append(card);
   });
-}
-
-function renderCharacters() {
-  const grid = $("#character-grid");
-  characters.forEach(([character, pinyin, meaning], index) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "character-button";
-    button.lang = "zh-Hans";
-    button.textContent = character;
-    button.setAttribute("aria-label", `${character}, ${pinyin}, ${meaning}`);
-    if (index === 0) button.classList.add("active");
-    button.addEventListener("click", () => {
-      grid.querySelectorAll("button").forEach((item) => item.classList.toggle("active", item === button));
-      $("#focus-character").textContent = character;
-      $("#focus-pinyin").textContent = pinyin;
-      $("#focus-meaning").textContent = meaning;
-    });
-    grid.append(button);
-  });
+  enhanceMandarinSpeech(grid);
 }
 
 $("#word-count").textContent = vocabulary.length;
@@ -426,18 +471,31 @@ $("#writing-word-list").addEventListener("click", async (event) => {
   writingWords = writingWords.filter((word) => word !== button.dataset.removeWritingWord);
   await saveWritingWords();
 });
-$("#reading-controls").addEventListener("click", (event) => {
-  const button = event.target.closest("button[data-layer]");
+$("#practice-type-tabs").addEventListener("click", (event) => {
+  const button = event.target.closest("[data-practice-type]");
   if (!button) return;
-  state.readingLayer = button.dataset.layer;
-  $("#reading-controls").querySelectorAll("button").forEach((item) => {
-    const active = item === button;
-    item.classList.toggle("active", active);
-    item.setAttribute("aria-pressed", String(active));
-  });
-  renderReading();
+  state.practiceType = button.dataset.practiceType;
+  state.practiceRevealed.clear();
+  $("#practice-type-tabs").querySelectorAll("button").forEach((item) => item.setAttribute("aria-selected", String(item === button)));
+  renderPracticeTopics();
+  renderPractice();
 });
-$("#speak-reading").addEventListener("click", () => speakMandarin(conversationReadings.map((reading) => reading.chinese).join("。")));
+$("#practice-mode-tabs").addEventListener("click", (event) => {
+  const button = event.target.closest("[data-practice-mode]");
+  if (!button) return;
+  state.practiceMode = button.dataset.practiceMode;
+  state.practiceRevealed.clear();
+  $("#practice-mode-tabs").querySelectorAll("button").forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+  renderPractice();
+});
+$("#practice-list").addEventListener("click", (event) => {
+  const button = event.target.closest("[data-reveal-practice]");
+  if (!button) return;
+  const key = button.dataset.revealPractice;
+  if (state.practiceRevealed.has(key)) state.practiceRevealed.delete(key);
+  else state.practiceRevealed.add(key);
+  renderPractice();
+});
 document.addEventListener("click", (event) => {
   const target = event.target.closest('.speakable-mandarin, [lang="zh-Hans"], [data-speak-mandarin]');
   if (target) speakFromElement(target);
@@ -449,25 +507,31 @@ document.addEventListener("keydown", (event) => {
   event.preventDefault();
   speakFromElement(target);
 });
-const requestedPage = new URLSearchParams(location.search).get("page");
-const mandarinPages = ["lesson", "cards", "sounds", "words", "writing", "sentences", "plans", "reading", "characters"];
+const rawRequestedPage = new URLSearchParams(location.search).get("page");
+const requestedPage = ["sentences", "plans", "reading"].includes(rawRequestedPage) ? "practice" : rawRequestedPage;
+const mandarinPages = ["lesson", "cards", "sounds", "words", "writing", "practice"];
 const activePage = mandarinPages.includes(requestedPage) ? requestedPage : "lesson";
+$$('[data-preserve-lesson]').forEach((link) => {
+  const url = new URL(link.href, location.href);
+  url.searchParams.set("lesson", currentLesson?.id || "lesson-1");
+  link.href = url.href;
+});
 $$('.mandarin-page').forEach((page) => { page.hidden = page.dataset.page !== activePage; });
 $$('[data-page-link]').forEach((link) => {
-  if (link.dataset.pageLink === activePage) link.setAttribute("aria-current", "page");
+  const activeLesson = link.dataset.pageLink !== "lesson" || link.dataset.lessonLink === currentLesson?.id;
+  if (link.dataset.pageLink === activePage && activeLesson) link.setAttribute("aria-current", "page");
   else link.removeAttribute("aria-current");
 });
 
 renderFilters();
 renderVocabulary();
+renderSoundTabs();
 renderPronunciation();
-renderPatternTabs();
-renderPatterns();
-renderDialogue();
-renderReading();
-renderCharacters();
 renderWritingWords();
 makeSession();
+renderKnownWords();
+renderPracticeTopics();
+renderPractice();
 updateProgress();
 enhanceMandarinSpeech();
 syncMandarinProgressFromCloud();

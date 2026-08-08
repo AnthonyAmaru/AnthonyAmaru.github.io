@@ -6,7 +6,7 @@
   --peach: #efe3bd;
 }
 .intro-copy { color: var(--muted); line-height: 1.6; }
-.mandarin-section-menu { display: grid; width: min(1000px, calc(100% - 32px)); grid-template-columns: repeat(5, minmax(120px, 1fr)); gap: 10px; margin: 0 auto 28px; }
+.mandarin-section-menu { display: grid; width: min(1000px, calc(100% - 32px)); grid-template-columns: repeat(4, minmax(120px, 1fr)); gap: 10px; margin: 0 auto 28px; }
 .mandarin-section-menu a { display: flex; min-height: 52px; align-items: center; justify-content: center; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); color: var(--ink); padding: 8px; font-size: .78rem; font-weight: 800; text-align: center; text-decoration: none; }
 .mandarin-section-menu a:hover, .mandarin-section-menu a:focus-visible { border-color: var(--ink); }
 .mandarin-section-menu a[aria-current="page"] { border-color: var(--ink); background: var(--ink); color: white; }

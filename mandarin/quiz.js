@@ -189,4 +189,11 @@ $("#exit-quiz").addEventListener("click", () => showView("setup-view")); $("#new
 $("#review-wrong").addEventListener("click", () => $("#wrong-list").scrollIntoView({ behavior: "smooth" }));
 $("#clear-history").addEventListener("click", async () => { if (!ensureAdmin()) return; if (confirm("Clear Mandarin score history on every synced device?")) { localStorage.removeItem(HISTORY_KEY); if (musicCloud.isSignedIn()) await musicCloud.clearTestAttempts("mandarin").catch((error) => console.warn("Cloud clear failed", error)); renderHistory(); } });
 
+const navigationLessonId = new URLSearchParams(location.search).get("lesson") || window.MandarinLessons?.lessons?.[0]?.id || "lesson-1";
+document.querySelectorAll("[data-preserve-lesson]").forEach((link) => {
+  const url = new URL(link.href, location.href);
+  url.searchParams.set("lesson", navigationLessonId);
+  link.href = url.href;
+});
+
 renderHistory(); renderWrongBank(); ensureAdmin(); loadHistoryFromCloud(); loadWrongBank();

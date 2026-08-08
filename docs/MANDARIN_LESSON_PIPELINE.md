@@ -49,13 +49,28 @@ Keep raw transcripts, private notes, and source images outside the public GitHub
 - Wrong-bank items retain stable keys so a lesson update does not duplicate existing misses.
 - Writing practice remains a separate manually managed list and must appear in both the notebook and Quiz navigation.
 
+## Study-surface ownership
+
+- Lesson overview and Practice are lesson-specific. Practice reads the selected lesson's sentences, conversation, and readings.
+- Cards, Sounds, Words, Writing, and Quiz live outside individual lessons. Cards and Words aggregate every confirmed lesson; Quiz aggregates every lesson's words and sentences.
+- Words and Characters share one cumulative grid. A type filter can show Words, Characters, or both.
+- Flashcard-known words use yellow, writing-known words use orange, and words present in both lists use purple. These colors and their filters must derive from the existing cloud-synced lists, never a second mastery store.
+- Practice offers Sentences, Conversation, and Reading without separate routes. Mandarin mode reveals pinyin; Pinyin mode reveals English. Every later lesson may become more complex without changing that interaction contract.
+- The global Sounds chart contains the complete beginner Pinyin component inventory: 23 initials, 24 finals, 16 whole syllables, and four tones plus neutral tone. It is not reset or duplicated for each lesson.
+
+The Pinyin inventory follows the [Mandarin.ac.cn Hanyu Pinyin reference](https://www.mandarin.ac.cn/resources/pinyin.html). Keep the counts and valid spellings stable when adding lesson-specific pronunciation notes.
+
 ## Regression checklist
 
 - Confirm each new lesson contains only source-supported learned vocabulary.
 - Confirm the cumulative quiz count increases by the number of unique new words and sentences.
 - Start the same quiz type twice and confirm its order changes.
 - Confirm every answer has three distinct distractors and no duplicate answer buttons.
-- Open Lesson, Writing, Quiz, and every study section from both notebook and Quiz menus.
+- Open Lesson, Cards, Sounds, Words, Writing, Practice, and Quiz from both notebook and Quiz menus.
+- Mark one Flashcard word, add one Writing word, and add one word to both lists; verify yellow, orange, and purple cards plus their exact filters.
+- Confirm Words shows the cumulative lesson vocabulary, Characters is a filter inside Words, and the known-word panel lists all Flashcard-known words.
+- Confirm Sounds exposes 23 initials, 24 finals, 16 whole syllables, and 5 tone examples.
+- In every lesson, verify Sentences, Conversation, and Reading in both Mandarin → Pinyin and Pinyin → English modes.
 - Confirm Voice Settings is one top-corner button, opens one compact panel, closes with its close button, outside click, and Escape, and never becomes a study-menu tile.
 - Confirm every Chinese target remains keyboard- and touch-speakable.
 
