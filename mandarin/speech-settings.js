@@ -75,22 +75,28 @@
   }
 
   function buildSettings() {
-    const menu = document.querySelector(".mandarin-section-menu");
-    if (!menu || document.querySelector("[data-mandarin-speech-settings]")) return;
+    if (!document.querySelector("main") || document.querySelector("[data-mandarin-speech-settings]")) return;
 
     const trigger = document.createElement("button");
     trigger.className = "mandarin-voice-settings-trigger";
     trigger.type = "button";
+    trigger.setAttribute("aria-label", "Voice settings");
     trigger.setAttribute("aria-expanded", "false");
     trigger.setAttribute("aria-controls", "mandarin-voice-settings");
-    trigger.innerHTML = '<span aria-hidden="true">🔊</span> Voice';
+    trigger.title = "Voice settings";
+    trigger.innerHTML = '<span aria-hidden="true">🔊</span>';
 
     const panel = document.createElement("section");
     panel.id = "mandarin-voice-settings";
     panel.className = "mandarin-speech-settings";
     panel.dataset.mandarinSpeechSettings = "";
+    panel.setAttribute("aria-label", "Mandarin voice settings");
     panel.hidden = true;
     panel.innerHTML = `
+      <div class="mandarin-voice-heading">
+        <strong>Voice settings</strong>
+        <button class="mandarin-voice-close" type="button" aria-label="Close voice settings">×</button>
+      </div>
       <label class="mandarin-voice-field">
         <span>Voice</span>
         <select data-mandarin-voice aria-label="Mandarin voice"></select>
@@ -102,12 +108,18 @@
       <button class="mandarin-voice-test" type="button">Test</button>
     `;
 
-    menu.append(trigger);
-    menu.after(panel);
+    document.body.append(trigger, panel);
     voiceSelect = panel.querySelector("[data-mandarin-voice]");
     rateInput = panel.querySelector("[data-mandarin-rate]");
     rateOutput = panel.querySelector("[data-mandarin-rate-output]");
     testButton = panel.querySelector(".mandarin-voice-test");
+    const closeButton = panel.querySelector(".mandarin-voice-close");
+
+    const closePanel = ({ restoreFocus = false } = {}) => {
+      panel.hidden = true;
+      trigger.setAttribute("aria-expanded", "false");
+      if (restoreFocus) trigger.focus();
+    };
 
     updateRate(savedRate());
     refreshVoices();
@@ -123,6 +135,7 @@
       trigger.setAttribute("aria-expanded", String(!panel.hidden));
       if (!panel.hidden) refreshVoices();
     });
+    closeButton.addEventListener("click", () => closePanel({ restoreFocus: true }));
     voiceSelect.addEventListener("change", () => {
       if (voiceSelect.value) localStorage.setItem(VOICE_KEY, voiceSelect.value);
       else localStorage.removeItem(VOICE_KEY);
@@ -132,10 +145,11 @@
 
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && !panel.hidden) {
-        panel.hidden = true;
-        trigger.setAttribute("aria-expanded", "false");
-        trigger.focus();
+        closePanel({ restoreFocus: true });
       }
+    });
+    document.addEventListener("click", (event) => {
+      if (!panel.hidden && !trigger.contains(event.target) && !panel.contains(event.target)) closePanel();
     });
   }
 

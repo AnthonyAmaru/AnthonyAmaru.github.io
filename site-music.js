@@ -4,6 +4,7 @@
   if (!bar || !window.musicCloud) return;
 
   const stateKey = "anthony_music_player_state_v1";
+  const librarySite = "shared";
   const title = bar.querySelector("[data-site-music-title]");
   const songSelect = bar.querySelector("[data-site-music-select]");
   const playlistSelect = document.createElement("select");
@@ -218,7 +219,7 @@
   async function initialize() {
     let library;
     try {
-      library = await musicCloud.list("anthony");
+      library = await musicCloud.list(librarySite);
       tracks = Array.isArray(library) ? library : library.tracks || [];
       playlists = Array.isArray(library) ? [] : library.playlists || [];
     } catch {

@@ -2,73 +2,8 @@ const HISTORY_KEY = "anthony_mandarin_history_v1";
 const WRONG_BANK_KEY = "anthony_mandarin_wrong_bank_v1";
 const WRONG_BANK_CLOUD_KEY = "mandarin_wrong_bank_v1";
 
-const wordBank = [
-  ["你好", "nǐ hǎo", "hello"], ["很好", "hěn hǎo", "very good"], ["谢谢", "xièxie", "thank you"],
-  ["明天见", "míngtiān jiàn", "see you tomorrow"], ["加油", "jiāyóu", "keep going"], ["朋友", "péngyou", "friend"],
-  ["老师", "lǎoshī", "teacher"], ["名字", "míngzi", "name"], ["中文", "zhōngwén", "Chinese language"],
-  ["面包", "miànbāo", "bread"], ["饺子", "jiǎozi", "dumplings"], ["面条", "miàntiáo", "noodles"],
-  ["米饭", "mǐfàn", "cooked rice"], ["鸡肉", "jīròu", "chicken"], ["西兰花", "xīlánhuā", "broccoli"],
-  ["馄饨", "húntun", "wontons"], ["冰水", "bīngshuǐ", "ice water"], ["热水", "rèshuǐ", "hot water"],
-  ["好吃", "hǎochī", "delicious"], ["服务员", "fúwùyuán", "server or waiter"], ["请客", "qǐngkè", "to treat someone"],
-  ["买单", "mǎidān", "to pay the bill"], ["打包", "dǎbāo", "to pack food to go"], ["一共", "yígòng", "altogether"],
-  ["生日", "shēngrì", "birthday"], ["昨天", "zuótiān", "yesterday"], ["明天", "míngtiān", "tomorrow"],
-  ["现在", "xiànzài", "now"], ["饭店", "fàndiàn", "restaurant"], ["操场", "cāochǎng", "playground"],
-  ["时间", "shíjiān", "time"], ["哪里", "nǎlǐ", "where"], ["没有", "méi yǒu", "do not have"],
-  ["非常", "fēicháng", "extremely"], ["太…了", "tài…le", "too or extremely"], ["两", "liǎng", "two before measure words"],
-  ["上午", "shàngwǔ", "morning"], ["下午", "xiàwǔ", "afternoon"], ["几点", "jǐ diǎn", "what time"],
-  ["披萨", "pīsà", "pizza"], ["好的", "hǎo de", "okay or all right"], ["小猫饭店", "Xiǎomāo Fàndiàn", "Little Cat Restaurant"],
-  ["知道", "zhīdào", "to know"], ["睡觉", "shuìjiào", "to sleep or go to bed"], ["牛肉", "niúròu", "beef"],
-  ["早上好", "zǎoshang hǎo", "good morning; early morning"], ["上午好", "shàngwǔ hǎo", "good morning; before noon"],
-  ["下午好", "xiàwǔ hǎo", "good afternoon"], ["晚上好", "wǎnshang hǎo", "good evening"], ["晚安", "wǎn'ān", "good night"],
-  ["早", "zǎo", "early"], ["晚", "wǎn", "late"], ["先", "xiān", "first or beforehand"],
-  ["妈妈", "māma", "mom"], ["爸爸", "bàba", "dad"], ["几岁", "jǐ suì", "how old"],
-  ["买", "mǎi", "to buy"], ["喜欢", "xǐhuan", "to like"], ["见", "jiàn", "to see or meet"],
-  ["肉", "ròu", "meat"], ["菜", "cài", "dish, cuisine, or vegetables"], ["谁", "shéi / shuí", "who"],
-  ["中国菜", "zhōngguó cài", "Chinese food"], ["美国菜", "měiguó cài", "American food"], ["墨西哥菜", "mòxīgē cài", "Mexican food"],
-];
-
-const sentenceBank = [
-  ["我叫安东尼。", "Wǒ jiào Āndōngní.", "My name is Anthony."],
-  ["我是美国人。", "Wǒ shì Měiguó rén.", "I am American."],
-  ["我不是中国人。", "Wǒ bú shì Zhōngguó rén.", "I am not Chinese."],
-  ["你是哪国人？", "Nǐ shì nǎ guó rén?", "What country are you from?"],
-  ["你叫什么名字？", "Nǐ jiào shénme míngzi?", "What is your name?"],
-  ["你呢？", "Nǐ ne?", "What about you?"],
-  ["我喜欢吃饺子。", "Wǒ xǐhuan chī jiǎozi.", "I like eating dumplings."],
-  ["你有冰水吗？", "Nǐ yǒu bīngshuǐ ma?", "Do you have ice water?"],
-  ["我要两杯冰水。", "Wǒ yào liǎng bēi bīngshuǐ.", "I want two cups of ice water."],
-  ["我们去饭店吃饭吧。", "Wǒmen qù fàndiàn chīfàn ba.", "Let's go to the restaurant to eat."],
-  ["今天太热了。", "Jīntiān tài rè le.", "It is too hot today."],
-  ["现在几点？", "Xiànzài jǐ diǎn?", "What time is it now?"],
-  ["我还要一碗面条。", "Wǒ hái yào yì wǎn miàntiáo.", "I also want a bowl of noodles."],
-  ["一共一百五十三块。", "Yígòng yì bǎi wǔ shí sān kuài.", "The total is 153 yuan."],
-  ["明天见！", "Míngtiān jiàn!", "See you tomorrow!"],
-  ["你明天上午有时间吗？", "Nǐ míngtiān shàngwǔ yǒu shíjiān ma?", "Do you have time tomorrow morning?"],
-  ["明天上午没有。", "Míngtiān shàngwǔ méiyǒu.", "I do not have time tomorrow morning."],
-  ["那下午呢？", "Nà xiàwǔ ne?", "Then how about the afternoon?"],
-  ["下午有时间。", "Xiàwǔ yǒu shíjiān.", "I have time in the afternoon."],
-  ["我们去吃披萨吧。", "Wǒmen qù chī pīsà ba.", "Let's go eat pizza."],
-  ["好的，几点？在哪里？", "Hǎo de, jǐ diǎn? Zài nǎlǐ?", "Okay. What time? Where?"],
-  ["5点，在小猫饭店。", "Wǔ diǎn, zài Xiǎomāo Fàndiàn.", "At five, at Little Cat Restaurant."],
-  ["我知道。", "Wǒ zhīdào.", "I know."],
-  ["我晚上睡觉。", "Wǒ wǎnshang shuìjiào.", "I sleep at night."],
-  ["我喜欢吃牛肉。", "Wǒ xǐhuan chī niúròu.", "I like eating beef."],
-  ["太早了。", "Tài zǎo le.", "It is too early."],
-  ["太晚了，我们睡觉吧。", "Tài wǎn le, wǒmen shuìjiào ba.", "It is too late; let's go to sleep."],
-  ["我们一共买了四碗馄饨。", "Wǒmen yígòng mǎi le sì wǎn húntun.", "We bought four bowls of wontons in total."],
-  ["这是小李。", "Zhè shì Xiǎo Lǐ.", "This is Xiao Li."],
-  ["他是中国人，他是我们的朋友，他喜欢鸡肉。", "Tā shì Zhōngguó rén, tā shì wǒmen de péngyou, tā xǐhuan jīròu.", "He is Chinese, he is our friend, and he likes chicken."],
-  ["他现在在美国。", "Tā xiànzài zài Měiguó.", "He is in America now."],
-  ["今天是他的生日。", "Jīntiān shì tā de shēngrì.", "Today is his birthday."],
-  ["我喜欢睡觉。", "Wǒ xǐhuan shuìjiào.", "I like sleeping."],
-  ["我喜欢钱。", "Wǒ xǐhuan qián.", "I like money."],
-  ["你几岁？", "Nǐ jǐ suì?", "How old are you?"],
-  ["我现在在美国。", "Wǒ xiànzài zài Měiguó.", "I am in America now."],
-  ["我喜欢中国菜。", "Wǒ xǐhuan Zhōngguó cài.", "I like Chinese food."],
-  ["我喜欢美国菜。", "Wǒ xǐhuan Měiguó cài.", "I like American food."],
-  ["我喜欢墨西哥菜。", "Wǒ xǐhuan Mòxīgē cài.", "I like Mexican food."],
-];
-
+const wordBank = window.MandarinLessons?.allVocabulary() || [];
+const sentenceBank = window.MandarinLessons?.allSentences() || [];
 const $ = (selector) => document.querySelector(selector);
 const state = { questions: [], index: 0, correct: 0, responses: [], mode: "mixed", section: "Mixed practice" };
 
@@ -86,7 +21,7 @@ function shuffle(items) {
 }
 
 function distractors(bank, answer, count = 3) {
-  return shuffle(bank.map((item) => item[2]).filter((meaning) => meaning !== answer)).slice(0, count);
+  return shuffle([...new Set(bank.map((item) => item[2]).filter((meaning) => meaning !== answer))]).slice(0, count);
 }
 
 function buildQuestions() {
@@ -142,7 +77,9 @@ function modeLabel(mode) { return ({ mixed: "Mixed practice", word: "Word meanin
 function startQuiz(questions = null, mode = null) {
   if (!ensureAdmin()) return;
   state.mode = mode || $("#quiz-type").value;
-  state.section = modeLabel(state.mode);
+  const lessonCount = window.MandarinLessons?.lessons?.length || 1;
+  const lessonLabel = lessonCount === 1 ? "Lesson 1" : `Lessons 1–${lessonCount}`;
+  state.section = state.mode === "wrong" ? "Wrong bank" : `${lessonLabel} · ${modeLabel(state.mode)}`;
   state.questions = questions || buildQuestions();
   state.index = 0;
   state.correct = 0;

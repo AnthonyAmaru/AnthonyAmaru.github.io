@@ -15,4 +15,6 @@ The entrance password is a client-side privacy gate, not server-side authenticat
 
 See [the reproduction guide](docs/PERSONAL_SITE_REPRODUCTION_GUIDE.md) for the living GitHub, GoDaddy, Supabase, browser-assisted setup, corrected code structure, and mandatory bug-fix ledger.
 
+See [the Mandarin lesson pipeline](docs/MANDARIN_LESSON_PIPELINE.md) for turning written notes, Granola notes, and lesson images into append-only lessons and cumulative reshuffled quizzes.
+
 Live at [anthonyamaru.com](https://anthonyamaru.com).

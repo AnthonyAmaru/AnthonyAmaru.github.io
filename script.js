@@ -1,13 +1,14 @@
 const VISITOR_HASH = "5723360ef11043a879520412e9ad897e0ebcb99cc820ec363bfecc9d751a1a99";
 const CLOUD_ADMIN_EMAIL = "anthonyamaru93@gmail.com";
 const MUSIC_PLAYER_STATE_KEY = "anthony_music_player_state_v1";
+const MUSIC_LIBRARY_SITE = "shared";
 const BOOK_CHAPTER_SIDEBAR_KEY = "anthony_book_chapter_sidebar_hidden";
 const BOOK_SPLIT_PAGES_KEY = "anthony_book_split_pages";
 const MANDARIN_WRITING_KEY = "anthony_mandarin_written_words_v1";
 const MANDARIN_WRITING_CLOUD_KEY = "mandarin_written_words_v1";
 const MANDARIN_KNOWN_KEY = "mandarin-known";
 const MANDARIN_KNOWN_CLOUD_KEY = "mandarin_known_words_v1";
-const DETAIL_SHELL_VERSION = "20260807-cloudprogress1";
+const DETAIL_SHELL_VERSION = "20260808-lessonsmusic1";
 const DETAIL_PAGES = {
   aviation: "aviation/index.html",
   mandarin: "mandarin/index.html",
@@ -874,7 +875,7 @@ async function askQuickAi(event) {
 async function renderMusic() {
   const previousBulkPlaylist = $("#bulk-playlist-select").value;
   try {
-    const library = await musicCloud.list("anthony");
+    const library = await musicCloud.list(MUSIC_LIBRARY_SITE);
     tracks = library.tracks;
     musicPlaylists = library.playlists;
     musicCloudError = "";
@@ -1250,7 +1251,7 @@ async function addMusicFiles(files) {
   let duplicates = 0;
   for (const file of audioFiles) {
     try {
-      const result = await musicCloud.upload("anthony", file);
+      const result = await musicCloud.upload(MUSIC_LIBRARY_SITE, file);
       if (result?.duplicate) duplicates += 1;
       else added += 1;
     } catch (error) { toast(`Could not upload ${file.name}: ${error.message}`); }
@@ -1345,7 +1346,7 @@ async function createPlaylist() {
   if (!(await ensureCloudMusicAdmin())) return;
   const name = prompt("Name this playlist:");
   if (!name?.trim()) return;
-  try { await musicCloud.createPlaylist("anthony", name.trim()); renderMusic(); } catch (error) { toast(error.message); }
+  try { await musicCloud.createPlaylist(MUSIC_LIBRARY_SITE, name.trim()); renderMusic(); } catch (error) { toast(error.message); }
 }
 
 function formatBytes(bytes) {
@@ -1398,6 +1399,7 @@ function refreshDashboard() {
   $("#aviation-last-score").textContent = aviation.length ? `${aviation[0].percent}%` : "—";
   $("#aviation-test-count").textContent = aviation.length;
   $("#mandarin-last-score").textContent = mandarin.length ? `${mandarin[0].percent}%` : "—";
+  $("#mandarin-known-count").textContent = String(window.MandarinLessons?.allVocabulary().length || 0);
   $("#mandarin-written-count").textContent = String(new Set(writingWords.map((word) => String(word || "").trim()).filter(Boolean)).size);
   $("#home-aviation-score").textContent = aviation.length ? `${aviation[0].percent}% · ${aviation[0].correct}/${aviation[0].total}` : "No aviation score yet";
   $("#home-mandarin-score").textContent = mandarin.length ? `${mandarin[0].percent}% · ${mandarin[0].correct}/${mandarin[0].total}` : "No Mandarin score yet";
