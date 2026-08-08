@@ -195,6 +195,9 @@ const patternGroups = {
     ["晚安。", "Wǎn'ān.", "Good night."],
     ["太早了。", "Tài zǎo le.", "It is too early."],
     ["太晚了，我们睡觉吧。", "Tài wǎn le, wǒmen shuìjiào ba.", "It is too late; let's go to sleep."],
+    ["你好，你好吗？", "Nǐ hǎo, nǐ hǎo ma?", "Hello, how are you?"],
+    ["谢谢，我很好。", "Xièxie, wǒ hěn hǎo.", "Thank you, I am very well."],
+    ["今天晚上你有时间吗？", "Jīntiān wǎnshang nǐ yǒu shíjiān ma?", "Do you have time this evening?"],
   ],
   "Introductions": [
     ["我叫…", "Wǒ jiào…", "My name is…"],
@@ -211,6 +214,9 @@ const patternGroups = {
     ["他现在在美国。", "Tā xiànzài zài Měiguó.", "He is in America now."],
     ["今天是他的生日。", "Jīntiān shì tā de shēngrì.", "Today is his birthday."],
     ["你几岁？", "Nǐ jǐ suì?", "How old are you?"],
+    ["这是我的朋友。", "Zhè shì wǒ de péngyou.", "This is my friend."],
+    ["他叫什么名字？", "Tā jiào shénme míngzi?", "What is his name?"],
+    ["我们都是美国人。", "Wǒmen dōu shì Měiguó rén.", "We are all American."],
   ],
   "Likes & food": [
     ["我喜欢饺子。", "Wǒ xǐhuan jiǎozi.", "I like dumplings."],
@@ -224,6 +230,9 @@ const patternGroups = {
     ["我喜欢中国菜。", "Wǒ xǐhuan Zhōngguó cài.", "I like Chinese food."],
     ["我喜欢美国菜。", "Wǒ xǐhuan Měiguó cài.", "I like American food."],
     ["我喜欢墨西哥菜。", "Wǒ xǐhuan Mòxīgē cài.", "I like Mexican food."],
+    ["我喜欢喝咖啡。", "Wǒ xǐhuan hē kāfēi.", "I like drinking coffee."],
+    ["你喜欢牛肉还是鸡肉？", "Nǐ xǐhuan niúròu háishi jīròu?", "Do you like beef or chicken?"],
+    ["这个披萨很好吃。", "Zhège pīsà hěn hǎochī.", "This pizza is delicious."],
   ],
   "Restaurant": [
     ["我们去吃饭吧。", "Wǒmen qù chīfàn ba.", "Let's go eat."],
@@ -234,6 +243,9 @@ const patternGroups = {
     ["我请客。", "Wǒ qǐngkè.", "It's my treat."],
     ["我要打包。", "Wǒ yào dǎbāo.", "I want it packed to go."],
     ["我们一共买了四碗馄饨。", "Wǒmen yígòng mǎi le sì wǎn húntun.", "We bought four bowls of wontons in total."],
+    ["服务员，请问有冰水吗？", "Fúwùyuán, qǐngwèn yǒu bīngshuǐ ma?", "Excuse me, server, do you have ice water?"],
+    ["我要一杯咖啡和一碗馄饨。", "Wǒ yào yì bēi kāfēi hé yì wǎn húntun.", "I want one cup of coffee and one bowl of wontons."],
+    ["这碗牛肉面多少钱？", "Zhè wǎn niúròu miàn duōshao qián?", "How much is this bowl of beef noodles?"],
   ],
   "Time & place": [
     ["今天星期几？", "Jīntiān xīngqī jǐ?", "What day of the week is today?"],
@@ -243,6 +255,9 @@ const patternGroups = {
     ["你在哪里？", "Nǐ zài nǎlǐ?", "Where are you?"],
     ["明天下午你有时间吗？", "Míngtiān xiàwǔ nǐ yǒu shíjiān ma?", "Do you have time tomorrow afternoon?"],
     ["你到了吗？", "Nǐ dào le ma?", "Have you arrived?"],
+    ["明天是星期六。", "Míngtiān shì xīngqīliù.", "Tomorrow is Saturday."],
+    ["我现在在小猫饭店。", "Wǒ xiànzài zài Xiǎomāo Fàndiàn.", "I am at Little Cat Restaurant now."],
+    ["你下午几点到？", "Nǐ xiàwǔ jǐ diǎn dào?", "What time will you arrive this afternoon?"],
   ],
   "Making plans": [
     ["你明天上午有时间吗？", "Nǐ míngtiān shàngwǔ yǒu shíjiān ma?", "Do you have time tomorrow morning?"],
@@ -253,29 +268,68 @@ const patternGroups = {
     ["好的，几点？在哪里？", "Hǎo de, jǐ diǎn? Zài nǎlǐ?", "Okay. What time? Where?"],
     ["5点，在小猫饭店。", "Wǔ diǎn, zài Xiǎomāo Fàndiàn.", "At five, at Little Cat Restaurant."],
     ["明天见。", "Míngtiān jiàn.", "See you tomorrow."],
+    ["今天晚上去吃饭吗？", "Jīntiān wǎnshang qù chīfàn ma?", "Shall we go eat this evening?"],
+    ["我们下午五点见。", "Wǒmen xiàwǔ wǔ diǎn jiàn.", "We will meet at five this afternoon."],
+    ["我们一起去买咖啡吧。", "Wǒmen yìqǐ qù mǎi kāfēi ba.", "Let's go buy coffee together."],
   ],
   "Daily life": [
     ["我知道。", "Wǒ zhīdào.", "I know."],
     ["我晚上睡觉。", "Wǒ wǎnshang shuìjiào.", "I sleep at night."],
     ["我喜欢吃牛肉。", "Wǒ xǐhuan chī niúròu.", "I like eating beef."],
+    ["我早上喝咖啡。", "Wǒ zǎoshang hē kāfēi.", "I drink coffee in the morning."],
+    ["我下午吃米饭和鸡肉。", "Wǒ xiàwǔ chī mǐfàn hé jīròu.", "I eat rice and chicken in the afternoon."],
+    ["我晚上十点睡觉。", "Wǒ wǎnshang shí diǎn shuìjiào.", "I sleep at ten at night."],
   ],
   "Possession": [
     ["这是我的面包。", "Zhè shì wǒ de miànbāo.", "This is my bread."],
     ["这杯咖啡是你的。", "Zhè bēi kāfēi shì nǐ de.", "This cup of coffee is yours."],
     ["他是我们的朋友。", "Tā shì wǒmen de péngyou.", "He is our friend."],
     ["我要辣的。", "Wǒ yào là de.", "I want the spicy one."],
+    ["这是你的咖啡吗？", "Zhè shì nǐ de kāfēi ma?", "Is this your coffee?"],
+    ["那是他的面包。", "Nà shì tā de miànbāo.", "That is his bread."],
+    ["哪一杯是我的？", "Nǎ yì bēi shì wǒ de?", "Which cup is mine?"],
+  ],
+  "Questions": [
+    ["这是什么？", "Zhè shì shénme?", "What is this?"],
+    ["他是谁？", "Tā shì shéi?", "Who is he?"],
+    ["你有几个朋友？", "Nǐ yǒu jǐ ge péngyou?", "How many friends do you have?"],
+    ["你怎么去饭店？", "Nǐ zěnme qù fàndiàn?", "How do you go to the restaurant?"],
+    ["这个菜怎么样？", "Zhège cài zěnmeyàng?", "How is this dish?"],
+    ["你要多少杯水？", "Nǐ yào duōshao bēi shuǐ?", "How many cups of water do you want?"],
   ],
 };
 
 const planDialogue = [
-  ["A", "你明天上午有时间吗？", "Nǐ míngtiān shàngwǔ yǒu shíjiān ma?", "Do you have time tomorrow morning?"],
-  ["B", "明天上午没有。", "Míngtiān shàngwǔ méiyǒu.", "I do not have time tomorrow morning."],
-  ["A", "那下午呢？", "Nà xiàwǔ ne?", "Then how about the afternoon?"],
-  ["B", "下午有时间。", "Xiàwǔ yǒu shíjiān.", "I have time in the afternoon."],
-  ["A", "我们去吃披萨吧。", "Wǒmen qù chī pīsà ba.", "Let's go eat pizza."],
-  ["B", "好的，几点？在哪里？", "Hǎo de, jǐ diǎn? Zài nǎlǐ?", "Okay. What time? Where?"],
-  ["A", "5点，在小猫饭店。", "Wǔ diǎn, zài Xiǎomāo Fàndiàn.", "At five, at Little Cat Restaurant."],
-  ["B", "明天见。", "Míngtiān jiàn.", "See you tomorrow."],
+  ["安", "小李，早上好！", "Xiǎo Lǐ, zǎoshang hǎo!", "Good morning, Xiao Li!"],
+  ["李", "Anthony，早上好！你好吗？", "Anthony, zǎoshang hǎo! Nǐ hǎo ma?", "Good morning, Anthony! How are you?"],
+  ["安", "我很好，谢谢。你呢？", "Wǒ hěn hǎo, xièxie. Nǐ ne?", "I am very well, thank you. And you?"],
+  ["李", "我也很好。今天星期几？", "Wǒ yě hěn hǎo. Jīntiān xīngqī jǐ?", "I am very well too. What day is today?"],
+  ["安", "今天星期五。今天也是我的生日。", "Jīntiān xīngqīwǔ. Jīntiān yě shì wǒ de shēngrì.", "Today is Friday. Today is also my birthday."],
+  ["李", "生日快乐！你今天有时间吗？", "Shēngrì kuàilè! Nǐ jīntiān yǒu shíjiān ma?", "Happy birthday! Do you have time today?"],
+  ["安", "上午没有时间，下午有时间。", "Shàngwǔ méiyǒu shíjiān, xiàwǔ yǒu shíjiān.", "I do not have time in the morning, but I have time in the afternoon."],
+  ["李", "那我们下午去吃饭吧。", "Nà wǒmen xiàwǔ qù chīfàn ba.", "Then let's go eat this afternoon."],
+  ["安", "好的。你想吃什么？", "Hǎo de. Nǐ xiǎng chī shénme?", "Okay. What do you want to eat?"],
+  ["李", "我想吃中国菜。你呢？", "Wǒ xiǎng chī Zhōngguó cài. Nǐ ne?", "I want to eat Chinese food. And you?"],
+  ["安", "我也喜欢中国菜。我们去小猫饭店吧。", "Wǒ yě xǐhuan Zhōngguó cài. Wǒmen qù Xiǎomāo Fàndiàn ba.", "I like Chinese food too. Let's go to Little Cat Restaurant."],
+  ["李", "好的，几点见面？", "Hǎo de, jǐ diǎn jiànmiàn?", "Okay. What time should we meet?"],
+  ["安", "五点。你现在在哪里？", "Wǔ diǎn. Nǐ xiànzài zài nǎlǐ?", "Five o'clock. Where are you now?"],
+  ["李", "我现在在家。你在哪里？", "Wǒ xiànzài zài jiā. Nǐ zài nǎlǐ?", "I am at home now. Where are you?"],
+  ["安", "我在工作。下午五点在饭店见。", "Wǒ zài gōngzuò. Xiàwǔ wǔ diǎn zài fàndiàn jiàn.", "I am at work. See you at the restaurant at five this afternoon."],
+  ["李", "好的，下午见。", "Hǎo de, xiàwǔ jiàn.", "Okay, see you this afternoon."],
+  ["安", "你到了吗？", "Nǐ dào le ma?", "Have you arrived?"],
+  ["李", "我到了。我在饭店里面。", "Wǒ dào le. Wǒ zài fàndiàn lǐmiàn.", "I have arrived. I am inside the restaurant."],
+  ["安", "你想喝什么？", "Nǐ xiǎng hē shénme?", "What do you want to drink?"],
+  ["李", "我要一杯冰水。你呢？", "Wǒ yào yì bēi bīngshuǐ. Nǐ ne?", "I want one cup of ice water. And you?"],
+  ["安", "我要咖啡。你想吃什么？", "Wǒ yào kāfēi. Nǐ xiǎng chī shénme?", "I want coffee. What do you want to eat?"],
+  ["李", "我要一碗牛肉面。", "Wǒ yào yì wǎn niúròu miàn.", "I want one bowl of beef noodles."],
+  ["安", "我要鸡肉西兰花和一碗馄饨。", "Wǒ yào jīròu xīlánhuā hé yì wǎn húntun.", "I want chicken with broccoli and one bowl of wontons."],
+  ["李", "这个饭店的鸡肉很好吃。", "Zhège fàndiàn de jīròu hěn hǎochī.", "The chicken at this restaurant is delicious."],
+  ["安", "是的。你饿了吗？", "Shì de. Nǐ è le ma?", "Yes. Are you hungry?"],
+  ["李", "我饿了。我们吃饭吧。", "Wǒ è le. Wǒmen chīfàn ba.", "I am hungry. Let's eat."],
+  ["安", "好的。吃完以后我去买单。", "Hǎo de. Chī wán yǐhòu wǒ qù mǎidān.", "Okay. After we finish eating, I will pay the bill."],
+  ["李", "谢谢！一共多少钱？", "Xièxie! Yígòng duōshao qián?", "Thank you! How much is it altogether?"],
+  ["安", "一共一百五十三块。我请客。", "Yígòng yìbǎi wǔshísān kuài. Wǒ qǐngkè.", "It is 153 yuan altogether. It is my treat."],
+  ["李", "谢谢，明天见！", "Xièxie, míngtiān jiàn!", "Thank you, see you tomorrow!"],
 ];
 
 const pronunciationDrills = [
@@ -297,6 +351,24 @@ const conversationReadings = [
     pinyin: "Dào le fàndiàn, fúwùyuán wèn: “Nǐmen xiǎng hē shénme?” Anthony shuō: “Wǒ yào liǎng bēi bīngshuǐ, zài lái yì wǎn húntun.” Xiǎo Lǐ shuō: “Wǒ xiǎng chángshì niúròu miàn.” Fúwùyuán shuō: “Méi wèntí, qǐng shāo děng.” Chī wán yǐhòu, Anthony qù mǎidān, tāmen dōu juéde hěn hǎochī.",
     english: "At the restaurant, the server asks, “What would you like to drink?” Anthony says, “I want two cups of ice water and another bowl of wontons.” Xiao Li says, “I want to try beef noodles.” The server says, “No problem, please wait a moment.” After eating, Anthony pays the bill, and they both think the food is delicious.",
     newWords: [["再来", "zài lái", "another"], ["尝试", "chángshì", "try"], ["没问题", "méi wèntí", "no problem"], ["稍等", "shāo děng", "wait a moment"], ["觉得", "juéde", "think or feel"]],
+  },
+  {
+    chinese: "今天是Anthony的生日。下午五点，小李到了小猫饭店。他给Anthony一个小礼物。Anthony很高兴，说：“谢谢，你是我的好朋友。”他们一起吃披萨，还喝了咖啡。",
+    pinyin: "Jīntiān shì Anthony de shēngrì. Xiàwǔ wǔ diǎn, Xiǎo Lǐ dào le Xiǎomāo Fàndiàn. Tā gěi Anthony yí ge xiǎo lǐwù. Anthony hěn gāoxìng, shuō: “Xièxie, nǐ shì wǒ de hǎo péngyou.” Tāmen yìqǐ chī pīsà, hái hē le kāfēi.",
+    english: "Today is Anthony's birthday. At five in the afternoon, Xiao Li arrives at Little Cat Restaurant. He gives Anthony a small gift. Anthony is very happy and says, “Thank you, you are my good friend.” They eat pizza together and also drink coffee.",
+    newWords: [["给", "gěi", "give"], ["礼物", "lǐwù", "gift"], ["高兴", "gāoxìng", "happy"], ["还", "hái", "also"]],
+  },
+  {
+    chinese: "每天早上，Anthony七点起床。他喝一杯咖啡，吃面包。上午他学习中文，下午他说中文。晚上十点，他说“晚安”，然后睡觉。",
+    pinyin: "Měitiān zǎoshang, Anthony qī diǎn qǐchuáng. Tā hē yì bēi kāfēi, chī miànbāo. Shàngwǔ tā xuéxí Zhōngwén, xiàwǔ tā shuō Zhōngwén. Wǎnshang shí diǎn, tā shuō ‘wǎn'ān,’ ránhòu shuìjiào.",
+    english: "Every morning, Anthony gets up at seven. He drinks a cup of coffee and eats bread. In the morning he studies Chinese, and in the afternoon he speaks Chinese. At ten at night, he says “good night” and then sleeps.",
+    newWords: [["每天", "měitiān", "every day"], ["起床", "qǐchuáng", "get up"], ["学习", "xuéxí", "study"], ["然后", "ránhòu", "then"]],
+  },
+  {
+    chinese: "星期日下午，Anthony和他的儿子一起去公园。他们走路，也说中文。Anthony问：“你喜欢吃什么？”儿子说：“我喜欢披萨，也喜欢鸡肉。”回家以前，他们买了两杯水。",
+    pinyin: "Xīngqīrì xiàwǔ, Anthony hé tā de érzi yìqǐ qù gōngyuán. Tāmen zǒulù, yě shuō Zhōngwén. Anthony wèn: “Nǐ xǐhuan chī shénme?” Érzi shuō: “Wǒ xǐhuan pīsà, yě xǐhuan jīròu.” Huíjiā yǐqián, tāmen mǎi le liǎng bēi shuǐ.",
+    english: "On Sunday afternoon, Anthony and his son go to the park together. They walk and also speak Chinese. Anthony asks, “What do you like to eat?” His son says, “I like pizza, and I also like chicken.” Before going home, they buy two cups of water.",
+    newWords: [["儿子", "érzi", "son"], ["公园", "gōngyuán", "park"], ["走路", "zǒulù", "walk"], ["回家", "huíjiā", "go home"], ["以前", "yǐqián", "before"]],
   },
 ];
 
@@ -659,7 +731,8 @@ function renderDialogue() {
   planDialogue.forEach(([speaker, chinese, pinyin, english]) => {
     const row = document.createElement("article");
     row.className = "dialogue-turn";
-    row.innerHTML = `<span class="dialogue-speaker">${speaker}</span><div><p class="dialogue-chinese" lang="zh-Hans">${chinese}</p><p class="dialogue-pinyin">${pinyin}</p></div><p class="dialogue-english">${english}</p>`;
+    const speakerName = speaker === "安" ? "Anthony" : "Xiao Li";
+    row.innerHTML = `<span class="dialogue-speaker" aria-label="${speakerName}" title="${speakerName}">${speaker}</span><div><p class="dialogue-chinese" lang="zh-Hans">${chinese}</p><p class="dialogue-pinyin">${pinyin}</p></div><p class="dialogue-english">${english}</p>`;
     list.append(row);
   });
 }

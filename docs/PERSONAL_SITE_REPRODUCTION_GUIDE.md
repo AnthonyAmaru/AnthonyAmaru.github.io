@@ -162,6 +162,63 @@ person-site/
 
 Use relative links and serve the site through HTTP during development. Do not use `file://` for testing.
 
+### Default Interests set
+
+Every new personal site starts with these six Interests tiles and directly addressable routes unless the owner explicitly removes or renames one:
+
+| Interest | Default route | Privacy default | Minimum contents |
+| --- | --- | --- | --- |
+| Gym & Nutrition | `gym.html` | private activity data | Nutrition, Gym Tracker, and Gym Program tiles; the tracker saves owner-scoped workouts and progression |
+| Finances | `bills.html` | private | editable income, recurring expenses, savings, and calculated summaries loaded only after authentication |
+| Health | `health.html` | private | value-free public shell plus authenticated health records, filters, trends, and source-linked educational guidance |
+| Taxes | `taxes.html` | private | official filing links, organizer, prior-year summaries, and references to private source documents |
+| Books | `books.html` | private by default | library tiles/list, reading progress, bookmarks, and private document references; never publish copyrighted book files |
+| AI | `ai.html` or an owner-specific AI route | authenticated | protected one-question assistant or downloadable owner-approved Markdown packages; provider calls go through the Edge Function |
+
+These are content defaults, not permission shortcuts. The Interests grid remains hidden until the one session-level administrator check succeeds. Every private route must also enforce Supabase Auth, administrator membership, grants, RLS, and private Storage independently so a direct URL cannot reveal data. A public route may return its empty HTML shell with `200`; that shell must contain no private values, private prose, document paths, diagnoses, balances, or owner-only metadata.
+
+### Public static-hosting privacy rule
+
+Assume every file shipped to GitHub Pages and every object committed to a public repository is public, even when the interface places it behind a riddle, password dialog, hidden element, route guard, or JavaScript hash comparison.
+
+- A client-side entrance password is a presentation gate only. Its hash and comparison algorithm can be downloaded and tested offline.
+- Never package a manuscript, private journal, medical interpretation, financial figure, tax value, private book/PDF, private filename, or owner profile in HTML, CSS, JavaScript, JSON, source maps, comments, test fixtures, or fallback data.
+- Load private content from owner-scoped Supabase rows or private Storage only after the current JWT and administrator allowlist check succeed.
+- A private Storage bucket must use authenticated downloads or short-lived signed URLs. Never put its object URL or original sensitive filename in public source.
+- If sensitive content was committed, removing it from the latest file is not enough. Treat the repository history, Pages artifact, forks, caches, and logs as exposed. Revoke or rotate secrets immediately; then remove sensitive history or make the repository private using a separately reviewed, explicitly approved recovery procedure.
+- Making a GitHub repository private does not make an already published Pages site private. Do not deploy sensitive static assets at all.
+
+### Single-owner website/app ownership model
+
+This package produces one independently owned website/app pair for one person. It is not a hosted multi-user product and must not create a central account system controlled by the blueprint author.
+
+```text
+Owner A website  ─┐
+                  ├── Owner A Supabase project
+Owner A iOS app  ─┘
+
+Another person copies this Markdown package and creates:
+
+Owner B website  ─┐
+                  ├── Owner B Supabase project
+Owner B iOS app  ─┘
+```
+
+Each person independently owns and controls:
+
+- their domain and DNS account;
+- their GitHub repository and deployment;
+- their Supabase organization/project, database, Auth user, Storage, Edge Functions, and billing;
+- their AI-provider account and secret;
+- their Apple Developer membership, signing certificates, bundle identifier, App Store Connect record, privacy policy, support contact, app listing, and submitted binary;
+- their branding, content, backups, credentials, security decisions, and ongoing updates.
+
+Never place several owners in one shared production Supabase project merely to simplify this blueprint. Never retain the owner's recovery codes, certificates, passwords, tax/health content, provider secrets, or App Store access. The human owner completes purchases, identity verification, agreements, signing access, CAPTCHA, MFA, recovery, and final submission confirmation.
+
+Apple's template-app rule requires the provider of the app's content to submit the app directly. Therefore each owner submits their own sufficiently customized app through their own developer account. Do not have the blueprint author publish a series of near-identical personal apps. Every submitted app needs unique branding, owner-provided content, useful native behavior, and an experience that goes beyond displaying the website.
+
+For a private app intended only for the owner, family, or a few friends, review Apple's current distribution guidance before choosing the public App Store. A PWA, direct Xcode installation, or an eligible private/ad hoc distribution route may fit better. If App Store distribution is chosen, the app must still satisfy App Review and provide reviewers a sanitized account or approved demo path without exposing the owner's real private data.
+
 ## Interface contract
 
 ### Primary navigation
@@ -335,6 +392,7 @@ The music page should support:
 - Store editable small JSON documents in `site_content` using `(user_id, site, content_key)` as the key.
 - For system speech, use the browser Web Speech API with an explicit language such as `zh-CN`, a user-triggered button, and a graceful no-op when no compatible voice is installed. Populate a shared voice picker from `getVoices()` and `voiceschanged`, prefer an installed local Mandarin voice in automatic mode, and persist the selected voice and playback-rate slider so the notebook and quiz behave identically. Do not require a paid speech service for basic pronunciation.
 - On a language notebook, make every target-language word, sentence, dialogue turn, drill, character, flashcard, and reading paragraph a keyboard-accessible pronunciation target. Use delegated events so dynamically rendered study items retain speech behavior.
+- Store long practice conversations as ordered speaker turns with target-language text, pronunciation, and a compact translation. Keep the exchange balanced between speakers, make every target-language turn individually speakable, and verify the intended per-speaker turn count when editing lesson data.
 - Reading exercises may introduce at most five new terms per paragraph. Keep the remaining text within the known vocabulary, highlight the new terms, and list their pronunciation and meaning beside the paragraph.
 - Debounce manuscript saves, show save state, and keep a local recovery copy.
 - Provide a single/two-page spread toggle that edits two adjacent pages in the current chapter without merging their saved content.
@@ -619,6 +677,69 @@ Then verify:
 - Confirm the AI gateway rejects an unsigned or non-admin request.
 - Confirm the AI-provider key is absent from the repository and browser responses.
 
+### Mandatory penetration-testing and privacy gate
+
+Run this authorized, non-destructive baseline before the first public deployment; repeat it after any Auth, RLS, grant, Storage, Edge Function, private-data, or hosting change and at least quarterly. Test only domains and projects the owner controls. Brute force, denial of service, destructive writes, persistence, social engineering, or testing a third-party system requires separate written scope and a staging environment.
+
+Record the date, tested production commit, project reference, checks performed, pass/fail result, severity, remediation, and retest result. Never place tokens, passwords, private response bodies, medical details, tax details, or complete filenames in the report.
+
+#### 1. Static-source and repository-history scan
+
+- Scan tracked files, generated Pages artifacts, source maps, and the complete Git history for provider keys, secret or legacy `service_role` keys, private keys, passwords, JWTs, database URLs with credentials, PII, tax identifiers, private addresses, health values, financial values, document names, and private file types.
+- Permit only the Supabase project URL and publishable browser key. Verify no elevated key or AI-provider secret appears in the browser bundle, build output, logs, URL, Markdown package, or Git history.
+- Request every sensitive-looking asset path directly. A public `200` is a failure when the response contains owner-only data; a value-free application shell is acceptable only when all data retrieval remains protected server-side.
+- Search for packaged fallback data. A private workspace must fail closed when cloud data is unavailable instead of rendering sensitive defaults from JavaScript.
+
+#### 2. Anonymous and unauthorized API tests
+
+- Query every private Data API table using only the publishable key and no user JWT. The result must be `401`/`403` or an empty set with no private row, aggregate, count, or existence leak.
+- Attempt `SELECT`, `INSERT`, `UPDATE`, and `DELETE` as `anon`; every unauthorized operation must fail or affect zero rows.
+- Use a temporary authenticated non-admin test account when the project permits it. Confirm it cannot read `site_admins`, private owner rows, test attempts, artwork metadata, finance/health/tax documents, or invoke the protected AI gateway.
+- Confirm the allowlisted administrator can access only rows whose `user_id` matches `auth.uid()` and the intended `site` slug.
+- Test identifiers belonging to a different user to detect BOLA/IDOR. Never rely on `TO authenticated` without an ownership or allowlist predicate.
+
+#### 3. RLS, grants, functions, and advisers
+
+- Confirm RLS is enabled on every table and view exposed through the Data API. Views must use `security_invoker` when supported or be inaccessible to browser roles.
+- Review `pg_policies` and object grants together. Revoke every unnecessary `anon` privilege from private objects and set restrictive default privileges so new objects are not exposed automatically.
+- UPDATE policies require SELECT access plus both `USING` and `WITH CHECK`. Policies require `auth.uid()` ownership and, for administrator-only content, membership in `site_admins`.
+- Review every function. Keep privileged helpers outside exposed schemas, revoke default `PUBLIC` execution, avoid `SECURITY DEFINER` unless necessary, and perform an explicit authenticated authorization check inside any privileged function.
+- Run Supabase Security Advisor after every schema/policy change and resolve all applicable high/critical findings before deployment. Record any accepted warning and why it is safe.
+
+#### 4. Storage tests
+
+- Confirm tax, health-document, art, manuscript, and private-book buckets are marked private.
+- Without a JWT, test listing, direct download, guessed paths, update, overwrite/upsert, and delete. None may reveal an object or object metadata.
+- With a non-admin JWT, repeat the same tests and confirm denial.
+- With the administrator JWT, confirm access succeeds only inside `SITE_SLUG/USER_UUID/` and that path traversal or another UUID fails.
+- Treat a public music bucket and public music metadata as deliberately public. If the owner expects music privacy, change both the bucket and read policies; a visual entrance gate does not make public tracks private.
+
+#### 5. Authentication and session tests
+
+- Use a unique password-manager-generated passphrase. Do not use a short PIN, reused password, name, date, riddle answer, or password previously pasted into chat, code, tickets, or logs.
+- Configure a strong minimum password length, enable compromised-password protection when the plan supports it, disable public sign-up for a single-owner site, and enable rate limits or bot protection on exposed Auth flows.
+- Enable authenticator-app MFA for the owner. For highly sensitive rows and files, enforce an MFA-backed `aal2` session in RLS or the server-side authorization layer; adding an MFA screen without enforcing the claim is incomplete.
+- Store the browser session only as long as required. Test sign-out, expiry, refresh, browser/tab closure, password change, and revoked sessions. On failure, clear the private UI and cached private values immediately.
+- Confirm authentication errors do not reveal whether an email, administrator membership, or private record exists.
+
+#### 6. Browser, XSS, AI, and transport tests
+
+- Verify HTTP redirects to HTTPS, the certificate covers apex and `www`, and no mixed-content request occurs.
+- Review response headers or equivalent meta policies for Content Security Policy, clickjacking protection (`frame-ancestors`), MIME sniffing protection, referrer policy, and permissions policy. GitHub Pages does not provide arbitrary response headers; use a suitable proxy/host or a carefully tested meta CSP where required.
+- Search for `innerHTML`, `insertAdjacentHTML`, `eval`, `new Function`, and `document.write`. Render owner/cloud/AI text with `textContent` or a proven sanitizer and test stored/reflected XSS payloads without executing harmful actions.
+- Confirm no third-party script can read the Supabase session unnecessarily. Pin dependencies and commit lockfiles when a package manager is used.
+- Call every Edge Function without a JWT, with a malformed/expired JWT, and with a non-admin JWT; each must fail. CORS is not authentication. Enforce input-size limits, timeouts, `Cache-Control: no-store`, safe error messages, provider rate limits, and server-side secrets.
+- Check that AI prompts never receive tax identifiers, medical reports, passwords, tokens, or unrelated private records automatically.
+
+#### 7. Required pass criteria
+
+- Zero critical or high findings remain open.
+- Anonymous and non-admin tests retrieve zero private rows and zero private Storage objects.
+- No private content or secret exists in the current public artifact or public Git history.
+- All security advisers have been reviewed, and applicable findings are fixed and retested.
+- HTTPS and direct-route tests pass on the production domain.
+- A second reviewer or independent tool validates the highest-risk Auth/RLS/Storage paths when health, tax, financial, or unpublished manuscript data is present.
+
 ### Deployment checks
 
 - Wait for the GitHub Pages deployment to finish.
@@ -643,6 +764,231 @@ When this occurs:
 
 For Cisco products, use the Talos **Web Reputation** form for a threat/reputation correction and the separate **Content Categorization** form for an incorrect or missing content label.
 
+## Phase 7 — build the independently owned iOS app
+
+Use Capacitor to package the existing responsive HTML/CSS/JavaScript as a native iOS application while preserving a single web source of truth. The website and app do not send updates directly to each other. Both authenticate independently and read/write the owner's Supabase project.
+
+```text
+GitHub Pages website ─┐
+                      ├── Supabase Auth + RLS + Database + Storage + Edge Functions
+Capacitor iOS app ────┘
+```
+
+### 7.1 Decide distribution before coding
+
+1. Decide whether the owner needs a public App Store listing, an unlisted/private distribution option, direct device installation, or only an installable PWA.
+2. For an App Store release, enroll the owner in the Apple Developer Program and accept current agreements. The owner—not the AI or blueprint author—completes identity and payment steps.
+3. Choose a permanent reverse-domain bundle ID that belongs to the owner, such as `com.OWNERDOMAIN.personal`.
+4. Choose the app name, icon, splash treatment, support URL, privacy-policy URL, and App Store category.
+5. Review the current Apple App Review Guidelines before implementation. A thin website wrapper or collection of links can be rejected under Minimum Functionality.
+
+### 7.2 Secure and normalize the shared web source first
+
+1. Complete the mandatory penetration-testing and privacy gate before creating an app bundle.
+2. Remove all owner-only fallback content from HTML/JavaScript. The app bundle is inspectable and must contain no manuscript, tax, health, financial, password, token, or private-document data.
+3. Make routes work with relative URLs under both HTTPS and Capacitor's local app origin.
+4. Put environment-dependent behavior behind one adapter, for example `platform.js`, which exposes `isNativeApp`, secure-session storage, file selection, sharing, notifications, biometrics, and media controls.
+5. Keep ordinary web behavior as a fallback so one source remains usable by GitHub Pages and the app.
+6. Do not restructure an established live website merely to satisfy Capacitor. Add a deterministic mobile build that copies an allowlisted production bundle into `mobile/www`; never edit generated `mobile/www` files manually.
+
+Recommended repository addition:
+
+```text
+mobile/
+├── package.json
+├── package-lock.json
+├── capacitor.config.ts
+├── scripts/
+│   └── build-web-bundle.mjs       # copies only approved production web assets
+├── www/                            # generated Capacitor webDir; no private data
+└── ios/                            # generated native Xcode project
+```
+
+### 7.3 Initialize Capacitor with pinned versions
+
+Check the current Capacitor requirements first. Record and pin one compatible version for core, CLI, iOS, and every plugin; commit `package-lock.json`.
+
+```bash
+cd mobile
+npm init -y
+CAPACITOR_VERSION="REPLACE_WITH_REVIEWED_EXACT_VERSION"
+npm install --save-exact "@capacitor/core@$CAPACITOR_VERSION" "@capacitor/ios@$CAPACITOR_VERSION"
+npm install --save-dev --save-exact "@capacitor/cli@$CAPACITOR_VERSION"
+npx cap init
+```
+
+Set the owner's app ID, app name, and generated web directory:
+
+```ts
+import type { CapacitorConfig } from "@capacitor/cli";
+
+const config: CapacitorConfig = {
+  appId: "com.OWNERDOMAIN.personal",
+  appName: "OWNER APP NAME",
+  webDir: "www",
+  loggingBehavior: "debug",
+};
+
+export default config;
+```
+
+Do not set a production `server.url` to the live website. Bundle the reviewed web code inside the app. Remote Supabase data may change, but website deployments must not silently download executable code that introduces or materially changes app functionality after App Review. Disable production logging or ensure logs can never contain private values or tokens.
+
+Generate and open the native project only after the `www/index.html` bundle exists:
+
+```bash
+npm run build
+npx cap add ios
+npx cap sync ios
+npx cap open ios
+```
+
+Run `npm run build` and `npx cap sync ios` after every shared web or plugin change. Never edit the copied files inside the native project as the source of truth.
+
+### 7.4 Connect the app to the owner's Supabase project
+
+1. Use the same project URL and publishable key as the owner's website. Never bundle a secret or legacy `service_role` key.
+2. Keep public sign-up disabled for the single-owner app. Authenticate the allowlisted owner and enforce the same `auth.uid()` ownership, `site_admins`, grants, RLS, and Storage policies used by the website.
+3. Give `supabase-js` a reviewed Keychain-backed storage adapter for refresh/session credentials. Do not put app tokens in plain Preferences, `localStorage`, source code, logs, analytics, or backups.
+4. Add biometric unlock only as a local convenience around a valid securely stored session. Face ID does not replace server-side JWT validation, RLS, or MFA.
+5. Subscribe to Supabase Realtime only for records that genuinely need immediate cross-device refresh. Ordinary writes are already synchronized because both clients use the same database; refresh on app foreground/reconnect even when Realtime is enabled.
+6. Add `updated_at` and a document version/revision to editable records. Reject or reconcile a save when another device has a newer revision so simultaneous website/app edits cannot silently overwrite a book page, workout, finance record, or list.
+7. Cache only the minimum required data. Keep tax, health, and financial records network-only by default; if offline access is explicitly required, use reviewed device encryption and a remote-revocation design.
+8. Use private Storage downloads or short-lived signed URLs for protected documents. Store temporary files in the app container, apply data-protection classes, and remove them after viewing/exporting.
+
+### 7.5 Add native value beyond the website
+
+Implement the native features that make sense for the owner's content. A submitted app should provide several durable, polished capabilities rather than functioning as a WebView bookmark:
+
+- Face ID/Touch ID convenience unlock backed by Keychain session storage;
+- local and push reminders for bills, workouts, studying, goals, or appointments;
+- background audio plus lock-screen/Control Center play, pause, previous, and next controls;
+- offline aviation/Mandarin quizzes with a conflict-safe sync queue;
+- native Files, camera, photo, PDF, share-sheet, and export flows;
+- Apple Pencil/PencilKit drawing when art is enabled;
+- widgets, App Intents, or Shortcuts for useful owner actions;
+- haptics, safe-area handling, native keyboard behavior, accessible labels, and iPhone/iPad layouts.
+
+Request only permissions required by an active feature and present Apple's purpose string before access. External web links open in the system browser unless an in-app view is necessary and allowlisted. Do not request Contacts, Photos, Camera, Microphone, HealthKit, Location, or notification access merely because a plugin supports it.
+
+### 7.6 Keep data updates and code updates distinct
+
+| Change | Website | Installed iOS app |
+| --- | --- | --- |
+| Owner changes a workout, bill, playlist, quiz, bookmark, or book page | saved to Supabase and visible to app | saved to Supabase and visible to website |
+| Owner uploads a protected file | private Storage record is available to authenticated app | private Storage record is available to authenticated website |
+| Website HTML/CSS/JavaScript changes | deploy through GitHub Pages | rebuild, test, and submit a new app version when bundled behavior changes |
+| Database content or approved server-driven configuration changes | refresh or Realtime update | refresh or Realtime update |
+| Native plugin, permission, icon, privacy declaration, or Swift change | no website effect | new signed build and App Store review required |
+
+Supabase synchronizes data, not application binaries. Never use database content, remote HTML, or an update service to evade App Review or introduce unreviewed executable features.
+
+### 7.7 Configure and test the native iOS project
+
+1. Open the generated workspace in the current supported Xcode version.
+2. Select the owner's Apple team, confirm the bundle ID, deployment target, version, and build number, and enable only required capabilities.
+3. Add final app icons, launch assets, orientations, safe-area behavior, and purpose strings.
+4. Add and validate `PrivacyInfo.xcprivacy` for Capacitor/plugins and complete Apple's required-reason API declarations.
+5. Keep App Transport Security strict. Use HTTPS only and never add a broad arbitrary-load exception for production.
+6. Test on a real iPhone and iPad, not only Simulator: initial login, MFA, Face ID fallback, session expiry, sign-out, app termination, background/foreground, offline/reconnect, low storage, denied permissions, rotation, text sizing, dark mode, music controls, uploads, downloads, and deep links.
+7. Make one change in the website and confirm it appears in the app; make one change in the app and confirm it appears on the website. Test conflict handling by editing the same record from both before either refreshes.
+8. Repeat the security gate against the installed app: inspect the bundle, proxy authorized test traffic, test anon/non-admin access, verify Keychain usage, confirm private files are not backed up or logged, and run Supabase advisers.
+
+### 7.8 Prepare App Store review
+
+1. Create the owner's App Store Connect record using the exact bundle ID.
+2. Add the privacy-policy URL inside the app and App Store metadata. Describe collected data, purpose, retention/deletion, Supabase/AI-provider processing, and how consent can be withdrawn.
+3. Complete App Privacy answers from actual code and network behavior, not assumptions.
+4. Create final screenshots for each required iPhone/iPad class, description, keywords, support URL, age rating, copyright, and review notes.
+5. Never give App Review the owner's real account. Create a temporary sanitized reviewer account whose RLS-visible rows contain only sample data, or arrange an approved demo mode when legal/security obligations prevent a reviewer account. Keep public signup disabled.
+6. Explain the app's native value and any non-obvious login, audio, offline, Pencil, notification, or file behavior in Review Notes.
+7. Archive and validate the release in Xcode, upload it to App Store Connect, distribute through TestFlight, fix device/review issues, then submit the owner-approved build for review.
+8. The owner performs the final submission and responds to Apple. Do not promise approval; App Review is discretionary and its rules change.
+
+### 7.9 App regression and release checklist
+
+- [ ] The app belongs to one owner and connects only to that owner's Supabase project.
+- [ ] The owner controls the developer account, signing, listing, repository, domain, and backend.
+- [ ] `mobile/www` is generated from the reviewed shared source and contains no private values or secrets.
+- [ ] Capacitor and plugins use exact compatible versions with a committed lockfile.
+- [ ] Production loads bundled code and has no live `server.url` or remote-code update path.
+- [ ] Supabase sessions use Keychain-backed storage; private tables/files remain protected by RLS and Storage policies.
+- [ ] Website → app and app → website synchronization pass, including conflict handling.
+- [ ] Native features provide lasting value beyond a wrapped website.
+- [ ] Real iPhone/iPad, offline, accessibility, permission-denial, background audio, and security tests pass.
+- [ ] Privacy policy, privacy manifest, App Privacy answers, screenshots, support URL, and sanitized review access are complete.
+- [ ] TestFlight passes before the owner submits the release.
+
+## Phase 8 — add the independently owned WhatsApp assistant
+
+Use Meta's official WhatsApp Cloud API with one Supabase Edge Function. The assistant runs in Supabase, so the owner's computer and phone do not need to stay online. It uses the same owner-scoped data source as the website but never places a Meta token, AI key, app secret, phone number, or service/secret Supabase key in GitHub Pages.
+
+```text
+Owner's WhatsApp
+      │
+      ▼
+Meta WhatsApp Cloud API
+      │ signed HTTPS webhook
+      ▼
+Supabase Edge Function ─── Big Pickle API
+      │
+      ├── owner allowlist + hashed phone comparison
+      ├── bounded progress snapshot
+      └── RLS-protected message/check-in tables
+```
+
+### 8.1 Required owner-controlled Meta setup
+
+1. Create or choose the owner's Meta business portfolio, Meta developer app, WhatsApp Business Account, and API phone number. The owner completes identity/business verification, phone verification, payment setup, terms, CAPTCHA, and MFA.
+2. Add the WhatsApp product to the Meta app and record the current Graph API version, Phone Number ID, WABA ID, App ID, and App Secret in the owner's password manager. Use a permanent production System User access token with only the required WhatsApp permissions; temporary quickstart tokens are test-only.
+3. Create two independent random secrets: one webhook verification token and one scheduler token. Never reuse the website password.
+4. Add these only through Supabase Edge Function Secrets: `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_VERIFY_TOKEN`, `WHATSAPP_APP_SECRET`, `WHATSAPP_OWNER_PHONE_E164`, `WHATSAPP_CRON_SECRET`, `META_GRAPH_API_VERSION`, and the existing AI-provider key. Do not send the values through chat, put them in an `.env` committed to Git, or expose them to browser code.
+5. Deploy `whatsapp-agent` with Supabase JWT verification disabled because Meta cannot send a Supabase JWT. The function itself must verify Meta's `X-Hub-Signature-256` HMAC over the exact raw request body before parsing or processing it.
+6. Configure the Meta webhook callback as `https://PROJECT_REF.supabase.co/functions/v1/whatsapp-agent`, enter the matching verification token, and subscribe to the `messages` field under **WhatsApp Business Account** (not the similarly named `User` webhook product). Field subscription alone does not attach the app to a WABA. With a least-privilege token containing `whatsapp_business_management`, call `POST /WABA_ID/subscribed_apps`, require `{ "success": true }`, then call `GET /WABA_ID/subscribed_apps` and confirm the intended App ID/name appears. Never place the token in a URL, screenshot, log, guide, or shell history.
+7. Test first with Meta's test number and the owner's allowlisted recipient. Move to the production number only after inbound text, AI reply, webhook retry, status update, and unauthorized-number tests pass.
+
+### 8.2 Single-owner and webhook security rules
+
+- Normalize the configured and incoming phone numbers to country-code digits, compare them in constant time, and persist only a SHA-256 phone hash. Do not store or log the clear phone number.
+- Require exactly one `site_admins` owner. Every message/check-in row carries that owner's UUID. Enable RLS, revoke `anon`, and give only the allowlisted authenticated owner access to their records.
+- A public webhook is not an unauthenticated business action. Verify the raw-body HMAC, cap request size, accept only the expected WhatsApp object type, and reject unsupported methods.
+- Make inbound `whatsapp_message_id` unique and insert it with conflict-ignore semantics. Meta retries must not trigger duplicate AI calls, replies, writes, or billing.
+- Return HTTP 200 immediately after authentication/validation and use `EdgeRuntime.waitUntil()` for bounded background processing. Catch background errors and log only status codes and internal error categories—never raw messages, private data, tokens, or provider response bodies.
+- Keep the bot read-only until every write action has a separately designed confirmation, authorization, validation, audit, and rollback path. The AI must never claim that it updated the website or accessed an external portal when it did not.
+- Never give the model raw health, tax, finance, manuscript, credentials, or entire `site_content` documents by default. Build a small deterministic snapshot adapter that exposes only approved counts, dates, and recent progress metadata. Add each new data source through explicit owner review.
+- If the owner approves a nutrition snapshot, isolate it behind a dedicated key such as `nutrition_profile_v1` and expose only the reviewed supplement, pre-workout, protein, and optional timing labels. Treat every entry as self-reported: omit diagnoses, bloodwork, dosages, adherence claims, safety conclusions, and medical endorsements unless a separately reviewed medical workflow explicitly requires them.
+- Retain chat history for a bounded period (the reference implementation uses 90 days), provide a `forget chat` command, and delete expired rows from a scheduled server-side job.
+- Treat messages as untrusted input. Bound history and message lengths, keep the system policy server-side, and do not let message text select arbitrary database tables, content keys, URLs, or tools.
+
+### 8.3 Scheduled accountability check-ins
+
+WhatsApp distinguishes user-initiated replies from business-initiated messages. A scheduled message outside the customer-service window must use an owner-approved WhatsApp message template; do not send an arbitrary free-form reminder.
+
+1. Create a neutral check-in template in WhatsApp Manager, such as a short question asking whether the owner completed a planned activity, and wait for Meta approval.
+2. Save only the approved template name/language plus cadence, weekdays, local time, timezone, and enabled state in `whatsapp_agent_checkins`. A new check-in starts disabled.
+3. Run one Supabase Cron job every 15 minutes. Store the scheduler secret in Vault and send it to the Edge Function in `x-agent-cron-secret` with `{ "action": "run-checkins" }`. Never put the secret in public SQL, a URL query string, or client JavaScript.
+4. The function converts the current instant into each check-in's IANA timezone, sends once per local scheduled date, records the returned Meta message ID, and updates `last_sent_at` immediately after Meta accepts the send so a later database-log failure cannot duplicate the reminder.
+5. Support `pause check-ins` and `resume check-ins` as deterministic commands. AI-generated text does not control the scheduler.
+
+### 8.4 External portal adapters
+
+Do not give the agent a portal username/password and let the model improvise browser automation. For each external site, prefer an official read-only API or export. Create a narrow server-side adapter with a dedicated token, allowlisted hostname/endpoints, least privilege, strict response schema, rate limit, timeout, and redacted audit trail. Keep the adapter disabled until the owner reviews the exact data it can read. Never bypass CAPTCHA, MFA, anti-bot controls, or a site's terms.
+
+### 8.5 WhatsApp regression checklist
+
+- [ ] Meta's GET verification succeeds only with the matching verify token.
+- [ ] `GET /WABA_ID/subscribed_apps` lists the intended Meta app; sending `status` from the allowlisted recipient creates an inbound database row and a single outbound reply without using Meta's manual webhook-test button.
+- [ ] A valid signed POST receives 200 quickly; a missing/incorrect HMAC receives 401 and performs no database or AI action.
+- [ ] The owner number receives one reply; a different number receives no reply and creates no row.
+- [ ] Replaying the same signed webhook produces no second AI call or response.
+- [ ] Text is capped, non-text input receives one safe instruction, and no raw payload is logged.
+- [ ] `status` reports only the approved progress snapshot; it never returns health, tax, finance, manuscript, credentials, or arbitrary site content.
+- [ ] Asking `what vitamins do I take?` returns exactly the owner-approved `nutrition_profile_v1` names and optional timing labels; it does not expose other health records or imply that any item is safe, prescribed, taken consistently, or medically endorsed.
+- [ ] `forget chat` removes saved history and leaves only its confirmation reply.
+- [ ] AI/provider failure returns a generic owner-facing error without leaking internals.
+- [ ] An approved template check-in sends once on the correct local day/time, repeated cron runs do not duplicate it, and pause/resume works.
+- [ ] Supabase Security and Performance advisers show no new RLS or policy findings.
+
 ## Cache-version rule
 
 GitHub Pages and browsers can temporarily serve older shared assets. Whenever a shared CSS or JavaScript file changes, update its query version in every HTML file that loads it:
@@ -660,6 +1006,12 @@ Append every future bug here. Update the relevant architecture section at the sa
 
 | Date | Symptom | Root cause | Corrected rule | Regression test |
 | --- | --- | --- | --- | --- |
+| 2026-08-07 | Messages from the allowlisted phone appeared in Meta's test-event list but never reached Supabase, even though the callback accepted Meta's manual sample POST with HTTP 200. | The `messages` webhook field was subscribed at the app-object level, but the test WhatsApp Business Account had not subscribed the intended app. Meta can record test-number events without forwarding them to an app that is absent from `WABA_ID/subscribed_apps`. | Treat webhook-field subscription and WABA-to-app subscription as separate required steps. Select the **WhatsApp Business Account** webhook product, subscribe `messages`, call `POST /WABA_ID/subscribed_apps`, and verify the exact App ID with `GET /WABA_ID/subscribed_apps` before testing a real phone message. | Confirm the GET result contains the intended app, then send `status` from the allowlisted number. Supabase must log one signed POST, persist one inbound row, send one reply, and update its outbound delivery status; Meta's manual webhook-test button is not part of the regression. |
+| 2026-08-07 | The WhatsApp tables' authenticated role retained `INSERT`, `UPDATE`, `TRUNCATE`, `REFERENCES`, and `TRIGGER` privileges beyond the operations intentionally granted. | Postgres `GRANT` is additive: granting a smaller list did not remove default privileges already applied when the public tables were created. RLS constrained row operations but does not replace least-privilege table grants. | After creating every sensitive exposed-schema table, `REVOKE ALL` from both `anon` and `authenticated`, then grant only the exact operations the reviewed RLS policies support. Never assume a narrower `GRANT` removes prior privileges. | Query `information_schema.role_table_grants`; check-ins must expose only owner CRUD to `authenticated`, messages only SELECT/DELETE, `anon` no privileges, and neither role may have TRUNCATE/TRIGGER/REFERENCES or unplanned writes. |
+| 2026-08-07 | An unsigned POST to the not-yet-configured WhatsApp webhook returned `503 configuration incomplete` instead of failing authentication. | The global configuration check ran before the scheduler-secret and Meta-HMAC authentication branches. It did not permit an action, but it disclosed deployment state and prevented a clean negative authentication test. | Authenticate the selected public-endpoint branch before reporting its configuration state: validate a non-empty scheduler secret before scheduler configuration, or validate Meta's raw-body HMAC before webhook configuration. Invalid callers always receive an authentication failure and perform no action. | With WhatsApp secrets absent, GET without the verify token returns 403 and unsigned POST returns 401; after configuration, wrong scheduler/HMAC credentials still fail while valid credentials reach their intended branch. |
+| 2026-08-07 | Supabase's performance advisor reported unindexed WhatsApp check-in owner and message/check-in foreign keys. | The first schema migration indexed scheduling/history queries but did not add covering indexes for both foreign-key columns. | Every new foreign key receives a covering index unless a reviewed existing composite index begins with the same columns; run both Supabase advisers after every DDL change. | Reapply the adviser after adding `whatsapp_agent_checkins(user_id)` and the partial `whatsapp_agent_messages(checkin_id)` index; confirm both `unindexed_foreign_keys` findings disappear. |
+| 2026-08-07 | A deployment safety review could not prove that the public WhatsApp endpoint's scheduler branch was disabled when no scheduler secret existed. | The branch checked only the incoming header before a constant-time comparison; the comparison rejected an empty configured secret indirectly, but the guard did not explicitly require a non-empty server-side secret. | A public webhook's alternate privileged branch must first require the configured server secret to be non-empty, then require a non-empty presented secret, then compare them in constant time. Missing or invalid scheduler credentials fall through to full Meta signature verification and cannot send messages. | Start the function with no scheduler secret and POST the scheduler action with empty and non-empty headers; both must fail without sending. Configure the secret, retry with a wrong value and expect failure, then use the matching value and expect one scheduled run. |
+| 2026-08-07 | The WhatsApp assistant would have sent the newest owner question to Big Pickle twice in one request. | The inbound message was persisted before history was loaded, so the history already ended with the current question and the request builder appended that same question again. | Before composing the provider request, remove exactly one matching trailing user-history entry, then append the current question once. Preserve earlier identical questions because they may be legitimate conversation history. | Insert a new inbound message, build the provider message array, and assert its text appears once at the end; repeat a question after an intervening reply and confirm the earlier occurrence remains in history. |
 | 2026-08-06 | Bills, Health, Taxes, Gym Tracker, Aviation, and Mandarin repeated an administrator password form after the owner had already entered the site; the current Supabase password could also be rejected before Auth was called. | Each protected detail implemented its own authentication UI, and the root client duplicated password verification with an obsolete hard-coded hash instead of reusing one verified Supabase session. | Authenticate once on the root Interests route using Supabase Auth plus the `site_admins` allowlist, never duplicate the account password as a client-side hash, reveal all tiles only after that session succeeds, and let every protected detail reuse it. Signed-out direct detail URLs contain no password form and point back to the root gate. | Start with empty session storage, open Interests, confirm the grid is absent and exactly one password field is visible, authenticate with the current Supabase password, open every protected tile and confirm no second password field appears, then clear/expire the session and confirm the grid locks again. |
 | 2026-08-06 | A private tax document's View action could do nothing on iPad even though the authenticated download succeeded. | The code waited for the private fetch and then triggered a synthetic `_blank` link; by then the browser no longer considered it part of the user's click and could block it as a pop-up. | Show authenticated PDF blobs in a same-page modal iframe, keep the bucket private, clear the frame on close, and revoke every blob URL. Use a synchronous new window only as a feature-detected fallback. | Sign in, open History, click each saved PDF at desktop/tablet/mobile widths, confirm the in-page viewer opens with a `blob:` source, close it, and confirm there are no console errors or extra tabs. |
 | 2026-08-06 | The futuristic Health console was eight pixels wider than a 768px tablet viewport even though every result row fit. | Its decorative grid pseudo-element used negative horizontal insets, so the background itself expanded the document scroll width beyond the responsive content container. | Decorative backgrounds, glow layers, and pseudo-elements on responsive page shells stay inside the shell's border box unless an ancestor explicitly clips them; never use negative horizontal insets on a viewport-width container. | Open the authenticated Health dashboard at 390px, 768px, and desktop widths and confirm `documentElement.scrollWidth === innerWidth` while every diagnostic row, badge, and reference value remains visible. |
@@ -719,6 +1071,15 @@ Append every future bug here. Update the relevant architecture section at the sa
 - [ ] Store the AI-provider secret only in Edge Function secrets.
 - [ ] Deploy and authenticate the AI gateway.
 - [ ] Test cloud files, quiz history, and editable content across devices.
+- [ ] Add the default Gym & Nutrition, Finances, Health, Taxes, Books, and AI Interests unless the owner explicitly removes or renames one.
+- [ ] Keep every private route and public static asset free of owner-only values and prose.
+- [ ] Complete the mandatory penetration-testing and privacy gate; remediate and retest every critical/high finding.
+- [ ] Enable strong administrator password controls and authenticator-app MFA; never paste the credential into code, GitHub, chat, or this package.
+- [ ] Confirm the single-owner website/app ownership model and chosen Apple distribution method.
+- [ ] Create the Capacitor project with pinned versions, a generated `www` bundle, and the owner's unique bundle ID.
+- [ ] Add Keychain-backed Supabase sessions, native value, two-way data synchronization, conflict handling, and native security tests.
+- [ ] Complete TestFlight and App Store privacy/review materials under the owner's Apple Developer account.
+- [ ] If WhatsApp is enabled, create the owner's Meta business assets, set secrets only in Supabase, deploy the signed webhook, allowlist one phone, and pass every Phase 8 regression check.
 - [ ] Run the standalone-interest regression test.
 - [ ] Test phone, tablet, narrow desktop, and dark mode.
 - [ ] Update this Markdown package for every bug fixed during the build.
@@ -734,6 +1095,20 @@ Append every future bug here. Update the relevant architecture section at the sa
 - Supabase Data API security: https://supabase.com/docs/guides/api/securing-your-api
 - Supabase RLS: https://supabase.com/docs/guides/database/postgres/row-level-security
 - Supabase Storage access control: https://supabase.com/docs/guides/storage/security/access-control
+- Supabase password security: https://supabase.com/docs/guides/auth/password-security
+- Supabase MFA: https://supabase.com/docs/guides/auth/auth-mfa
+- Supabase product security: https://supabase.com/docs/guides/security/product-security
+- OWASP Web Security Testing Guide: https://owasp.org/www-project-web-security-testing-guide/
+- OWASP Authentication Cheat Sheet: https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html
+- GitHub removing sensitive data: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository
+- Capacitor installation: https://capacitorjs.com/docs/getting-started
+- Capacitor configuration: https://capacitorjs.com/docs/config
+- Capacitor iOS: https://capacitorjs.com/docs/ios
+- Capacitor iOS privacy manifest: https://capacitorjs.com/docs/ios/privacy-manifest
+- Capacitor App Store deployment: https://capacitorjs.com/docs/ios/deploying-to-app-store
+- Supabase Realtime Postgres changes: https://supabase.com/docs/guides/realtime/postgres-changes
+- Apple App Review Guidelines: https://developer.apple.com/app-store/review/guidelines/
+- Apple Developer Program: https://developer.apple.com/programs/whats-included/
 - IRS individual filing: https://www.irs.gov/individual-tax-filing
 - IRS Free File: https://www.irs.gov/file-your-taxes-for-free
 - New Jersey income tax forms: https://www.nj.gov/treasury/taxation/prntgit.shtml
@@ -742,5 +1117,9 @@ Append every future bug here. Update the relevant architecture section at the sa
 - Supabase function authentication: https://supabase.com/docs/guides/functions/auth
 - Supabase function secrets: https://supabase.com/docs/guides/functions/secrets
 - Supabase changelog: https://supabase.com/changelog
+- Supabase background tasks: https://supabase.com/docs/guides/functions/background-tasks
+- Supabase scheduled functions: https://supabase.com/docs/guides/functions/schedule-functions
+- Meta WhatsApp Cloud API collection: https://www.postman.com/meta/whatsapp-business-platform/collection/wlk6lh4/whatsapp-cloud-api
+- Meta WhatsApp API examples: https://github.com/fbsamples/whatsapp-api-examples
 - Cisco Umbrella threat definitions: https://docs.umbrella.com/umbrella-sig-gov/docs/threat-type-definitions
 - Cisco Talos reputation and categorization tickets: https://support.talosintelligence.com/docs/submit-ticket/
