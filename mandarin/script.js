@@ -10,6 +10,7 @@ const WRITING_WORDS_KEY = "anthony_mandarin_written_words_v1";
 const WRITING_WORDS_CLOUD_KEY = "mandarin_written_words_v1";
 const KNOWN_WORDS_KEY = "mandarin-known";
 const KNOWN_WORDS_CLOUD_KEY = "mandarin_known_words_v1";
+const MANDARIN_PAGE_VERSION = "20260808-lessons3";
 
 const state = {
   activeCategory: "All",
@@ -307,12 +308,37 @@ function renderVocabulary() {
   enhanceMandarinSpeech(grid);
 }
 
+function mandarinLessonHref(page, lessonId) {
+  const url = new URL("index.html", location.href);
+  url.searchParams.set("page", page);
+  url.searchParams.set("lesson", lessonId);
+  url.searchParams.set("v", MANDARIN_PAGE_VERSION);
+  return url.href;
+}
+
+function renderLessonList() {
+  const list = $("#lesson-list");
+  const lessons = window.MandarinLessons?.lessons || [];
+  list.innerHTML = lessons.map((lesson) => {
+    const sentenceCount = Object.values(lesson.sentenceGroups || {}).flat().length;
+    const practiceCount = sentenceCount + (lesson.dialogue?.length || 0) + (lesson.readings?.length || 0);
+    const sample = lesson.overview?.cards?.[0]?.[1] || "中文";
+    return `<a class="lesson-list-card" href="${mandarinLessonHref("lesson", lesson.id)}">
+      <span class="lesson-card-sample" aria-hidden="true">${escapeHtml(sample)}</span>
+      <strong>${escapeHtml(lesson.title)}</strong>
+      <small>${lesson.vocabulary?.length || 0} words · ${practiceCount} practice items</small>
+      <b aria-hidden="true">→</b>
+    </a>`;
+  }).join("");
+}
+
 function renderLessonOverview() {
   const overview = currentLesson?.overview || {};
   const cards = overview.cards || [];
   const feature = overview.feature || [];
   const drills = currentLesson?.pronunciationDrills || [];
   $("#lesson-overview-title").textContent = currentLesson?.title || "Lesson";
+  $("#lesson-practice-link").href = mandarinLessonHref("practice", currentLesson?.id || "lesson-1");
   $("#lesson-overview-cards").innerHTML = cards.map(([label, chinese, pinyin, meaning]) => `
     <article class="greeting-card">
       <span>${escapeHtml(label)}</span>
@@ -375,6 +401,7 @@ function renderPracticeTopics() {
 
 function renderPractice() {
   $("#practice-lesson-title").textContent = currentLesson?.title || "Lesson";
+  $("#practice-lesson-link").href = mandarinLessonHref("lesson", currentLesson?.id || "lesson-1");
   const list = $("#practice-list");
   const revealLayer = state.practiceMode === "mandarin" ? "pinyin" : "english";
   list.innerHTML = practiceRows().map((row) => {
@@ -538,8 +565,8 @@ document.addEventListener("keydown", (event) => {
 });
 const rawRequestedPage = new URLSearchParams(location.search).get("page");
 const requestedPage = ["sentences", "plans", "reading"].includes(rawRequestedPage) ? "practice" : rawRequestedPage;
-const mandarinPages = ["lesson", "cards", "sounds", "words", "writing", "practice"];
-const activePage = mandarinPages.includes(requestedPage) ? requestedPage : "lesson";
+const mandarinPages = ["lessons", "lesson", "cards", "sounds", "words", "writing", "practice"];
+const activePage = mandarinPages.includes(requestedPage) ? requestedPage : "lessons";
 $$('[data-preserve-lesson]').forEach((link) => {
   const url = new URL(link.href, location.href);
   url.searchParams.set("lesson", currentLesson?.id || "lesson-1");
@@ -547,13 +574,14 @@ $$('[data-preserve-lesson]').forEach((link) => {
 });
 $$('.mandarin-page').forEach((page) => { page.hidden = page.dataset.page !== activePage; });
 $$('[data-page-link]').forEach((link) => {
-  const activeLesson = link.dataset.pageLink !== "lesson" || link.dataset.lessonLink === currentLesson?.id;
-  if (link.dataset.pageLink === activePage && activeLesson) link.setAttribute("aria-current", "page");
+  const menuPage = ["lesson", "practice"].includes(activePage) ? "lessons" : activePage;
+  if (link.dataset.pageLink === menuPage) link.setAttribute("aria-current", "page");
   else link.removeAttribute("aria-current");
 });
 
 renderFilters();
 renderVocabulary();
+renderLessonList();
 renderLessonOverview();
 renderSoundTabs();
 renderPronunciation();
